@@ -57,7 +57,14 @@ int Tracking::CalcInitTPD(Basin &bsn, Control &ctrl){
 	_d18O_MW1->matrix[r][c] = _d18Osoil1->matrix[r][c];
 	_d18O_TB2->matrix[r][c] = _d18Osoil2->matrix[r][c];
 	_d18O_MW2->matrix[r][c] = _d18Osoil2->matrix[r][c];
-	}
+      }
+      // d18O
+      if(ctrl.sw_Cl){
+	_cCl_TB1->matrix[r][c] = _cClsoil1->matrix[r][c];
+	_cCl_MW1->matrix[r][c] = _cClsoil1->matrix[r][c];
+	_cCl_TB2->matrix[r][c] = _cClsoil2->matrix[r][c];
+	_cCl_MW2->matrix[r][c] = _cClsoil2->matrix[r][c];
+      }
       // Age
       if(ctrl.sw_Age){
 	_Age_TB1->matrix[r][c] = _Agesoil1->matrix[r][c];

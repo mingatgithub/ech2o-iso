@@ -48,7 +48,8 @@ int Basin::CalcRootDistrib(){
   { 
 #pragma omp for nowait
 
-    for (UINT4 j = 0; j < _vSortedGrid.cells.size(); j++) {
+    for (UINT4 j = 0; j < _vSortedGrid.cells.size(); j++)
+      {
 	r = _vSortedGrid.cells[j].row;
 	c = _vSortedGrid.cells[j].col;
 
@@ -60,11 +61,13 @@ int Basin::CalcRootDistrib(){
 	p_veg = 0;
 	
 	for (s = 0; s < nsp; s++) {
+
 	  if (s == nsp - 1) { //if this is bare ground set fracs to 0
 	    frac1 = 0;
 	    frac2 = 0;
 	  } 
 	  else {
+
 	    // use exponential profile
 	    k = fForest->getKRoot(s);
 	    frac1 = (1 - expl(-k*d1))/(1-expl(-k*d));
@@ -72,7 +75,7 @@ int Basin::CalcRootDistrib(){
 
 	    // Contribution of each layer to rootzone: use depth at which 95% of the roots
 	    // are found
-	    d95 = std::min<double>(d,log2l(0.05+0.95*expl(-k*d))/(-k));
+	    d95 = std::min<double>(d,logl(0.05+0.95*expl(-k*d))/(-k));
 	    // average over species is made using the vegetated fraction sum (p_veg<=1)
 	    p = fForest->getPropSpecies(s, r, c);
 
@@ -97,7 +100,12 @@ int Basin::CalcRootDistrib(){
 	_ProotzoneL2->matrix[r][c] = p_veg > RNDOFFERR ? _ProotzoneL2->matrix[r][c] / p_veg : 0;
 	_ProotzoneL3->matrix[r][c] = p_veg > RNDOFFERR ? _ProotzoneL3->matrix[r][c] / p_veg : 0;
 	_Zroot95->matrix[r][c] = p_veg > RNDOFFERR ? _Zroot95->matrix[r][c] / p_veg : 0;
-
+	
+	/*
+	k = _Kroot->matrix[r][c];
+	_rootfrac1->matrix[r][c] = (1 - expl(-k*d1))/(1-expl(-k*d));
+	_rootfrac2->matrix[r][c] = (expl(-k*d1) - expl(-k*(d1+d2)))/(1-expl(-k*d));
+	*/
       } // for
   } //end omp parallel block
   return EXIT_SUCCESS;

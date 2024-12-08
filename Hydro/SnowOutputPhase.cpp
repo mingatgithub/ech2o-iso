@@ -19,7 +19,7 @@
  *     along with Ech2o.  If not, see <http://www.gnu.org/licenses/>.
  *
  * Contributors:
- *    Marco Maneta
+ *    Marco Maneta, Sylvain Kuppel
  *******************************************************************************/
 /*
  * SnowOutputPhase.cpp
@@ -34,33 +34,33 @@ double Basin::SnowOutput(Atmosphere &atm, Control &ctrl, Tracking &trck,
 			 const double &meltheat, int row, int col) {
 
 	double h = 0; // depth of snow water equivalent
-	double h0 = 0; // depth of snow water equivalent previous time-step
 	double dh = 0; // depth of snow output - decrease in snow water equivalent depth
 
 	h = _snow->matrix[row][col] < RNDOFFERR ? 0.0 : _snow->matrix[row][col];
 
-	h0 = _snow_old->matrix[row][col] < RNDOFFERR ? 0.0 : _snow_old->matrix[row][col];
-
 	_snow->matrix[row][col] = h;
-	
-	//if there is snow pack and latent heat of melt < 0
-	if (h > RNDOFFERR && meltheat < RNDOFFERR){
-	  dh = -meltheat * ctrl.dt / (lat_heat_fus*rho_w); 	//transform LE of melt into snowmelt depth
-	  if (dh > h)						//if this water energy equivalent > SWE
-	    dh = h; 						// output = water in snowpack
-	  _snow->matrix[row][col] -= dh;
 
-	} else
-	  h = 0.0;
-    
+	if (h < RNDOFFERR or meltheat > RNDOFFERR) // meltheat should be negative
+	  //if there is no snowpack and latent heat of melt is null
+	  //_Temp_s->matrix[row][col];//_Temp_s->matrix[row][col] = 0;
+	  //	else
+	  return 0.0;
+
+	//transform latent heat of melt into snowmelt depth
+	dh = min<double>(h, -meltheat * ctrl.dt / (lat_heat_fus*rho_w)); 
+
+	//if (dh > h)//if this water energy equivalent is larger than the available snow pack
+	//	dh = h; //the water output equals the water in the remaining snowpack
+
+
+	_snow->matrix[row][col] -= dh ;
+
+	_FluxSnowmelt->matrix[row][col] = dh / ctrl.dt ; 
+
 	// Flux tracking after snowmelt
-	if(ctrl.sw_trck){
-	  _FluxSnowtoSrf->matrix[row][col] = dh;
-	  trck.MixingV_snow(atm, *this, ctrl, h, h0, dh, row, col);
-	}
-
-	_snow_old->matrix[row][col] = _snow->matrix[row][col]; // update the snow for the next time-step
+	if(ctrl.sw_trck)
+	  trck.MixingV_snow(atm, *this, ctrl, h, dh, row, col);
 
 	return dh;
-	
+
 }

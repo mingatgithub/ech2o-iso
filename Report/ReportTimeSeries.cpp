@@ -51,7 +51,8 @@ int Report::ReportTimeSeries(const grid *input, string filename, float timestep)
 	  for (UINT4 i = 0; i< length; i++){
 		  r = mask.cells[i].row;
 		  c = mask.cells[i].col;
-
+		  //DEBUG 
+		  //cout << "r=" << r << ", c=" << c << ", i=" << i << endl;
           fout << input->matrix[r][c] << "\t";
 	  }
 	  fout << "\n";

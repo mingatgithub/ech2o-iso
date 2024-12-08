@@ -19,7 +19,7 @@
  *     along with Ech2o.  If not, see <http://www.gnu.org/licenses/>.
  *
  * Contributors:
- *    Marco Maneta
+ *    Marco Maneta, Sylvain Kuppel
  *******************************************************************************/
 /*
  * AdvanceClimateMaps.cpp
@@ -30,44 +30,74 @@
 
 #include "Atmosphere.h"
 
+
+
 int Atmosphere::AdvanceClimateMaps(Control &ctrl){
 
-  int grid = (int) _vSsortedGridTotalCellNumber;
-  
-  if(UpdateClimateMap(ifLdown, *_Ldown)!=grid)
-    throw string("Error advancing long-wave time-step");
-  if(UpdateClimateMap(ifSdown, *_Sdown)!=grid)
-    throw string("Error advancing short wave time-step");
-  if(UpdateClimateMap(ifTp, *_Tp)!=grid)
-    throw string("Error advancing avg air temp time-step");
-  if(UpdateClimateMap(ifMaxTp, *_MaxTp)!=grid)
-    throw string("Error advancing max air temp time-step");
-  if(UpdateClimateMap(ifMinTp, *_MinTp)!=grid)
-    throw string("Error advancing min air temp time-step");
-  if(UpdateClimateMap(ifPrecip, *_Precip)!=grid)
-    throw string("Error advancing precipitation time-step");
-  AdjustPrecip(); // adjust precipitation with the isohyet map
-  if(UpdateClimateMap(ifRelHumid, *_Rel_humid)!=grid)
-    throw string("Error advancing RH time-step");
-  if(UpdateClimateMap(ifWindSpeed, *_Wind_speed)!=grid)
-    throw string("Error advancing wind speed time-step");
-  if(UpdateClimateMap(ifPa, *_Pa)!=grid)
-    throw string("Error advancing avg air pressure time-step");
-  // --------------------------------------
-  //Urban ech2o
-  // --------------------------------------
-  if(ctrl.sw_anthr_heat)
-    if(UpdateClimateMap(ifAnthrHeat, *_Anthr_Heat)!=grid)
-      throw string("Error advancing anthropogenic heat time-step");  
-  // --------------------------------------
-  //Tracking
-  // --------------------------------------
-  if(ctrl.sw_trck && ctrl.sw_2H){
-    if(UpdateClimateMap(ifd2Hprecip, *_d2Hprecip)!=grid)
-      throw string("Error advancing d2H precipitation time-step");}
-  if(ctrl.sw_trck && ctrl.sw_18O){
-    if(UpdateClimateMap(ifd18Oprecip, *_d18Oprecip)!=grid)
-      throw string("Error advancing d18O precipitation time-step");}
-  return EXIT_SUCCESS;
-  
+// #ifdef _OPENMP
+// UINT4 number_threads;
+//  number_threads = omp_get_num_threads();
+// #endif
+size_t errCount = 0;
+
+// #pragma omp parallel num_threads(8) if (number_threads > 1)
+// {
+try {
+    if (UpdateClimateMap(ifLdown, *_Ldown) != _vSsortedGridTotalCellNumber) {
+        throw string("error advancing long wave time step");
+    }
+    if (UpdateClimateMap(ifSdown, *_Sdown) != _vSsortedGridTotalCellNumber) {
+        throw string("error advancing short wave time step");
+    }
+    if (UpdateClimateMap(ifTp, *_Tp) != _vSsortedGridTotalCellNumber) {
+        throw string("error advancing av air temp time step");
+    }
+    if (UpdateClimateMap(ifMaxTp, *_MaxTp) != _vSsortedGridTotalCellNumber) {
+        throw string("error advancing max air temp time step");
+    }
+    if (UpdateClimateMap(ifMinTp, *_MinTp) != _vSsortedGridTotalCellNumber) {
+        throw string("error advancing min air temp time step");
+    }
+
+    if (ctrl.sw_trck && ctrl.sw_2H) {
+        if (UpdateClimateMap(ifd2Hprecip, *_d2Hprecip) != _vSsortedGridTotalCellNumber) {
+            throw string("error advancing input d2H time step");
+        }
+    }
+
+    if (UpdateClimateMap(ifPrecip, *_Precip) != _vSsortedGridTotalCellNumber) {
+        throw string("error advancing precipitation time step");
+    }
+    AdjustPrecip();
+
+    if (UpdateClimateMap(ifRelHumid, *_Rel_humid) != _vSsortedGridTotalCellNumber) {
+        throw string("error advancing RH time step");
+    }
+
+    if (ctrl.sw_trck && ctrl.sw_18O) {
+        if (UpdateClimateMap(ifd18Oprecip, *_d18Oprecip) != _vSsortedGridTotalCellNumber) {
+            throw string("error advancing input d18O time step");
+        }
+    }
+
+    if (UpdateClimateMap(ifWindSpeed, *_Wind_speed) != _vSsortedGridTotalCellNumber) {
+        throw string("error advancing wind speed time step");
+    }
+
+    if (ctrl.sw_trck && ctrl.sw_Cl) {
+        if (UpdateClimateMap(ifcClprecip, *_cClprecip) != _vSsortedGridTotalCellNumber) {
+            throw string("error advancing input chloride time step");
+        }
+    }
+} catch (string &s) {
+    cout << s;
+    ++errCount;
+}//catch
+// } //parallel region
+
+ if (errCount != 0)
+   throw;
+
+ return EXIT_SUCCESS;
+
 }

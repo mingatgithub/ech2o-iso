@@ -57,6 +57,10 @@ void Tracking::MixingTPD_postET(Basin &bsn, Control &ctrl,
       _d18O_TB1->matrix[r][c] = InputMix(TB1_new, _d18O_TB1->matrix[r][c],
 					 min<double>(theta_MW1-TB1_new,MW1_new), 
 					 _d18O_MW1->matrix[r][c]) ;
+    if(ctrl.sw_Cl)
+      _cCl_TB1->matrix[r][c] = InputMix(TB1_new, _cCl_TB1->matrix[r][c],
+					min<double>(theta_MW1-TB1_new,MW1_new), 
+					 _cCl_MW1->matrix[r][c]) ;
 
     if(ctrl.sw_Age)
       _Age_TB1->matrix[r][c] = InputMix(TB1_new, _Age_TB1->matrix[r][c],
@@ -76,6 +80,10 @@ void Tracking::MixingTPD_postET(Basin &bsn, Control &ctrl,
       _d18O_TB2->matrix[r][c] = InputMix(TB2_new, _d18O_TB2->matrix[r][c],
 					 min<double>(theta_MW2-TB2_new,MW2_new), 
 					 _d18O_MW2->matrix[r][c]) ;
+    if(ctrl.sw_Cl)
+      _cCl_TB2->matrix[r][c] = InputMix(TB2_new, _cCl_TB2->matrix[r][c],
+					min<double>(theta_MW2-TB2_new,MW2_new), 
+					 _cCl_MW2->matrix[r][c]) ;
 
     if(ctrl.sw_Age)
       _Age_TB2->matrix[r][c] = InputMix(TB2_new, _Age_TB2->matrix[r][c],

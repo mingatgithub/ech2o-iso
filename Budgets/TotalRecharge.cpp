@@ -30,9 +30,9 @@
 
 #include "Budget.h"
 
-void Budget::TotalRecharge(const grid *map1, const grid *map2, const Basin *b)
+void Budget::TotalRecharge(const grid *map, const Basin *b)
 {
-  recharge += AccountStorages(map1, map2, b);
+  recharge += AccountStorages(map, b);
   // AccountStorages is used because FluxRecharge is already in m/tstep
   // (no need to multiply by dt)
 }
@@ -46,6 +46,11 @@ void Budget::InstRecharge_d2H(const grid *map1, const grid *map2, const Basin *b
 void Budget::InstRecharge_d18O(const grid *map1, const grid *map2, const Basin *b)
 {
   d18Orecharge = AccountTrckFluxes2(map1, map2, b);
+}
+// Instantaneous cCl reporting
+void Budget::InstRecharge_cCl(const grid *map1, const grid *map2, const Basin *b)
+{
+  cClrecharge = AccountTrckFluxes2(map1, map2, b);
 }
 // Instantaneous Age reporting
 void Budget::InstRecharge_Age(const grid *map1, const grid *map2, const Basin *b)

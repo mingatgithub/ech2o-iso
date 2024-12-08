@@ -38,115 +38,95 @@
 #include"Basin.h"
 
 void Basin::CalcSoilMoistureProfile(Atmosphere &atm, Control &ctrl, REAL8 theta,
-				    UINT4 row, UINT4 col) {
+		UINT4 row, UINT4 col) {
 
-  REAL8 d = _soildepth->matrix[row][col];
+	REAL8 d = _soildepth->matrix[row][col];
+	REAL8 poros0 = _porosity0->matrix[row][col];
+	REAL8 kp, poros;
 
-  REAL8 poros0 = _porosity0->matrix[row][col];
-  REAL8 kp, poros;
+	REAL8 theta_r ;
+	REAL8 psi = _psi_ae->matrix[row][col];
+	REAL8 lambda = 1 / _BClambda->matrix[row][col];
+	REAL8 psilam = powl(psi, lambda);
+	REAL8 H = _EquivDepth2Sat->matrix[row][col] + 0.1; //equivalent depth to saturation (m). Initial estimate is the old value for H + 0.1 to avoid initial value of 0
+	REAL8 H1 = H; //updated equivalent depth to saturation (m)
+	REAL8 u = d; // depth of the unsaturated layer needed to integrate the piecewise function
+	REAL8 fH, dfH;
+	UINT4 k = 0;
+
+	if(ctrl.toggle_Poros==1){
+	  kp = _kporos->matrix[row][col];
+	  poros = kp*poros0/d*(1-expl(-d/kp));
+	  theta_r = 1/d * (_depth_layer1->matrix[row][col]*_theta_rL1->matrix[row][col] +
+			   _depth_layer2->matrix[row][col]*_theta_rL2->matrix[row][col] +
+			   (d-_depth_layer1->matrix[row][col]-_depth_layer2->matrix[row][col]) *
+			   _theta_rL3->matrix[row][col]);
+	} else {
+	  poros = poros0;
+	  theta_r = _theta_rL1->matrix[row][col];
+	}
 	
-  REAL8 theta_r;
-  REAL8 psi = _psi_ae->matrix[row][col];
-  REAL8 lambda = 1 / _BClambda->matrix[row][col];
-  REAL8 psilam = powl(psi, lambda);
-  REAL8 H = _WaterTableDepth->matrix[row][col] + 0.1; //equivalent depth to saturation (m). Initial estimate is the old value for H + 0.1 to avoid initial value of 0
-  REAL8 H1 = H; //updated equivalent depth to saturation (m)
-  REAL8 u = d; // depth of the unsaturated layer needed to integrate the piecewise function
-  REAL8 fH, dfH;
-  UINT4 k = 0;
+	//TODO: prepare case of lambda = 1, which results in a different integrated function for soil moisture
+	//for the time being, if lambda =1 change it to 0.95 (lambda shouldnt be that high anyway)
 
-  if(ctrl.sw_expPoros){
-    kp = _kporos->matrix[row][col];
-    poros = kp*poros0/d*(1-expl(-d/kp));
-    theta_r = 1/d * (_depth_layer1->matrix[row][col]*_theta_rL1->matrix[row][col] +
-		     _depth_layer2->matrix[row][col]*_theta_rL2->matrix[row][col] +
-		     (d-_depth_layer1->matrix[row][col]-_depth_layer2->matrix[row][col]) *
-		     _theta_rL3->matrix[row][col]);
-  } else {
-    poros = poros0;
-    theta_r = _theta_rL1->matrix[row][col];
-  }
-	
-  //TODO: prepare case of lambda = 1, which results in a different integrated function for soil moisture
-  //for the time being, if lambda =1 change it to 0.95 (lambda shouldnt be that high anyway)
+	if (lambda == 1)
+		lambda = 0.95;
 
-  if (lambda == 1)
-    lambda = 0.95;
+	//if we have a fully saturated soil, then there is no point in calculating any soil moisture profile
 
-  //if we have a fully saturated soil, then there is no point in calculating any soil moisture profile
+	if (((poros - theta) * d) < (psi + H)) {
+	  //_soilmoist10cm->matrix[row][col] = theta;
+	  _WaterTableDepth->matrix[row][col] = (poros - theta) * d;
+	  return;
+	}
 
-  if (((poros - theta) * d) < (psi + H)) {
-    REAL8 theta1 = _soilmoist1->matrix[row][col];
-    REAL8 theta2 = _soilmoist2->matrix[row][col];
-    REAL8 theta3 = _soilmoist3->matrix[row][col];
-    REAL8 poros1 = _porosityL1->matrix[row][col];
-    REAL8 poros2 = _porosityL2->matrix[row][col];
-    REAL8 poros3 = _porosityL3->matrix[row][col];
-    REAL8 d1 = _depth_layer1->matrix[row][col];
-    REAL8 d2 = _depth_layer2->matrix[row][col];
-    REAL8 d3 = _soildepth->matrix[row][col] - d1 - d2;
-    REAL8 S1 = 1 - std::max<double>((poros1 - theta1)/poros1,0); 
-    REAL8 S2 = 1 - std::max<double>((poros2 - theta2)/poros2,0);
-    REAL8 S3 = 1 - std::max<double>((poros3 - theta3)/poros3,0);
+	do { //uses N-R to calculate the corresponding depth to the equivalent water table for the given average soil moisture
 
-    _WaterTableDepth->matrix[row][col] = (poros - (theta1*S1*d1 + theta2*S2*d2 + theta3*S3*d3)/(d1 + d2 + d3))*(d1 + d2 + d3)/poros;
-    /* THIS IS THE ORIGINAL -- PROBLEMS WITH 
-    _WaterTableDepth->matrix[row][col] = (poros - theta) * d;
-    //_soilmoist10cm->matrix[row][col] = theta;
-    */
-    return;
-  }
+		H = H1;
+		if (H == d)
+			H += 0.01; //in the unlikely case H equals d, make it 1 cm deeper to avoid division by zero
+		if (H > 1000) { //if the depth water table is larger than some large arbitrary depth (m), assume soil moisture at the topsoil equals average soil moisture and return
+		  //_soilmoist10cm->matrix[row][col] = theta;
+		  _WaterTableDepth->matrix[row][col] = H1;
+			return;
+		}
+		u = ((H - d) > psi) ? d : H - psi;
 
-  do { //uses N-R to calculate the corresponding depth to the equivalent water table for the given average soil moisture
+		fH = (1 / d)
+				* (((((poros - theta_r) * psilam
+						* ((H - u) * pow(H, lambda) - H * pow(H - u, lambda)))
+						/ ((lambda - 1) * pow(H - u, lambda) * pow(H, lambda)))
+						+ theta_r * u) + poros * (d - u)) - theta;
+		dfH = ((H - d) > psi) ?
+				(1 / d)
+						* -((poros - theta_r)
+								* (pow(psi / (H - u), lambda)
+										- pow(psi / (H), lambda))) :
+				-poros / d;
 
-    H = H1;
-    if (H == d)
-      H += 0.01; //in the unlikely case H equals d, make it 1 cm deeper to avoid division by zero
-    if (H > 1000) { //if the depth water table is larger than some large arbitrary depth (m), assume soil moisture at the topsoil equals average soil moisture and return
-      //_soilmoist10cm->matrix[row][col] = theta;
-      _WaterTableDepth->matrix[row][col] = H1;
-      return;
-    }
-    u = ((H - d) > psi) ? d : H - psi;
+		H1 = H - fH / dfH;
 
-    fH = (1 / d)
-      * (((((poros - theta_r) * psilam
-	    * ((H - u) * pow(H, lambda) - H * pow(H - u, lambda)))
-	   / ((lambda - 1) * pow(H - u, lambda) * pow(H, lambda)))
-	  + theta_r * u) + poros * (d - u)) - theta;
-    dfH = ((H - d) > psi) ?
-      (1 / d)
-      * -((poros - theta_r)
-	  * (pow(psi / (H - u), lambda)
-	     - pow(psi / (H), lambda))) :
-      -poros / d;
+		k++;
 
-    H1 = H - fH / dfH;
+	} while (fabs(H - H1) > 0.01 && k < MAX_ITER);
 
-    k++;
+	if (k >= MAX_ITER)
+		std::cout
+				<< "WARNING: non-convergence soil moisture profile at cell row: "
+				<< row << " col: " << col << " closure err: " << (H1 - H)
+				<< endl;
 
-  } while (fabs(H - H1) > 0.01 && k < MAX_ITER);
+	//calculates average soil moisture of first 10 cm of soil given teh calculated depth to the water table
+	d = 0.1;
+	u = ((H1 - d) > psi) ? d : H1 - psi; //
 
-  if (k >= MAX_ITER)
-    std::cout
-      << "WARNING: non-convergence soil moisture profile at cell row: "
-      << row << " col: " << col << " closure err: " << (H1 - H)
-      << endl;
+	/*_soilmoist10cm->matrix[row][col] = (1 / d)
+			* (((((poros - theta_r) * psilam
+					* ((H1 - u) * powl(H1, lambda) - H1 * powl(H1 - u, lambda)))
+					/ ((lambda - 1) * powl(H1 - u, lambda) * powl(H1, lambda)))
+					+ theta_r * u) + poros * (u - d));*/
 
-  //  cout << "Unsaturated --> " << "poros: " << poros << " |theta: " << theta << " |d: " << d << " |u: " << u << endl;
-  //  cout << "                lambda" << lambda << " |psi: " << psi << " |H: " << H1 << " |row: " << row << " |col: " << col << endl;
-
-  //calculates average soil moisture of first 10 cm of soil given teh calculated depth to the water table
-  d = 0.1;
-  u = ((H1 - d) > psi) ? d : H1 - psi; //
-
-  /*_soilmoist10cm->matrix[row][col] = (1 / d)
-   * (((((poros - theta_r) * psilam
-   * ((H1 - u) * powl(H1, lambda) - H1 * powl(H1 - u, lambda)))
-   / ((lambda - 1) * powl(H1 - u, lambda) * powl(H1, lambda)))
-   + theta_r * u) + poros * (u - d)); */
-
-  //stores the calculated depth to saturation
-  _WaterTableDepth->matrix[row][col] = H1;
+	//stores the calculated depth to saturation in case we need it
+	_WaterTableDepth->matrix[row][col] = H1;
 
 }

@@ -1,0 +1,682 @@
+Last login: Sat Dec  7 11:25:44 on ttys002
+
+The default interactive shell is now zsh.
+To update your account to use zsh, please run `chsh -s /bin/zsh`.
+For more details, please visit https://support.apple.com/kb/HT208050.
+(base) Mings-Air:~ aqiu$ conda deactivate
+Mings-Air:~ aqiu$ cd /Users/aqiu/Downloads/ech2o-iso/Release-Mac 
+Mings-Air:Release-Mac aqiu$ make all
+Building file: ../wrappers/CalculateBudgets.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"wrappers/CalculateBudgets.d" -MT"wrappers/CalculateBudgets.o" -o "wrappers/CalculateBudgets.o" "../wrappers/CalculateBudgets.cpp"
+Finished building: ../wrappers/CalculateBudgets.cpp
+ 
+Building file: ../wrappers/CreateWorld.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"wrappers/CreateWorld.d" -MT"wrappers/CreateWorld.o" -o "wrappers/CreateWorld.o" "../wrappers/CreateWorld.cpp"
+Finished building: ../wrappers/CreateWorld.cpp
+ 
+Building file: ../wrappers/CrunchWorld.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"wrappers/CrunchWorld.d" -MT"wrappers/CrunchWorld.o" -o "wrappers/CrunchWorld.o" "../wrappers/CrunchWorld.cpp"
+Finished building: ../wrappers/CrunchWorld.cpp
+ 
+Building file: ../wrappers/Report2maps.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"wrappers/Report2maps.d" -MT"wrappers/Report2maps.o" -o "wrappers/Report2maps.o" "../wrappers/Report2maps.cpp"
+Finished building: ../wrappers/Report2maps.cpp
+ 
+Building file: ../wrappers/Report2screen.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"wrappers/Report2screen.d" -MT"wrappers/Report2screen.o" -o "wrappers/Report2screen.o" "../wrappers/Report2screen.cpp"
+Finished building: ../wrappers/Report2screen.cpp
+ 
+Building file: ../wrappers/SolveTimeStep.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"wrappers/SolveTimeStep.d" -MT"wrappers/SolveTimeStep.o" -o "wrappers/SolveTimeStep.o" "../wrappers/SolveTimeStep.cpp"
+Finished building: ../wrappers/SolveTimeStep.cpp
+ 
+Building file: ../wrappers/Splash.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"wrappers/Splash.d" -MT"wrappers/Splash.o" -o "wrappers/Splash.o" "../wrappers/Splash.cpp"
+Finished building: ../wrappers/Splash.cpp
+ 
+Building file: ../wrappers/globals.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"wrappers/globals.d" -MT"wrappers/globals.o" -o "wrappers/globals.o" "../wrappers/globals.cpp"
+Finished building: ../wrappers/globals.cpp
+ 
+Building file: ../Tracking/CalcTPDtoLayers.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -ggdb -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Tracking/CalcTPDtoLayers.d" -MT"Tracking/CalcTPDtoLayers.o" -o "Tracking/CalcTPDtoLayers.o" "../Tracking/CalcTPDtoLayers.cpp"
+Finished building: ../Tracking/CalcTPDtoLayers.cpp
+ 
+Building file: ../Tracking/CalcInitTPD.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -ggdb -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Tracking/CalcInitTPD.d" -MT"Tracking/CalcInitTPD.o" -o "Tracking/CalcInitTPD.o" "../Tracking/CalcInitTPD.cpp"
+Finished building: ../Tracking/CalcInitTPD.cpp
+ 
+Building file: ../Tracking/CalcTrck_SoilAv.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -ggdb -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Tracking/CalcTrck_SoilAv.d" -MT"Tracking/CalcTrck_SoilAv.o" -o "Tracking/CalcTrck_SoilAv.o" "../Tracking/CalcTrck_SoilAv.cpp"
+Finished building: ../Tracking/CalcTrck_SoilAv.cpp
+ 
+Building file: ../Tracking/CheckMapsTrck.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -ggdb -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Tracking/CheckMapsTrck.d" -MT"Tracking/CheckMapsTrck.o" -o "Tracking/CheckMapsTrck.o" "../Tracking/CheckMapsTrck.cpp"
+Finished building: ../Tracking/CheckMapsTrck.cpp
+ 
+Building file: ../Tracking/FCdownstream.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -ggdb -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Tracking/FCdownstream.d" -MT"Tracking/FCdownstream.o" -o "Tracking/FCdownstream.o" "../Tracking/FCdownstream.cpp"
+Finished building: ../Tracking/FCdownstream.cpp
+ 
+Building file: ../Tracking/Fractionation_Esoil.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -ggdb -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Tracking/Fractionation_Esoil.d" -MT"Tracking/Fractionation_Esoil.o" -o "Tracking/Fractionation_Esoil.o" "../Tracking/Fractionation_Esoil.cpp"
+Finished building: ../Tracking/Fractionation_Esoil.cpp
+ 
+Building file: ../Tracking/IncrementAge.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -ggdb -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Tracking/IncrementAge.d" -MT"Tracking/IncrementAge.o" -o "Tracking/IncrementAge.o" "../Tracking/IncrementAge.cpp"
+Finished building: ../Tracking/IncrementAge.cpp
+ 
+Building file: ../Tracking/MixingTPD_postET.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -ggdb -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Tracking/MixingTPD_postET.d" -MT"Tracking/MixingTPD_postET.o" -o "Tracking/MixingTPD_postET.o" "../Tracking/MixingTPD_postET.cpp"
+Finished building: ../Tracking/MixingTPD_postET.cpp
+ 
+Building file: ../Tracking/MixingV_down.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -ggdb -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Tracking/MixingV_down.d" -MT"Tracking/MixingV_down.o" -o "Tracking/MixingV_down.o" "../Tracking/MixingV_down.cpp"
+Finished building: ../Tracking/MixingV_down.cpp
+ 
+Building file: ../Tracking/MixingV_evapS.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -ggdb -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Tracking/MixingV_evapS.d" -MT"Tracking/MixingV_evapS.o" -o "Tracking/MixingV_evapS.o" "../Tracking/MixingV_evapS.cpp"
+Finished building: ../Tracking/MixingV_evapS.cpp
+ 
+Building file: ../Tracking/MixingV_latup.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -ggdb -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Tracking/MixingV_latup.d" -MT"Tracking/MixingV_latup.o" -o "Tracking/MixingV_latup.o" "../Tracking/MixingV_latup.cpp"
+Finished building: ../Tracking/MixingV_latup.cpp
+ 
+Building file: ../Tracking/MixingV_snow.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -ggdb -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Tracking/MixingV_snow.d" -MT"Tracking/MixingV_snow.o" -o "Tracking/MixingV_snow.o" "../Tracking/MixingV_snow.cpp"
+Finished building: ../Tracking/MixingV_snow.cpp
+ 
+Building file: ../Tracking/MixingV_through.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -ggdb -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Tracking/MixingV_through.d" -MT"Tracking/MixingV_through.o" -o "Tracking/MixingV_through.o" "../Tracking/MixingV_through.cpp"
+Finished building: ../Tracking/MixingV_through.cpp
+ 
+Building file: ../Tracking/OutletVals.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -ggdb -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Tracking/OutletVals.d" -MT"Tracking/OutletVals.o" -o "Tracking/OutletVals.o" "../Tracking/OutletVals.cpp"
+Finished building: ../Tracking/OutletVals.cpp
+ 
+Building file: ../Report/RenameFile.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Report/RenameFile.d" -MT"Report/RenameFile.o" -o "Report/RenameFile.o" "../Report/RenameFile.cpp"
+Finished building: ../Report/RenameFile.cpp
+ 
+Building file: ../Report/ReportTimeSeries.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Report/ReportTimeSeries.d" -MT"Report/ReportTimeSeries.o" -o "Report/ReportTimeSeries.o" "../Report/ReportTimeSeries.cpp"
+Finished building: ../Report/ReportTimeSeries.cpp
+ 
+Building file: ../Report/ReportVectCells.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Report/ReportVectCells.d" -MT"Report/ReportVectCells.o" -o "Report/ReportVectCells.o" "../Report/ReportVectCells.cpp"
+Finished building: ../Report/ReportVectCells.cpp
+ 
+Building file: ../Radiation/CalcAerodynResist.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Radiation/CalcAerodynResist.d" -MT"Radiation/CalcAerodynResist.o" -o "Radiation/CalcAerodynResist.o" "../Radiation/CalcAerodynResist.cpp"
+Finished building: ../Radiation/CalcAerodynResist.cpp
+ 
+Building file: ../Radiation/GrndHeat.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Radiation/GrndHeat.d" -MT"Radiation/GrndHeat.o" -o "Radiation/GrndHeat.o" "../Radiation/GrndHeat.cpp"
+Finished building: ../Radiation/GrndHeat.cpp
+ 
+Building file: ../Radiation/LatHeat.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Radiation/LatHeat.d" -MT"Radiation/LatHeat.o" -o "Radiation/LatHeat.o" "../Radiation/LatHeat.cpp"
+Finished building: ../Radiation/LatHeat.cpp
+ 
+Building file: ../Radiation/MeltHeat.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Radiation/MeltHeat.d" -MT"Radiation/MeltHeat.o" -o "Radiation/MeltHeat.o" "../Radiation/MeltHeat.cpp"
+../Radiation/MeltHeat.cpp:36:9: warning: variable 'Ta' set but not used [-Wunused-but-set-variable]
+   36 |         double Ta = 0; // temperature of air // [[maybe_unused]]
+      |                ^
+1 warning generated.
+Finished building: ../Radiation/MeltHeat.cpp
+ 
+Building file: ../Radiation/NetRad.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Radiation/NetRad.d" -MT"Radiation/NetRad.o" -o "Radiation/NetRad.o" "../Radiation/NetRad.cpp"
+Finished building: ../Radiation/NetRad.cpp
+ 
+Building file: ../Radiation/RainHeat.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Radiation/RainHeat.d" -MT"Radiation/RainHeat.o" -o "Radiation/RainHeat.o" "../Radiation/RainHeat.cpp"
+Finished building: ../Radiation/RainHeat.cpp
+ 
+Building file: ../Radiation/SensHeat.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Radiation/SensHeat.d" -MT"Radiation/SensHeat.o" -o "Radiation/SensHeat.o" "../Radiation/SensHeat.cpp"
+Finished building: ../Radiation/SensHeat.cpp
+ 
+Building file: ../Radiation/SolveSurfaceFluxes.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Radiation/SolveSurfaceFluxes.d" -MT"Radiation/SolveSurfaceFluxes.o" -o "Radiation/SolveSurfaceFluxes.o" "../Radiation/SolveSurfaceFluxes.cpp"
+Finished building: ../Radiation/SolveSurfaceFluxes.cpp
+ 
+Building file: ../Radiation/snowheat.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Radiation/snowheat.d" -MT"Radiation/snowheat.o" -o "Radiation/snowheat.o" "../Radiation/snowheat.cpp"
+Finished building: ../Radiation/snowheat.cpp
+ 
+Building file: ../ParsingFunctions/ConfigFile.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"ParsingFunctions/ConfigFile.d" -MT"ParsingFunctions/ConfigFile.o" -o "ParsingFunctions/ConfigFile.o" "../ParsingFunctions/ConfigFile.cpp"
+Finished building: ../ParsingFunctions/ConfigFile.cpp
+ 
+Building file: ../ParsingFunctions/FileRoot.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"ParsingFunctions/FileRoot.d" -MT"ParsingFunctions/FileRoot.o" -o "ParsingFunctions/FileRoot.o" "../ParsingFunctions/FileRoot.cpp"
+Finished building: ../ParsingFunctions/FileRoot.cpp
+ 
+Building file: ../ParsingFunctions/ParseString.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"ParsingFunctions/ParseString.d" -MT"ParsingFunctions/ParseString.o" -o "ParsingFunctions/ParseString.o" "../ParsingFunctions/ParseString.cpp"
+Finished building: ../ParsingFunctions/ParseString.cpp
+ 
+Building file: ../IO/CSF2Grid.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"IO/CSF2Grid.d" -MT"IO/CSF2Grid.o" -o "IO/CSF2Grid.o" "../IO/CSF2Grid.cpp"
+Finished building: ../IO/CSF2Grid.cpp
+ 
+Building file: ../IO/Grass2grid.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"IO/Grass2grid.d" -MT"IO/Grass2grid.o" -o "IO/Grass2grid.o" "../IO/Grass2grid.cpp"
+Finished building: ../IO/Grass2grid.cpp
+ 
+Building file: ../IO/PCRMap2grid.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"IO/PCRMap2grid.d" -MT"IO/PCRMap2grid.o" -o "IO/PCRMap2grid.o" "../IO/PCRMap2grid.cpp"
+Finished building: ../IO/PCRMap2grid.cpp
+ 
+Building file: ../IO/Table2grid.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"IO/Table2grid.d" -MT"IO/Table2grid.o" -o "IO/Table2grid.o" "../IO/Table2grid.cpp"
+Finished building: ../IO/Table2grid.cpp
+ 
+Building file: ../IO/WriteASCIImap.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"IO/WriteASCIImap.d" -MT"IO/WriteASCIImap.o" -o "IO/WriteASCIImap.o" "../IO/WriteASCIImap.cpp"
+Finished building: ../IO/WriteASCIImap.cpp
+ 
+Building file: ../IO/WritePCRMap.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"IO/WritePCRMap.d" -MT"IO/WritePCRMap.o" -o "IO/WritePCRMap.o" "../IO/WritePCRMap.cpp"
+Finished building: ../IO/WritePCRMap.cpp
+ 
+Building file: ../Hydro/AdvanceLAIMaps.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Hydro/AdvanceLAIMaps.d" -MT"Hydro/AdvanceLAIMaps.o" -o "Hydro/AdvanceLAIMaps.o" "../Hydro/AdvanceLAIMaps.cpp"
+Finished building: ../Hydro/AdvanceLAIMaps.cpp
+ 
+Building file: ../Hydro/CalcCatchArea.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Hydro/CalcCatchArea.d" -MT"Hydro/CalcCatchArea.o" -o "Hydro/CalcCatchArea.o" "../Hydro/CalcCatchArea.cpp"
+Finished building: ../Hydro/CalcCatchArea.cpp
+ 
+Building file: ../Hydro/CalcFracMobileWater.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Hydro/CalcFracMobileWater.d" -MT"Hydro/CalcFracMobileWater.o" -o "Hydro/CalcFracMobileWater.o" "../Hydro/CalcFracMobileWater.cpp"
+Finished building: ../Hydro/CalcFracMobileWater.cpp
+ 
+Building file: ../Hydro/CalcInitialStreamStorage.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Hydro/CalcInitialStreamStorage.d" -MT"Hydro/CalcInitialStreamStorage.o" -o "Hydro/CalcInitialStreamStorage.o" "../Hydro/CalcInitialStreamStorage.cpp"
+Finished building: ../Hydro/CalcInitialStreamStorage.cpp
+ 
+Building file: ../Hydro/CalcPropLayers.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Hydro/CalcPropLayers.d" -MT"Hydro/CalcPropLayers.o" -o "Hydro/CalcPropLayers.o" "../Hydro/CalcPropLayers.cpp"
+Finished building: ../Hydro/CalcPropLayers.cpp
+ 
+Building file: ../Hydro/CalcRootDistrib.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Hydro/CalcRootDistrib.d" -MT"Hydro/CalcRootDistrib.o" -o "Hydro/CalcRootDistrib.o" "../Hydro/CalcRootDistrib.cpp"
+Finished building: ../Hydro/CalcRootDistrib.cpp
+ 
+Building file: ../Hydro/CalcSoilResist.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Hydro/CalcSoilResist.d" -MT"Hydro/CalcSoilResist.o" -o "Hydro/CalcSoilResist.o" "../Hydro/CalcSoilResist.cpp"
+Finished building: ../Hydro/CalcSoilResist.cpp
+ 
+Building file: ../Hydro/CalcTPDMoisture.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Hydro/CalcTPDMoisture.d" -MT"Hydro/CalcTPDMoisture.o" -o "Hydro/CalcTPDMoisture.o" "../Hydro/CalcTPDMoisture.cpp"
+Finished building: ../Hydro/CalcTPDMoisture.cpp
+ 
+Building file: ../Hydro/CalculateForestGrowth.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Hydro/CalculateForestGrowth.d" -MT"Hydro/CalculateForestGrowth.o" -o "Hydro/CalculateForestGrowth.o" "../Hydro/CalculateForestGrowth.cpp"
+Finished building: ../Hydro/CalculateForestGrowth.cpp
+ 
+Building file: ../Hydro/CalculateGroundwater.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Hydro/CalculateGroundwater.d" -MT"Hydro/CalculateGroundwater.o" -o "Hydro/CalculateGroundwater.o" "../Hydro/CalculateGroundwater.cpp"
+Finished building: ../Hydro/CalculateGroundwater.cpp
+ 
+Building file: ../Hydro/CalculateSatArea.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Hydro/CalculateSatArea.d" -MT"Hydro/CalculateSatArea.o" -o "Hydro/CalculateSatArea.o" "../Hydro/CalculateSatArea.cpp"
+Finished building: ../Hydro/CalculateSatArea.cpp
+ 
+Building file: ../Hydro/CanopyInterception.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Hydro/CanopyInterception.d" -MT"Hydro/CanopyInterception.o" -o "Hydro/CanopyInterception.o" "../Hydro/CanopyInterception.cpp"
+Finished building: ../Hydro/CanopyInterception.cpp
+ 
+Building file: ../Hydro/GWrouting.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Hydro/GWrouting.d" -MT"Hydro/GWrouting.o" -o "Hydro/GWrouting.o" "../Hydro/GWrouting.cpp"
+Finished building: ../Hydro/GWrouting.cpp
+ 
+Building file: ../Hydro/Infilt_GreenAmpt.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Hydro/Infilt_GreenAmpt.d" -MT"Hydro/Infilt_GreenAmpt.o" -o "Hydro/Infilt_GreenAmpt.o" "../Hydro/Infilt_GreenAmpt.cpp"
+Finished building: ../Hydro/Infilt_GreenAmpt.cpp
+ 
+Building file: ../Hydro/KinematicWave.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Hydro/KinematicWave.d" -MT"Hydro/KinematicWave.o" -o "Hydro/KinematicWave.o" "../Hydro/KinematicWave.cpp"
+Finished building: ../Hydro/KinematicWave.cpp
+ 
+Building file: ../Hydro/SnowOutputPhase.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Hydro/SnowOutputPhase.d" -MT"Hydro/SnowOutputPhase.o" -o "Hydro/SnowOutputPhase.o" "../Hydro/SnowOutputPhase.cpp"
+Finished building: ../Hydro/SnowOutputPhase.cpp
+ 
+Building file: ../Hydro/SoilEvapotranspiration.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Hydro/SoilEvapotranspiration.d" -MT"Hydro/SoilEvapotranspiration.o" -o "Hydro/SoilEvapotranspiration.o" "../Hydro/SoilEvapotranspiration.cpp"
+Finished building: ../Hydro/SoilEvapotranspiration.cpp
+ 
+Building file: ../Hydro/SoilWaterRedistribution.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Hydro/SoilWaterRedistribution.d" -MT"Hydro/SoilWaterRedistribution.o" -o "Hydro/SoilWaterRedistribution.o" "../Hydro/SoilWaterRedistribution.cpp"
+Finished building: ../Hydro/SoilWaterRedistribution.cpp
+ 
+Building file: ../Hydro/SolveCanopyFluxes.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Hydro/SolveCanopyFluxes.d" -MT"Hydro/SolveCanopyFluxes.o" -o "Hydro/SolveCanopyFluxes.o" "../Hydro/SolveCanopyFluxes.cpp"
+Finished building: ../Hydro/SolveCanopyFluxes.cpp
+ 
+Building file: ../Hydro/SolveSurfaceEnergyBalance.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Hydro/SolveSurfaceEnergyBalance.d" -MT"Hydro/SolveSurfaceEnergyBalance.o" -o "Hydro/SolveSurfaceEnergyBalance.o" "../Hydro/SolveSurfaceEnergyBalance.cpp"
+Finished building: ../Hydro/SolveSurfaceEnergyBalance.cpp
+ 
+Building file: ../Hydro/UpdateSnowPack.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Hydro/UpdateSnowPack.d" -MT"Hydro/UpdateSnowPack.o" -o "Hydro/UpdateSnowPack.o" "../Hydro/UpdateSnowPack.cpp"
+Finished building: ../Hydro/UpdateSnowPack.cpp
+ 
+Building file: ../Grid/SortGrid.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Grid/SortGrid.d" -MT"Grid/SortGrid.o" -o "Grid/SortGrid.o" "../Grid/SortGrid.cpp"
+Finished building: ../Grid/SortGrid.cpp
+ 
+Building file: ../Grid/SortGridForest.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Grid/SortGridForest.d" -MT"Grid/SortGridForest.o" -o "Grid/SortGridForest.o" "../Grid/SortGridForest.cpp"
+Finished building: ../Grid/SortGridForest.cpp
+ 
+Building file: ../Grid/SortGridLDD.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Grid/SortGridLDD.d" -MT"Grid/SortGridLDD.o" -o "Grid/SortGridLDD.o" "../Grid/SortGridLDD.cpp"
+../Grid/SortGridLDD.cpp:46:9: warning: variable 'flag' set but not used [-Wunused-but-set-variable]
+   46 |   REAL4 flag;
+      |         ^
+1 warning generated.
+Finished building: ../Grid/SortGridLDD.cpp
+ 
+Building file: ../Grid/grid.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Grid/grid.d" -MT"Grid/grid.o" -o "Grid/grid.o" "../Grid/grid.cpp"
+Finished building: ../Grid/grid.cpp
+ 
+Building file: ../Functions/ConstAndFuncs.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Functions/ConstAndFuncs.d" -MT"Functions/ConstAndFuncs.o" -o "Functions/ConstAndFuncs.o" "../Functions/ConstAndFuncs.cpp"
+Finished building: ../Functions/ConstAndFuncs.cpp
+ 
+Building file: ../Forest/AdvanceLAIMaps.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -I"/usr/local/Cellar/armadillo/14.2.1/include" -O3 -ggdb -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Forest/AdvanceLAIMaps.d" -MT"Forest/AdvanceLAIMaps.o" -o "Forest/AdvanceLAIMaps.o" "../Forest/AdvanceLAIMaps.cpp"
+Finished building: ../Forest/AdvanceLAIMaps.cpp
+ 
+Building file: ../Forest/CalculateCanopyConduct.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -I"/usr/local/Cellar/armadillo/14.2.1/include" -O3 -ggdb -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Forest/CalculateCanopyConduct.d" -MT"Forest/CalculateCanopyConduct.o" -o "Forest/CalculateCanopyConduct.o" "../Forest/CalculateCanopyConduct.cpp"
+Finished building: ../Forest/CalculateCanopyConduct.cpp
+ 
+Building file: ../Forest/CreateGrids.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -I"/usr/local/Cellar/armadillo/14.2.1/include" -O3 -ggdb -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Forest/CreateGrids.d" -MT"Forest/CreateGrids.o" -o "Forest/CreateGrids.o" "../Forest/CreateGrids.cpp"
+Finished building: ../Forest/CreateGrids.cpp
+ 
+Building file: ../Forest/GrowForest.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -I"/usr/local/Cellar/armadillo/14.2.1/include" -O3 -ggdb -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Forest/GrowForest.d" -MT"Forest/GrowForest.o" -o "Forest/GrowForest.o" "../Forest/GrowForest.cpp"
+Finished building: ../Forest/GrowForest.cpp
+ 
+Building file: ../Forest/GrowGrass.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -I"/usr/local/Cellar/armadillo/14.2.1/include" -O3 -ggdb -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Forest/GrowGrass.d" -MT"Forest/GrowGrass.o" -o "Forest/GrowGrass.o" "../Forest/GrowGrass.cpp"
+Finished building: ../Forest/GrowGrass.cpp
+ 
+Building file: ../Forest/GrowGrassLAI.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -I"/usr/local/Cellar/armadillo/14.2.1/include" -O3 -ggdb -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Forest/GrowGrassLAI.d" -MT"Forest/GrowGrassLAI.o" -o "Forest/GrowGrassLAI.o" "../Forest/GrowGrassLAI.cpp"
+Finished building: ../Forest/GrowGrassLAI.cpp
+ 
+Building file: ../Forest/GrowLAI.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -I"/usr/local/Cellar/armadillo/14.2.1/include" -O3 -ggdb -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Forest/GrowLAI.d" -MT"Forest/GrowLAI.o" -o "Forest/GrowLAI.o" "../Forest/GrowLAI.cpp"
+Finished building: ../Forest/GrowLAI.cpp
+ 
+Building file: ../Forest/GrowRoots.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -I"/usr/local/Cellar/armadillo/14.2.1/include" -O3 -ggdb -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Forest/GrowRoots.d" -MT"Forest/GrowRoots.o" -o "Forest/GrowRoots.o" "../Forest/GrowRoots.cpp"
+Finished building: ../Forest/GrowRoots.cpp
+ 
+Building file: ../Forest/GrowStem.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -I"/usr/local/Cellar/armadillo/14.2.1/include" -O3 -ggdb -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Forest/GrowStem.d" -MT"Forest/GrowStem.o" -o "Forest/GrowStem.o" "../Forest/GrowStem.cpp"
+Finished building: ../Forest/GrowStem.cpp
+ 
+Building file: ../Forest/GrowTrees.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -I"/usr/local/Cellar/armadillo/14.2.1/include" -O3 -ggdb -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Forest/GrowTrees.d" -MT"Forest/GrowTrees.o" -o "Forest/GrowTrees.o" "../Forest/GrowTrees.cpp"
+Finished building: ../Forest/GrowTrees.cpp
+ 
+Building file: ../Forest/InitiateLAIMap.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -I"/usr/local/Cellar/armadillo/14.2.1/include" -O3 -ggdb -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Forest/InitiateLAIMap.d" -MT"Forest/InitiateLAIMap.o" -o "Forest/InitiateLAIMap.o" "../Forest/InitiateLAIMap.cpp"
+Finished building: ../Forest/InitiateLAIMap.cpp
+ 
+Building file: ../Forest/LatHeatCanopy.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -I"/usr/local/Cellar/armadillo/14.2.1/include" -O3 -ggdb -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Forest/LatHeatCanopy.d" -MT"Forest/LatHeatCanopy.o" -o "Forest/LatHeatCanopy.o" "../Forest/LatHeatCanopy.cpp"
+Finished building: ../Forest/LatHeatCanopy.cpp
+ 
+Building file: ../Forest/MapGetters.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -I"/usr/local/Cellar/armadillo/14.2.1/include" -O3 -ggdb -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Forest/MapGetters.d" -MT"Forest/MapGetters.o" -o "Forest/MapGetters.o" "../Forest/MapGetters.cpp"
+Finished building: ../Forest/MapGetters.cpp
+ 
+Building file: ../Forest/NetRadCanopy.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -I"/usr/local/Cellar/armadillo/14.2.1/include" -O3 -ggdb -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Forest/NetRadCanopy.d" -MT"Forest/NetRadCanopy.o" -o "Forest/NetRadCanopy.o" "../Forest/NetRadCanopy.cpp"
+Finished building: ../Forest/NetRadCanopy.cpp
+ 
+Building file: ../Forest/SensHeatCanopy.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -I"/usr/local/Cellar/armadillo/14.2.1/include" -O3 -ggdb -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Forest/SensHeatCanopy.d" -MT"Forest/SensHeatCanopy.o" -o "Forest/SensHeatCanopy.o" "../Forest/SensHeatCanopy.cpp"
+Finished building: ../Forest/SensHeatCanopy.cpp
+ 
+Building file: ../Forest/SetSpeciesParameters.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -I"/usr/local/Cellar/armadillo/14.2.1/include" -O3 -ggdb -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Forest/SetSpeciesParameters.d" -MT"Forest/SetSpeciesParameters.o" -o "Forest/SetSpeciesParameters.o" "../Forest/SetSpeciesParameters.cpp"
+Finished building: ../Forest/SetSpeciesParameters.cpp
+ 
+Building file: ../Forest/SetSpeciesStateVars.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -I"/usr/local/Cellar/armadillo/14.2.1/include" -O3 -ggdb -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Forest/SetSpeciesStateVars.d" -MT"Forest/SetSpeciesStateVars.o" -o "Forest/SetSpeciesStateVars.o" "../Forest/SetSpeciesStateVars.cpp"
+Finished building: ../Forest/SetSpeciesStateVars.cpp
+ 
+Building file: ../Forest/SetSpeciesStateVarsMaps.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -I"/usr/local/Cellar/armadillo/14.2.1/include" -O3 -ggdb -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Forest/SetSpeciesStateVarsMaps.d" -MT"Forest/SetSpeciesStateVarsMaps.o" -o "Forest/SetSpeciesStateVarsMaps.o" "../Forest/SetSpeciesStateVarsMaps.cpp"
+Finished building: ../Forest/SetSpeciesStateVarsMaps.cpp
+ 
+Building file: ../Forest/SolveCanopyEnergyBalance.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -I"/usr/local/Cellar/armadillo/14.2.1/include" -O3 -ggdb -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Forest/SolveCanopyEnergyBalance.d" -MT"Forest/SolveCanopyEnergyBalance.o" -o "Forest/SolveCanopyEnergyBalance.o" "../Forest/SolveCanopyEnergyBalance.cpp"
+../Forest/SolveCanopyEnergyBalance.cpp:76:9: warning: variable 'dleafRHdpsi_l' set but not used [-Wunused-but-set-variable]
+   76 |   REAL8 dleafRHdpsi_l = 0; // [[maybe_unused]]
+      |         ^
+1 warning generated.
+Finished building: ../Forest/SolveCanopyEnergyBalance.cpp
+ 
+Building file: ../Forest/UpdateLAIMap.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -I"/usr/local/Cellar/armadillo/14.2.1/include" -O3 -ggdb -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Forest/UpdateLAIMap.d" -MT"Forest/UpdateLAIMap.o" -o "Forest/UpdateLAIMap.o" "../Forest/UpdateLAIMap.cpp"
+Finished building: ../Forest/UpdateLAIMap.cpp
+ 
+Building file: ../Destructors/AtmosphDesctruct.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Destructors/AtmosphDesctruct.d" -MT"Destructors/AtmosphDesctruct.o" -o "Destructors/AtmosphDesctruct.o" "../Destructors/AtmosphDesctruct.cpp"
+Finished building: ../Destructors/AtmosphDesctruct.cpp
+ 
+Building file: ../Destructors/BasinDestruct.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Destructors/BasinDestruct.d" -MT"Destructors/BasinDestruct.o" -o "Destructors/BasinDestruct.o" "../Destructors/BasinDestruct.cpp"
+Finished building: ../Destructors/BasinDestruct.cpp
+ 
+Building file: ../Destructors/ForestDestruct.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Destructors/ForestDestruct.d" -MT"Destructors/ForestDestruct.o" -o "Destructors/ForestDestruct.o" "../Destructors/ForestDestruct.cpp"
+Finished building: ../Destructors/ForestDestruct.cpp
+ 
+Building file: ../Destructors/GroveDestruct.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Destructors/GroveDestruct.d" -MT"Destructors/GroveDestruct.o" -o "Destructors/GroveDestruct.o" "../Destructors/GroveDestruct.cpp"
+Finished building: ../Destructors/GroveDestruct.cpp
+ 
+Building file: ../Destructors/TrackingDestruct.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Destructors/TrackingDestruct.d" -MT"Destructors/TrackingDestruct.o" -o "Destructors/TrackingDestruct.o" "../Destructors/TrackingDestruct.cpp"
+Finished building: ../Destructors/TrackingDestruct.cpp
+ 
+Building file: ../Control/GenerateConfigTemplate.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Control/GenerateConfigTemplate.d" -MT"Control/GenerateConfigTemplate.o" -o "Control/GenerateConfigTemplate.o" "../Control/GenerateConfigTemplate.cpp"
+Finished building: ../Control/GenerateConfigTemplate.cpp
+ 
+Building file: ../Control/GenerateConfigTrckTemplate.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Control/GenerateConfigTrckTemplate.d" -MT"Control/GenerateConfigTrckTemplate.o" -o "Control/GenerateConfigTrckTemplate.o" "../Control/GenerateConfigTrckTemplate.cpp"
+Finished building: ../Control/GenerateConfigTrckTemplate.cpp
+ 
+Building file: ../Control/ReadConfigFile.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Control/ReadConfigFile.d" -MT"Control/ReadConfigFile.o" -o "Control/ReadConfigFile.o" "../Control/ReadConfigFile.cpp"
+Finished building: ../Control/ReadConfigFile.cpp
+ 
+Building file: ../Control/ReadConfigTrck.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Control/ReadConfigTrck.d" -MT"Control/ReadConfigTrck.o" -o "Control/ReadConfigTrck.o" "../Control/ReadConfigTrck.cpp"
+Finished building: ../Control/ReadConfigTrck.cpp
+ 
+Building file: ../Constructors/AtmosphConstruct.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Constructors/AtmosphConstruct.d" -MT"Constructors/AtmosphConstruct.o" -o "Constructors/AtmosphConstruct.o" "../Constructors/AtmosphConstruct.cpp"
+Finished building: ../Constructors/AtmosphConstruct.cpp
+ 
+Building file: ../Constructors/BasinConstruct.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Constructors/BasinConstruct.d" -MT"Constructors/BasinConstruct.o" -o "Constructors/BasinConstruct.o" "../Constructors/BasinConstruct.cpp"
+Finished building: ../Constructors/BasinConstruct.cpp
+ 
+Building file: ../Constructors/CheckMaps.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Constructors/CheckMaps.d" -MT"Constructors/CheckMaps.o" -o "Constructors/CheckMaps.o" "../Constructors/CheckMaps.cpp"
+Finished building: ../Constructors/CheckMaps.cpp
+ 
+Building file: ../Constructors/ForestConstruct.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Constructors/ForestConstruct.d" -MT"Constructors/ForestConstruct.o" -o "Constructors/ForestConstruct.o" "../Constructors/ForestConstruct.cpp"
+Finished building: ../Constructors/ForestConstruct.cpp
+ 
+Building file: ../Constructors/GroveConstruct.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Constructors/GroveConstruct.d" -MT"Constructors/GroveConstruct.o" -o "Constructors/GroveConstruct.o" "../Constructors/GroveConstruct.cpp"
+Finished building: ../Constructors/GroveConstruct.cpp
+ 
+Building file: ../Constructors/ReportConstruct.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Constructors/ReportConstruct.d" -MT"Constructors/ReportConstruct.o" -o "Constructors/ReportConstruct.o" "../Constructors/ReportConstruct.cpp"
+Finished building: ../Constructors/ReportConstruct.cpp
+ 
+Building file: ../Constructors/checkForestDatabase.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Constructors/checkForestDatabase.d" -MT"Constructors/checkForestDatabase.o" -o "Constructors/checkForestDatabase.o" "../Constructors/checkForestDatabase.cpp"
+Finished building: ../Constructors/checkForestDatabase.cpp
+ 
+Building file: ../Constructors/TrackingConstruct.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Constructors/TrackingConstruct.d" -MT"Constructors/TrackingConstruct.o" -o "Constructors/TrackingConstruct.o" "../Constructors/TrackingConstruct.cpp"
+Finished building: ../Constructors/TrackingConstruct.cpp
+ 
+Building file: ../Budgets/AccountFluxes.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Budgets/AccountFluxes.d" -MT"Budgets/AccountFluxes.o" -o "Budgets/AccountFluxes.o" "../Budgets/AccountFluxes.cpp"
+Finished building: ../Budgets/AccountFluxes.cpp
+ 
+Building file: ../Budgets/AccountRelArea.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Budgets/AccountRelArea.d" -MT"Budgets/AccountRelArea.o" -o "Budgets/AccountRelArea.o" "../Budgets/AccountRelArea.cpp"
+Finished building: ../Budgets/AccountRelArea.cpp
+ 
+Building file: ../Budgets/AccountStorages.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Budgets/AccountStorages.d" -MT"Budgets/AccountStorages.o" -o "Budgets/AccountStorages.o" "../Budgets/AccountStorages.cpp"
+Finished building: ../Budgets/AccountStorages.cpp
+ 
+Building file: ../Budgets/MassBalanceError.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Budgets/MassBalanceError.d" -MT"Budgets/MassBalanceError.o" -o "Budgets/MassBalanceError.o" "../Budgets/MassBalanceError.cpp"
+Finished building: ../Budgets/MassBalanceError.cpp
+ 
+Building file: ../Budgets/TotalOutputs.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Budgets/TotalOutputs.d" -MT"Budgets/TotalOutputs.o" -o "Budgets/TotalOutputs.o" "../Budgets/TotalOutputs.cpp"
+Finished building: ../Budgets/TotalOutputs.cpp
+ 
+Building file: ../Budgets/TotalEvaporationS.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Budgets/TotalEvaporationS.d" -MT"Budgets/TotalEvaporationS.o" -o "Budgets/TotalEvaporationS.o" "../Budgets/TotalEvaporationS.cpp"
+Finished building: ../Budgets/TotalEvaporationS.cpp
+ 
+Building file: ../Budgets/TotalEvaporationI.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Budgets/TotalEvaporationI.d" -MT"Budgets/TotalEvaporationI.o" -o "Budgets/TotalEvaporationI.o" "../Budgets/TotalEvaporationI.cpp"
+Finished building: ../Budgets/TotalEvaporationI.cpp
+ 
+Building file: ../Budgets/TotalGWtoChn.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Budgets/TotalGWtoChn.d" -MT"Budgets/TotalGWtoChn.o" -o "Budgets/TotalGWtoChn.o" "../Budgets/TotalGWtoChn.cpp"
+Finished building: ../Budgets/TotalGWtoChn.cpp
+ 
+Building file: ../Budgets/TotalTranspiration.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Budgets/TotalTranspiration.d" -MT"Budgets/TotalTranspiration.o" -o "Budgets/TotalTranspiration.o" "../Budgets/TotalTranspiration.cpp"
+Finished building: ../Budgets/TotalTranspiration.cpp
+ 
+Building file: ../Budgets/TotalLeakage.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Budgets/TotalLeakage.d" -MT"Budgets/TotalLeakage.o" -o "Budgets/TotalLeakage.o" "../Budgets/TotalLeakage.cpp"
+Finished building: ../Budgets/TotalLeakage.cpp
+ 
+Building file: ../Budgets/TotalOvlndFlow.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Budgets/TotalOvlndFlow.d" -MT"Budgets/TotalOvlndFlow.o" -o "Budgets/TotalOvlndFlow.o" "../Budgets/TotalOvlndFlow.cpp"
+Finished building: ../Budgets/TotalOvlndFlow.cpp
+ 
+Building file: ../Budgets/TotalPrecipitation.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Budgets/TotalPrecipitation.d" -MT"Budgets/TotalPrecipitation.o" -o "Budgets/TotalPrecipitation.o" "../Budgets/TotalPrecipitation.cpp"
+Finished building: ../Budgets/TotalPrecipitation.cpp
+ 
+Building file: ../Budgets/TotalRecharge.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Budgets/TotalRecharge.d" -MT"Budgets/TotalRecharge.o" -o "Budgets/TotalRecharge.o" "../Budgets/TotalRecharge.cpp"
+Finished building: ../Budgets/TotalRecharge.cpp
+ 
+Building file: ../Budgets/TotalSaturationArea.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Budgets/TotalSaturationArea.d" -MT"Budgets/TotalSaturationArea.o" -o "Budgets/TotalSaturationArea.o" "../Budgets/TotalSaturationArea.cpp"
+Finished building: ../Budgets/TotalSaturationArea.cpp
+ 
+Building file: ../Budgets/TotalSrftoChn.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Budgets/TotalSrftoChn.d" -MT"Budgets/TotalSrftoChn.o" -o "Budgets/TotalSrftoChn.o" "../Budgets/TotalSrftoChn.cpp"
+Finished building: ../Budgets/TotalSrftoChn.cpp
+ 
+Building file: ../Budgets/TotalStorage.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Budgets/TotalStorage.d" -MT"Budgets/TotalStorage.o" -o "Budgets/TotalStorage.o" "../Budgets/TotalStorage.cpp"
+Finished building: ../Budgets/TotalStorage.cpp
+ 
+Building file: ../Budgets/totalGrndFlow.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Budgets/totalGrndFlow.d" -MT"Budgets/totalGrndFlow.o" -o "Budgets/totalGrndFlow.o" "../Budgets/totalGrndFlow.cpp"
+Finished building: ../Budgets/totalGrndFlow.cpp
+ 
+Building file: ../Atmosphere/AdjustPrecip.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Atmosphere/AdjustPrecip.d" -MT"Atmosphere/AdjustPrecip.o" -o "Atmosphere/AdjustPrecip.o" "../Atmosphere/AdjustPrecip.cpp"
+Finished building: ../Atmosphere/AdjustPrecip.cpp
+ 
+Building file: ../Atmosphere/AdvanceClimateMaps.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Atmosphere/AdvanceClimateMaps.d" -MT"Atmosphere/AdvanceClimateMaps.o" -o "Atmosphere/AdvanceClimateMaps.o" "../Atmosphere/AdvanceClimateMaps.cpp"
+Finished building: ../Atmosphere/AdvanceClimateMaps.cpp
+ 
+Building file: ../Atmosphere/CountNumZones.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Atmosphere/CountNumZones.d" -MT"Atmosphere/CountNumZones.o" -o "Atmosphere/CountNumZones.o" "../Atmosphere/CountNumZones.cpp"
+Finished building: ../Atmosphere/CountNumZones.cpp
+ 
+Building file: ../Atmosphere/InitiateClimateMap.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Atmosphere/InitiateClimateMap.d" -MT"Atmosphere/InitiateClimateMap.o" -o "Atmosphere/InitiateClimateMap.o" "../Atmosphere/InitiateClimateMap.cpp"
+Finished building: ../Atmosphere/InitiateClimateMap.cpp
+ 
+Building file: ../Atmosphere/UpdateClimateMap.cpp
+Invoking: GCC C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"Atmosphere/UpdateClimateMap.d" -MT"Atmosphere/UpdateClimateMap.o" -o "Atmosphere/UpdateClimateMap.o" "../Atmosphere/UpdateClimateMap.cpp"
+Finished building: ../Atmosphere/UpdateClimateMap.cpp
+ 
+Building file: ../ech2o.cpp
+Invoking2: Clang C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -O3 -Wall -c -fmessage-length=0 -fopenmp -MMD -MP -MF"ech2o.d" -MT"ech2o.o" -o "ech2o.o" "../ech2o.cpp" 
+Finished building: ../ech2o.cpp
+ 
+Building target: ech2o_iso
+Invoking: Clang C++ Compiler
+/usr/local/opt/llvm/bin/clang++  -DCPU_LITTLE_ENDIAN -I"../includes" -I"/usr/local/Cellar/boost/include" -I"/usr/local/Cellar/armadillo/14.2.1/include" -I"/usr/local/opt/llvm/include" -I"/usr/local/opt/libomp/include" -O3 -Wall -fopenmp -v -g -fsanitize=address -target x86_64-apple-macosx15 -L"/usr/local/Cellar/boost/lib" -Wl,-rpath,/usr/local/Cellar/boost/lib -L"/usr/local/opt/libomp/lib" -Wl,-rpath,/usr/local/opt/libomp/lib -L"/usr/local/Cellar/armadillo/14.2.1/lib" -L"/usr/local/opt/llvm/lib" -L"../lib" -g -o "ech2o_iso"  ./wrappers/CalculateBudgets.o ./wrappers/CreateWorld.o ./wrappers/CrunchWorld.o ./wrappers/Report2maps.o ./wrappers/Report2screen.o ./wrappers/SolveTimeStep.o ./wrappers/Splash.o ./wrappers/globals.o  ./Tracking/CalcTPDtoLayers.o ./Tracking/CalcInitTPD.o ./Tracking/CalcTrck_SoilAv.o ./Tracking/CheckMapsTrck.o ./Tracking/FCdownstream.o ./Tracking/Fractionation_Esoil.o ./Tracking/IncrementAge.o ./Tracking/MixingTPD_postET.o ./Tracking/MixingV_down.o ./Tracking/MixingV_evapS.o ./Tracking/MixingV_latup.o ./Tracking/MixingV_snow.o ./Tracking/MixingV_through.o ./Tracking/OutletVals.o ./Report/RenameFile.o ./Report/ReportTimeSeries.o ./Report/ReportVectCells.o  ./Radiation/CalcAerodynResist.o ./Radiation/GrndHeat.o ./Radiation/LatHeat.o ./Radiation/MeltHeat.o ./Radiation/NetRad.o ./Radiation/RainHeat.o ./Radiation/SensHeat.o ./Radiation/SolveSurfaceFluxes.o ./Radiation/snowheat.o  ./ParsingFunctions/ConfigFile.o ./ParsingFunctions/FileRoot.o ./ParsingFunctions/ParseString.o  ./IO/CSF2Grid.o ./IO/Grass2grid.o ./IO/PCRMap2grid.o ./IO/Table2grid.o ./IO/WriteASCIImap.o ./IO/WritePCRMap.o  ./Hydro/AdvanceLAIMaps.o ./Hydro/CalcCatchArea.o ./Hydro/CalcFracMobileWater.o ./Hydro/CalcInitialStreamStorage.o ./Hydro/CalcPropLayers.o ./Hydro/CalcRootDistrib.o ./Hydro/CalcSoilResist.o ./Hydro/CalcTPDMoisture.o ./Hydro/CalculateForestGrowth.o ./Hydro/CalculateGroundwater.o ./Hydro/CalculateSatArea.o ./Hydro/CanopyInterception.o ./Hydro/GWrouting.o ./Hydro/Infilt_GreenAmpt.o ./Hydro/KinematicWave.o ./Hydro/SnowOutputPhase.o ./Hydro/SoilEvapotranspiration.o ./Hydro/SoilWaterRedistribution.o ./Hydro/SolveCanopyFluxes.o ./Hydro/SolveSurfaceEnergyBalance.o ./Hydro/UpdateSnowPack.o  ./Grid/SortGrid.o ./Grid/SortGridForest.o ./Grid/SortGridLDD.o ./Grid/grid.o  ./Functions/ConstAndFuncs.o  ./Forest/AdvanceLAIMaps.o ./Forest/CalculateCanopyConduct.o ./Forest/CreateGrids.o ./Forest/GrowForest.o ./Forest/GrowGrass.o ./Forest/GrowGrassLAI.o ./Forest/GrowLAI.o ./Forest/GrowRoots.o ./Forest/GrowStem.o ./Forest/GrowTrees.o ./Forest/InitiateLAIMap.o ./Forest/LatHeatCanopy.o ./Forest/MapGetters.o ./Forest/NetRadCanopy.o ./Forest/SensHeatCanopy.o ./Forest/SetSpeciesParameters.o ./Forest/SetSpeciesStateVars.o ./Forest/SetSpeciesStateVarsMaps.o ./Forest/SolveCanopyEnergyBalance.o ./Forest/UpdateLAIMap.o  ./Destructors/AtmosphDesctruct.o ./Destructors/BasinDestruct.o ./Destructors/ForestDestruct.o ./Destructors/GroveDestruct.o ./Destructors/TrackingDestruct.o ./Control/GenerateConfigTemplate.o ./Control/GenerateConfigTrckTemplate.o ./Control/ReadConfigFile.o ./Control/ReadConfigTrck.o  ./Constructors/AtmosphConstruct.o ./Constructors/BasinConstruct.o ./Constructors/CheckMaps.o ./Constructors/ForestConstruct.o ./Constructors/GroveConstruct.o ./Constructors/ReportConstruct.o ./Constructors/checkForestDatabase.o ./Constructors/TrackingConstruct.o  ./Budgets/AccountFluxes.o ./Budgets/AccountRelArea.o ./Budgets/AccountStorages.o ./Budgets/MassBalanceError.o ./Budgets/TotalOutputs.o ./Budgets/TotalEvaporationS.o ./Budgets/TotalEvaporationI.o ./Budgets/TotalGWtoChn.o ./Budgets/TotalTranspiration.o ./Budgets/TotalLeakage.o ./Budgets/TotalOvlndFlow.o ./Budgets/TotalPrecipitation.o ./Budgets/TotalRecharge.o ./Budgets/TotalSaturationArea.o ./Budgets/TotalSrftoChn.o ./Budgets/TotalStorage.o ./Budgets/totalGrndFlow.o  ./Atmosphere/AdjustPrecip.o ./Atmosphere/AdvanceClimateMaps.o ./Atmosphere/CountNumZones.o ./Atmosphere/InitiateClimateMap.o ./Atmosphere/UpdateClimateMap.o  ./ech2o.o   -lcsfosx -larmadillo -lboost_serialization 
+Homebrew clang version 19.1.4
+Target: x86_64-apple-macosx15
+Thread model: posix
+InstalledDir: /usr/local/Cellar/llvm/19.1.4/bin
+Configuration file: /usr/local/etc/clang/x86_64-apple-macosx15.cfg
+System configuration file directory: /usr/local/etc/clang
+User configuration file directory: /Users/aqiu/.config/clang
+ "/usr/bin/ld" -demangle -lto_library /usr/local/Cellar/llvm/19.1.4/lib/libLTO.dylib -dynamic -arch x86_64 -platform_version macos 15.0.0 15.0.0 -syslibroot /Library/Developer/CommandLineTools/SDKs/MacOSX15.sdk -mllvm -enable-linkonceodr-outlining -o ech2o_iso -L/usr/local/Cellar/boost/lib -L/usr/local/opt/libomp/lib -L/usr/local/Cellar/armadillo/14.2.1/lib -L/usr/local/opt/llvm/lib -L../lib -rpath /usr/local/Cellar/boost/lib -rpath /usr/local/opt/libomp/lib ./wrappers/CalculateBudgets.o ./wrappers/CreateWorld.o ./wrappers/CrunchWorld.o ./wrappers/Report2maps.o ./wrappers/Report2screen.o ./wrappers/SolveTimeStep.o ./wrappers/Splash.o ./wrappers/globals.o ./Tracking/CalcTPDtoLayers.o ./Tracking/CalcInitTPD.o ./Tracking/CalcTrck_SoilAv.o ./Tracking/CheckMapsTrck.o ./Tracking/FCdownstream.o ./Tracking/Fractionation_Esoil.o ./Tracking/IncrementAge.o ./Tracking/MixingTPD_postET.o ./Tracking/MixingV_down.o ./Tracking/MixingV_evapS.o ./Tracking/MixingV_latup.o ./Tracking/MixingV_snow.o ./Tracking/MixingV_through.o ./Tracking/OutletVals.o ./Report/RenameFile.o ./Report/ReportTimeSeries.o ./Report/ReportVectCells.o ./Radiation/CalcAerodynResist.o ./Radiation/GrndHeat.o ./Radiation/LatHeat.o ./Radiation/MeltHeat.o ./Radiation/NetRad.o ./Radiation/RainHeat.o ./Radiation/SensHeat.o ./Radiation/SolveSurfaceFluxes.o ./Radiation/snowheat.o ./ParsingFunctions/ConfigFile.o ./ParsingFunctions/FileRoot.o ./ParsingFunctions/ParseString.o ./IO/CSF2Grid.o ./IO/Grass2grid.o ./IO/PCRMap2grid.o ./IO/Table2grid.o ./IO/WriteASCIImap.o ./IO/WritePCRMap.o ./Hydro/AdvanceLAIMaps.o ./Hydro/CalcCatchArea.o ./Hydro/CalcFracMobileWater.o ./Hydro/CalcInitialStreamStorage.o ./Hydro/CalcPropLayers.o ./Hydro/CalcRootDistrib.o ./Hydro/CalcSoilResist.o ./Hydro/CalcTPDMoisture.o ./Hydro/CalculateForestGrowth.o ./Hydro/CalculateGroundwater.o ./Hydro/CalculateSatArea.o ./Hydro/CanopyInterception.o ./Hydro/GWrouting.o ./Hydro/Infilt_GreenAmpt.o ./Hydro/KinematicWave.o ./Hydro/SnowOutputPhase.o ./Hydro/SoilEvapotranspiration.o ./Hydro/SoilWaterRedistribution.o ./Hydro/SolveCanopyFluxes.o ./Hydro/SolveSurfaceEnergyBalance.o ./Hydro/UpdateSnowPack.o ./Grid/SortGrid.o ./Grid/SortGridForest.o ./Grid/SortGridLDD.o ./Grid/grid.o ./Functions/ConstAndFuncs.o ./Forest/AdvanceLAIMaps.o ./Forest/CalculateCanopyConduct.o ./Forest/CreateGrids.o ./Forest/GrowForest.o ./Forest/GrowGrass.o ./Forest/GrowGrassLAI.o ./Forest/GrowLAI.o ./Forest/GrowRoots.o ./Forest/GrowStem.o ./Forest/GrowTrees.o ./Forest/InitiateLAIMap.o ./Forest/LatHeatCanopy.o ./Forest/MapGetters.o ./Forest/NetRadCanopy.o ./Forest/SensHeatCanopy.o ./Forest/SetSpeciesParameters.o ./Forest/SetSpeciesStateVars.o ./Forest/SetSpeciesStateVarsMaps.o ./Forest/SolveCanopyEnergyBalance.o ./Forest/UpdateLAIMap.o ./Destructors/AtmosphDesctruct.o ./Destructors/BasinDestruct.o ./Destructors/ForestDestruct.o ./Destructors/GroveDestruct.o ./Destructors/TrackingDestruct.o ./Control/GenerateConfigTemplate.o ./Control/GenerateConfigTrckTemplate.o ./Control/ReadConfigFile.o ./Control/ReadConfigTrck.o ./Constructors/AtmosphConstruct.o ./Constructors/BasinConstruct.o ./Constructors/CheckMaps.o ./Constructors/ForestConstruct.o ./Constructors/GroveConstruct.o ./Constructors/ReportConstruct.o ./Constructors/checkForestDatabase.o ./Constructors/TrackingConstruct.o ./Budgets/AccountFluxes.o ./Budgets/AccountRelArea.o ./Budgets/AccountStorages.o ./Budgets/MassBalanceError.o ./Budgets/TotalOutputs.o ./Budgets/TotalEvaporationS.o ./Budgets/TotalEvaporationI.o ./Budgets/TotalGWtoChn.o ./Budgets/TotalTranspiration.o ./Budgets/TotalLeakage.o ./Budgets/TotalOvlndFlow.o ./Budgets/TotalPrecipitation.o ./Budgets/TotalRecharge.o ./Budgets/TotalSaturationArea.o ./Budgets/TotalSrftoChn.o ./Budgets/TotalStorage.o ./Budgets/totalGrndFlow.o ./Atmosphere/AdjustPrecip.o ./Atmosphere/AdvanceClimateMaps.o ./Atmosphere/CountNumZones.o ./Atmosphere/InitiateClimateMap.o ./Atmosphere/UpdateClimateMap.o ./ech2o.o -lcsfosx -larmadillo -lboost_serialization -lomp -L/usr/local/Cellar/llvm/19.1.4/lib -lc++ /usr/local/Cellar/llvm/19.1.4/lib/clang/19/lib/darwin/libclang_rt.asan_osx_dynamic.dylib -rpath @executable_path -rpath /usr/local/Cellar/llvm/19.1.4/lib/clang/19/lib/darwin -lSystem /usr/local/Cellar/llvm/19.1.4/lib/clang/19/lib/darwin/libclang_rt.osx.a
+Finished building target: ech2o_iso
+ 
+/Library/Developer/CommandLineTools/usr/bin/make --no-print-directory post-build
+strip ech2o_iso
+ 
+Mings-Air:Release-Mac aqiu$ 

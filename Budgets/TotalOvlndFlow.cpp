@@ -47,6 +47,12 @@ void Budget::TotalOvlndFlow_d18O(const vectCells* timeseries1, const vectCells* 
   //ovlndflow_d18O = AccountTrckFluxes(timeseries1, timeseries2);
 }
 
+void Budget::TotalOvlndFlow_cCl(const vectCells* timeseries1, const vectCells* timeseries2)
+{
+  ovlndflow_cCl += AccountTrckFluxes(timeseries1, timeseries2);
+  //ovlndflow_cCl = AccountTrckFluxes(timeseries1, timeseries2);
+}
+
 // the water that already left is kept in the balance and "aging" as well
 void Budget::TotalOvlndFlow_Age(const vectCells* timeseries1, const vectCells* timeseries2)
 {
@@ -63,6 +69,11 @@ void Budget::InstOvlndFlow_d2H(const vectCells* timeseries1, const vectCells* ti
 void Budget::InstOvlndFlow_d18O(const vectCells* timeseries1, const vectCells* timeseries2)
 {
   d18OOvlndOut = AccountTrckFluxes2(timeseries1, timeseries2);
+}
+// Instantaneous cCl reporting
+void Budget::InstOvlndFlow_cCl(const vectCells* timeseries1, const vectCells* timeseries2)
+{
+  cClOvlndOut = AccountTrckFluxes2(timeseries1, timeseries2);
 }
 // Instantaneous age reporting
 void Budget::InstOvlndFlow_Age(const vectCells* timeseries1, const vectCells* timeseries2)

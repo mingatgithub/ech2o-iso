@@ -19,7 +19,7 @@
  *     along with Ech2o.  If not, see <http://www.gnu.org/licenses/>.
  *
  * Contributors:
- *    Marco Maneta
+ *    Marco Maneta, Sylvain Kuppel
  *******************************************************************************/
 /*
  * Atmosphere.h
@@ -30,7 +30,7 @@
 
 #ifndef ATMOSPHERE_H_
 #define ATMOSPHERE_H_
-
+#include <omp.h>
 #include <fstream>
 #include "Grid.h"
 #include "InitConf.h"
@@ -51,9 +51,10 @@ class Atmosphere{
   vector<vectCells> _vSortedGrid;
   grid *_isohyet; //map with rainfall multipliers to spatially distribute precipitation
   UINT4 _vSsortedGridTotalCellNumber;
-  
-  REAL8 _rain_snow_temp; //scalar with air temperature threshold for rain-snow partition
-  
+
+  //REAL8 _rain_snow_temp; //scalar with
+  grid *_snow_rain_temp; // air temperature threshold for rain-snow partition
+
   grid *_Ldown; //longwave downward radiation Wm-2
   grid *_Sdown; //shortwave downward radiation Wm-2
   grid *_Tp; //Average air temperature C
@@ -62,10 +63,9 @@ class Atmosphere{
   grid *_Precip; // Precipitation intensity ms-1
   grid *_Rel_humid; //relative humidity of air [0-1]
   grid *_Wind_speed; //windspeed in ms-1
-  grid *_Pa; //atmospheric pressure in Pa
-  grid *_Anthr_Heat; //anthropogenic heat [W.m-2]
   grid *_d2Hprecip; //Isotopic signature of precipitation (2H per mil)
   grid *_d18Oprecip; //Isotopic signature of precipitation (18O per mil)
+  grid *_cClprecip; // Chloride concentration in precipitation (mg L-1)
   
   void CountNumZones();
   vectCells SortGrid(int zoneId);
@@ -73,7 +73,7 @@ class Atmosphere{
   // internal function that updates a climate map
   int UpdateClimateMap(ifstream & ifHandle, grid & ClimMap);
   int AdjustPrecip();
-  
+
   //climate data file handles
   ifstream ifLdown;
   ifstream ifSdown;
@@ -83,63 +83,46 @@ class Atmosphere{
   ifstream ifPrecip;
   ifstream ifRelHumid;
   ifstream ifWindSpeed;
-  ifstream ifPa;
-  ifstream ifAnthrHeat;
   ifstream ifd2Hprecip;
   ifstream ifd18Oprecip;
- 
+  ifstream ifcClprecip;
+  
  public:
   
   Atmosphere();
   Atmosphere(Control &ctrl);
   ~Atmosphere();
-  
+
+
   int AdvanceClimateMaps(Control &ctrl); //external interface that updates all climate maps by calling UpdateClimateMap
-  
+
+
+
   /*Getters and setters*/
   //get methods (inline)
-  
+
   REAL8 getCellSize() const {
     return _dx;
   }
 
-  UINT4 getNZns() const {
-    return _NZns;
-  }
-
-  UINT4 getnzones() const {
-    return _nzones;
-  }
-
-  UINT4 *getzoneId() const {
-    return _zoneId;
-  }
-
-  UINT4 getSsortedGridTotalCellNumber() const{
-    return _vSsortedGridTotalCellNumber;
-  }
-
-  grid *getzones() const {
-    return _zones;
-  }
-  
   const vector<vectCells> &getSortedGrid() const {
     return _vSortedGrid;
   }
-  
-  REAL8 getRainSnowTempThreshold() const{
-    return _rain_snow_temp;
+
+  // REAL8 getRainSnowTempThreshold() const{
+  grid *getSnowRainTempThreshold() const{
+    return _snow_rain_temp;
   }
   grid *getIncomingLongWave() const
   {
     return _Ldown;
   }
-  
+
   grid *getIncomingShortWave() const
   {
     return _Sdown;
   }
-  
+
   grid *getTemperature() const
   {
     return _Tp;
@@ -156,28 +139,18 @@ class Atmosphere{
   {
     return _Precip;
   }
-  
+
   grid *getRelativeHumidty() const
   {
     return _Rel_humid;
   }
-  
+
   grid *getWindSpeed() const
   {
     return _Wind_speed;
   }
   
-  grid *getPressure() const
-  {
-    return _Pa;
-  }
-
-  grid *getAnthrHeat() const
-  {
-    return _Anthr_Heat;
-  }
-
-  // Isotope tracking
+  // Tracer tracking
   grid *getd2Hprecip() const
   {
     return _d2Hprecip;
@@ -185,6 +158,10 @@ class Atmosphere{
   grid *getd18Oprecip() const
   {
     return _d18Oprecip;
+  }
+  grid *getcClprecip() const
+  {
+    return _cClprecip;
   }
   
   //setter

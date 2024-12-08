@@ -50,10 +50,6 @@ Atmosphere::~Atmosphere(){
 		delete _Rel_humid;
 	if(_Wind_speed)
 		delete _Wind_speed;
-        if(_Pa)
-                delete _Pa;
-	if(_Anthr_Heat)
-		delete _Anthr_Heat;	
 	if(_zoneId)
 		delete[] _zoneId;
 	if(_isohyet)
@@ -62,6 +58,8 @@ Atmosphere::~Atmosphere(){
 		delete _d2Hprecip;
 	if(_d18Oprecip)
 		delete _d18Oprecip;
+	if(_cClprecip)
+		delete _cClprecip;
 
 
 	if(ifLdown.is_open())
@@ -80,10 +78,11 @@ Atmosphere::~Atmosphere(){
 		ifRelHumid.close();
 	if(ifWindSpeed.is_open())
 		ifWindSpeed.close();
-	if(ifAnthrHeat.is_open())
-		ifAnthrHeat.close();	
 	if(ifd2Hprecip.is_open())
 		ifd2Hprecip.close();
 	if(ifd18Oprecip.is_open())
 		ifd18Oprecip.close();
+	if(ifcClprecip.is_open())
+	  ifcClprecip.close();
+		
 }

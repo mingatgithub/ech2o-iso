@@ -36,6 +36,12 @@ int Tracking::IncrementAge(Basin &bsn, Control &ctrl){
   REAL8 dt = ctrl.dt / 86400 ; // units: days
   UINT4 nsp = bsn.getNumSpecies();
 
+  /*REAL8 output1, output2;
+    output1 = _Agesoil1->mini();
+    output2 = _Agesoil1->maxi();
+    cout << "[" << output1 << "," << output2 << "] -->";
+  */
+
 #pragma omp parallel default(shared) private(r,c, s)
   {
 
@@ -45,51 +51,67 @@ int Tracking::IncrementAge(Basin &bsn, Control &ctrl){
 
       r = bsn.getSortedGrid().cells[j].row;
       c = bsn.getSortedGrid().cells[j].col;
-      
-      _Agecanopy_sum->matrix[r][c] += dt; // Canopy interception storage
-      for (s = 0; s < nsp - 1; s++)
-	bsn.setAgecanopy(s, r, c, bsn.getAgecanopy(s)->matrix[r][c] + dt);
-      
-      _Agesnowpack->matrix[r][c] = bsn.getSnowWaterEquiv()->matrix[r][c] > RNDOFFERR ?
-	                                 _Agesnowpack->matrix[r][c] + dt : 0.0 ; 	// Snowpack
-      _Agesurface->matrix[r][c] = bsn.getPondingWater()->matrix[r][c] > RNDOFFERR ?
-	                                 _Agesurface->matrix[r][c] + dt : 0.0 ; 	// Ponding
-      _Agegroundwater->matrix[r][c] = bsn.getGrndWater()->matrix[r][c] > RNDOFFERR ?
-	                                 _Agegroundwater->matrix[r][c] + dt : 0.0; 	// Groundwater
-      if(ctrl.sw_deepGW)
-	_AgedeepGW->matrix[r][c] = bsn.getDeepGW()->matrix[r][c] > RNDOFFERR ? 
-					_AgedeepGW->matrix[r][c] + dt : 0.0; 		//Extra GW
 
-      if(ctrl.sw_TPD){
-	_Age_TB1->matrix[r][c] += dt; // Mobile water layer 1
-	_Age_MW1->matrix[r][c] += dt; // Mobile water layer 1
-	_Age_TB2->matrix[r][c] += dt; // Tightly-bound layer 2
-	_Age_MW2->matrix[r][c] += dt; // Mobile water layer 2
-      }
-      _Agesoil1->matrix[r][c] += dt; // Vadose layer 1
-      _Agesoil2->matrix[r][c] += dt; // Vadose layer 2
-      _Agesoil3->matrix[r][c] += dt; // Vadose layer 3
-
-      // The outputs as well, for mass balance consistency (notably)
-      _AgeevapS_sum->matrix[r][c] += dt;
-      _AgeevapI_sum->matrix[r][c] += dt;
-      _AgeevapT_sum->matrix[r][c] += dt;
-      _Ageleakage->matrix[r][c] += dt;
-      for (s = 0; s < nsp - 1; s++){
-	bsn.setAgeevapS(s, r, c, bsn.getAgeevapS(s)->matrix[r][c] + dt);
-	bsn.setAgeevapI(s, r, c, bsn.getAgeevapI(s)->matrix[r][c] + dt);
-	bsn.setAgeevapT(s, r, c, bsn.getAgeevapT(s)->matrix[r][c] + dt);
+      // Check if this is the "aging" domain  (i.e. control volume for transit/residence times tracking)
+      if(_AgeDomain->matrix[r][c] != _AgeDomain->nodata) {
+	
+	_Agecanopy_sum->matrix[r][c] += dt; // Canopy interception storage
+	for (s = 0; s < nsp - 1; s++)
+	  bsn.setAgecanopy(s, r, c, bsn.getAgecanopy(s)->matrix[r][c] + dt);
+	
+	_Agesnowpack->matrix[r][c] = bsn.getSnowWaterEquiv()->matrix[r][c] > RNDOFFERR ?
+	  _Agesnowpack->matrix[r][c] + dt : 0.0 ; // Snowpack
+	_Agesurface->matrix[r][c] = bsn.getPondingWater()->matrix[r][c] > RNDOFFERR ?
+	  _Agesurface->matrix[r][c] + dt : 0.0 ;// Ponding
+	//_Agegroundwater->matrix[r][c] = bsn.getGrndWater()->matrix[r][c] > RNDOFFERR ?
+	//  _Agegroundwater->matrix[r][c] + dt : 0.0; // Groundwater
+	
+	if(ctrl.sw_TPD){
+	  _Age_TB1->matrix[r][c] += dt; // Mobile water layer 1
+	  _Age_MW1->matrix[r][c] += dt; // Mobile water layer 1
+	  _Age_TB2->matrix[r][c] += dt; // Tightly-bound layer 2
+	  _Age_MW2->matrix[r][c] += dt; // Mobile water layer 2
+	}
+	_Agesoil1->matrix[r][c] += dt; // Vadose layer 1
+	_Agesoil2->matrix[r][c] += dt; // Vadose layer 2
+	_Agesoil3->matrix[r][c] += dt; // Vadose layer 3
+	
+	// The outputs as well, for mass balance consistency (notably)
+	_Agesnowmelt->matrix[r][c] += dt;
+	_AgeevapS_sum->matrix[r][c] += dt;
+	_AgeevapI_sum->matrix[r][c] += dt;
+	_AgeevapT_sum->matrix[r][c] += dt;
+	_Ageleakage->matrix[r][c] += dt;
+	for (s = 0; s < nsp - 1; s++){
+	  bsn.setAgeevapS(s, r, c, bsn.getAgeevapS(s)->matrix[r][c] + dt);
+	  bsn.setAgeevapI(s, r, c, bsn.getAgeevapI(s)->matrix[r][c] + dt);
+	  bsn.setAgeevapT(s, r, c, bsn.getAgeevapT(s)->matrix[r][c] + dt);
+	}
       }
     }
-    
+  }    
 #pragma omp for
     for (UINT4 i = 0; i < _AgeOvlndOutput.cells.size(); i++){ //b->getSortedGrid().cells.size();; i++){
-      _AgeOvlndOutput.cells[i].val += dt ;
-      _AgeGwtrOutput.cells[i].val += dt ;
-      if(ctrl.sw_deepGW)
-	_AgeDeepGwtrOutput.cells[i].val += dt;
-      }
+
+      r = _AgeOvlndOutput.cells[i].row;
+      c = _AgeOvlndOutput.cells[i].col;
+      // Check if this is the "aging" domain  (i.e. control volume for transit/residence times tracking)
+      if(_AgeDomain->matrix[r][c] != _AgeDomain->nodata)
+	_AgeOvlndOutput.cells[i].val += dt ;
+
+      r = _AgeGwtrOutput.cells[i].row;
+      c = _AgeGwtrOutput.cells[i].col;
+      // Check if this is the "aging" domain  (i.e. control volume for transit/residence times tracking)
+      if(_AgeDomain->matrix[r][c] != _AgeDomain->nodata)
+	_AgeGwtrOutput.cells[i].val += dt ;
+      
+    
   }
+  /*
+    output1 = _Agesoil1->mini();
+    output2 = _Agesoil1->maxi();
+    cout << "[" << output1 << "," << output2 << "]" << endl;
+  */
   
   return EXIT_SUCCESS;
 }

@@ -1,0 +1,4 @@
+1	40
+1	0.47	0.009	1.8e-6	290	18	30	0	2.235	6e-3	3.3	6e-7	300	1e-3	153	3.36	153	0.003	0.022	0.25	0.4	220000	15	5	8.56E-009	1.80E-008	0.2	1.80E-008	0.2	1	5.34E-009	0.0000624	0.1	0.95	0.55	800	10	0	0	0
+numSpecs	NumParams
+SpeciesID	NPP/GPPRatio	gsmax(ms-1)	CanopyQuantumEffic(gCJ-1)	MaxForestAge(yrs)	OptimalTemp(C)	MaxTemp(C)	MinTemp(C)	FoliageAllocCoef_a	FoliageAllocCoef_b	StemAllocCoef_a	StemAllocCoef_b	gs_light_coeff(Wm-2)	gs_vpd_coeff(m-1)	gs_psi_low(m)	gs_psi_high(m)	WiltingPnt(m)	SpecificLeafArea(m2g-1)	SpecificRootArea(m2kg-1)	Crown2StemDRat	TreeShapeParam	WoodDens(gCm-2)	Fhdmax	Fhdmin	LeafTurnoverRate(s-1)	MaxLeafTurnoverWaterStress(s-1)	LeafTurnoverWaterStressParam	MaxLeafTurnoverTempStress(s-1)	LeafTurnoverTempStressParam	ColdStressParam(degC)	RootTurnoverRate(s-1)	MaxCanStorageParam(m)	albedo	emissivity	KBeers	CanopyWatEffic(gCm-1)	Kroot(m-1)	vegtype	DeadGrassLeafTurnoverRate(s-1)	DeadGrassLeafTurnoverTempAdjustment(degC)

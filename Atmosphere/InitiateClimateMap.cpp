@@ -19,7 +19,7 @@
  *     along with Ech2o.  If not, see <http://www.gnu.org/licenses/>.
  *
  * Contributors:
- *    Marco Maneta
+ *    Marco Maneta, Sylvain Kuppel
  *******************************************************************************/
 /*
  * UpdateClimateMap.cpp
@@ -29,9 +29,9 @@
  */
 
 #include "Atmosphere.h"
-#include "ConstAndFuncs.h"
 
 UINT4 Atmosphere::InitiateClimateMap(ifstream &ifHandle, grid &ClimMap){
+
 
   char comment[256];
   UINT4 nZns; //number of zones as read from the climatic data file
@@ -40,20 +40,20 @@ UINT4 Atmosphere::InitiateClimateMap(ifstream &ifHandle, grid &ClimMap){
   float *TS = NULL;
   float *data = NULL;
   UINT4 data_written = 0;
-  
+
   try{
     //reads 256 bytes of comments
     ifHandle.read(comment, sizeof(comment));
+
     //reads one int with the number of time steps
     ifHandle.read((char *)&nTs, sizeof(int));
     TS = new float[nTs];
     //reads nTs floats into the TS array
     ifHandle.read((char *)TS, sizeof(float)*nTs);
+
     //reads one int with the number of zones
     ifHandle.read((char *)&nZns, sizeof(int));
-
-    //    cout << "nZns: " << nZns << " |nzones " << _nzones << endl;
-    
+        
     if(_NZns!=0) //if this is not the first time a climatic map is read and the number of zone is being set
       if(_NZns != (UINT4)nZns){ //make sure the number of zones in all climate time series are the same
 	cout << "The number of zones in two climatic time series differ. Number of zones in all climatic times series must be equal" << endl;
@@ -72,13 +72,14 @@ UINT4 Atmosphere::InitiateClimateMap(ifstream &ifHandle, grid &ClimMap){
     //ifHandle.seekg(sizeof(int)*(nZns-_nzones), ios::cur); //skip the rest of the zones
 
     data = new float[nZns]; //creates the array to hold the data
-    
+
     ifHandle.read((char *)data, sizeof(float)*nZns); //reads data for all zones
 
     int r, c;
-#pragma omp parallel for default(none) private(r,c) shared(data,Zns, ClimMap, nZns) reduction(+:data_written)        
-    for (UINT4 a = 0; a < nZns; a++ ){
-      for (UINT4 i = 0; i < _vSortedGrid.size(); i++ ){
+#pragma omp parallel for default(none) private(r,c) shared(data, Zns, ClimMap, nZns) reduction(+:data_written)
+    for (UINT4 a = 0; a < nZns; a++ )
+      //#pragma omp for reduction(+:data_written)
+      for (UINT4 i = 0; i < _vSortedGrid.size(); i++ )
 	if(_vSortedGrid[i].zone == Zns[a])
 	  {
 	    //store the index of the climate data array that corresponds to the clim zones map
@@ -89,15 +90,14 @@ UINT4 Atmosphere::InitiateClimateMap(ifstream &ifHandle, grid &ClimMap){
 	      {
 		r = _vSortedGrid[i].cells[j].row;
 		c = _vSortedGrid[i].cells[j].col;
-		
+
 		ClimMap.matrix[r][c] = data[a];
 
-		data_written++;
-		
+		data_written+=1;
+
 	      }
 	  }
-      }
-    }
+
     delete[] TS;
     delete[] data;
     delete[] Zns;
@@ -110,10 +110,11 @@ UINT4 Atmosphere::InitiateClimateMap(ifstream &ifHandle, grid &ClimMap){
       delete[] data;
     if(Zns)
       delete[] Zns;
-    
+
     throw;
-    
+
   }
+
   return data_written;
-  
+
 }

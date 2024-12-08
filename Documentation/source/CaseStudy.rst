@@ -44,7 +44,7 @@ Open the file with any text editor. In the ``Folder`` section of the file
 make sure the paths to the ``Spatial`` and ``Climate`` folders of the case
 study are correct. In these files we will be storing spatial and climate
 information. Also make sure the folder where |ech2o|-iso will write the
-results (``Results`` folder) exists and the path is correct.
+results (``Outputs`` folder) exists and the path is correct.
 
 The maps to be read by |ech2o|-iso will be in the PCRaster cross-system format so
 make sure ``MapTypes = csf``. Also we will be using tables to initialize the vegetation
@@ -69,7 +69,7 @@ The report map section is a series of boolean switches (0-1) that turn
 on or off the reporting (writing to the results folder) of maps with the
 state variables. Turn on (*= 1*) the variables that you like reported. Mind
 that writing maps to the disk is an expensive processes in terms of
-computer time and space.
+computer time and disk space.
 
 Populating the database
 -----------------------
@@ -158,7 +158,7 @@ environment type the command::
 
 This command instructs PCRaster to calculate the local drainage
 direction (ldd) for each cell using the dem (``DEM.map``) and save the drainage
-network on a map called ``ldd.map``. The large numbers included as the final four
+network to a map called ``ldd.map``. The large numbers included as the final four
 arguments to the *lddcreate* function are options to remove pits and
 core areas (see PCRaster documentation on lddcreate for more details).
 Display the results with aguila to visually inspect the drainage
@@ -175,7 +175,7 @@ the functions in PCRaster (see PCRaster documentation for this).
 A map of the channels and the width of the channel is provided in the
 folder ``Spatial``. Inspect it using aguila and observe that cells with a channel
 have a positive number indicating the width of the channel in meters and
-cells without a channel should have attribute 0.
+cells without a channel have attribute 0 or nodata.
 
 The resistance presented by the channel to flow is given by Manning’s
 :math:`n` coefficient. Values for Manning’s :math:`n` coefficient needs
@@ -266,7 +266,7 @@ near the water divide.
 
 This expression uses the function *accuflux* to accumulate the area of
 the cells (10,000 :math:`m^{2}`) following the drainage direction and
-divides it by the map of slopes that we created earlier. The function
+divides it by the map of slopes (``slope.map``) that we created earlier. The function
 *ln* takes the logarithm of the result of the quotient to equalize the
 distribution of values, which is highly skewed due to the exponential
 distribution of the accumulated areas.
@@ -278,9 +278,9 @@ properties:
 
 ::
 
-    pcrcalc depth_soil.map = topind.map 
+    pcrcalc soildepth.map = topind.map 
     	/areaaverage(topind.map,nominal(unit.map))
-    pcrcalc Keff.map = 1 / (depth_soil.map * 36000)
+    pcrcalc Khsat.map = 1 / (soildepth.map * 36000)
     pcrcalc poros.map = 1 / (1 + exp(0.01 * topind.map))
 
 We will set initial conditions for the soil assuming the basin starts
@@ -289,12 +289,12 @@ temperature of 10\ :math:`^{\circ}C` throughout the basin:
 
 ::
 
-    pcrcalc swe.map = unit.map * 0 
-    pcrcalc Soil_moisture_1.map = poros.map * 0.5
-    pcrcalc Soil_moisture_2.map = poros.map * 0.5
-    pcrcalc Soil_moisture_3.map = poros.map * 0.5
-    pcrcalc soiltemp.map = unit.map * 10
-    pcrcalc streamflow.map = unit.map * 0
+    pcrcalc Init_SWE.map = unit.map * 0 
+    pcrcalc Init_soilmoisture.L1.map = poros.map * 0.5
+    pcrcalc Init_soilmoisture.L2.map = poros.map * 0.5
+    pcrcalc Init_soilmoisture.L3.map = poros.map * 0.5
+    pcrcalc Init_soiltemp.map = unit.map * 10
+    pcrcalc Init_streamflow.map = unit.map * 0
 
 We will also assume that the first hydraulic layer of the soil is 10 cm
 deep (0.1 m). We will also assume that the second hydraulic layer is 10
@@ -302,8 +302,8 @@ cm deep. will calculate the depth of the 3rd layer such that the sum of
 the three layers equals the soil depth at the pixel.
 ::
 
-    pcrcalc depth_soil1.map = unit.map * 0.1
-    pcrcalc depth_soil2.map = unit.map * 0.1
+    pcrcalc soildepth.L1.map = unit.map * 0.1
+    pcrcalc soildepth.L2.map = unit.map * 0.1
 
 |ech2o|-iso assumes an exponential root profile: :math:`root(z)=exp(-K_{root}z)`.
 Here we chose a value of 10 m\ :sup:`-1` for :math:`K_{root}`,
@@ -338,49 +338,49 @@ Table 1.
 
    SpeciesID , 1
    NPP/GPPRatio , 0.47
-   gsmax(ms-1) , 0.009
-   CanopyQuantumEffic(gCJ-1) , 0.0000018
-   MaxForestAge(yrs) , 290
-   OptimalTemp(C) , 18
-   MaxTemp(C) , 30
-   MinTemp(C) , 0
-   FoliageAllocCoef\_a , 2.235
-   FoliageAllocCoef\_b , 0.006
-   StemAllocCoef\_a , 3.3
-   StemAllocCoef\_b , 6.00E-07
-   gs\_light\_coeff , 300
-   gs\_vpd\_coeff , 0.0019
-   gs_psi\_d , 5
-   gs_psi\_c , 2
+   gsmax (m s-1) , 0.009
+   CanopyQuantumEffic (gC J-1) , 0.0000018
+   MaxForestAge (yrs) , 290
+   OptimalTemp (degC) , 18
+   MaxTemp (degC) , 30
+   MinTemp (degC) , 0
+   FoliageAllocCoef_a , 2.235
+   FoliageAllocCoef_b , 0.006
+   StemAllocCoef_a , 3.3
+   StemAllocCoef_b , 6.00E-07
+   gs_light_coeff (W m-2) , 300
+   gs_vpd_coeff (Pa-1) , 0.0005
+   gs_psi_low (m) , 153
+   gs_psi_high (m) , 3.36
    WiltingPnt , 0.05
-   SpecificLeafArea(m2g-1) , 0.003
-   SpecificRootArea(m2kg-1) , 0.022
+   SpecificLeafArea (m2 g-1) , 0.003
+   SpecificRootArea (m2 kg-1) , 0.022
    Crown2StemDRat , 0.25
    TreeShapeParam , 0.4
-   WoodDens(gCm-2) , 220000
+   WoodDens (gC m-2) , 220000
    Fhdmax , 15
    Fhdmin , 5
-   LeafTurnoverRate(s-1) , 8.56E-09
-   MaxLeafTurnoverWaterStress(s-1) , 0.000000018
+   LeafTurnoverRate (s-1) , 8.56E-09
+   MaxLeafTurnoverWaterStress (s-1) , 0.000000018
    LeafTurnoverWaterStressParam , 0.2
-   MaxLeafTurnoverTempStress(s-1) , 0.000000018
+   MaxLeafTurnoverTempStress (s-1) , 0.000000018
    LeafTurnoverTempStressParam , 0.2
-   ColdStressParam(degC) , 1
-   RootTurnoverRate(s-1) , 5.34E-09
-   MaxCanStorageParam(m) , 0.0000624
+   ColdStressParam (degC) , 1
+   RootTurnoverRate (s-1) , 5.34E-09
+   MaxCanStorageParam (m LAI-1) , 0.0000624
    albedo , 0.1
    emissivity , 0.95
    KBeers , 0.55
-   CanopyWatEffic(gCm-1) , 800
-   Kroot(m-1) , 10
+   CanopyWatEffic (gC m-1) , 800
+   Kroot (m-1) , 10
    vegtype , 0
-   DeadGrassLeafTurnoverRate(s-1) , 0
-   DeadGrassLeafTurnoverTempAdjustment(degC) , 0
+   DeadGrassLeafTurnoverRate (s-1) , 0
+   DeadGrassLeafTurnoverTempAdjustment (degC) , 0
 
 The parameters are listed in the order they should appear in the
-vegetation confguration file. Make sure you include in the first line
+vegetation configuration file. Make sure you include in the first line
 of the header the number of species in the file and the number of
-information items per species (2 39). For convenience, the information
+information items per species (2 40). For convenience, the information
 in Table 1 is properly formatted in a parameter file
 named ``SpeciesParams.tab``, which is is provided in the folder of the case study.
 
@@ -557,13 +557,13 @@ EXISTS. ECH2O-iso WILL NOT CREATE THE FOLDER IF IT DOES NOT EXIST AND WILL
 TERMINATE THE RUN WHEN IT ATTEMPTS TO WRITE TO THE NON-EXISTING FOLDER.**
 
 Open the configuration file in a text editor and replace the default
-input file names for the soil moisture keys with the correct filenames
+input file names with the correct filenames ; for instance for soil moisture keys 
 
 ::
 
-    Soil_moisture_1 = Soil_moisture_1.map 
-    Soil_moisture_2 = Soil_moisture_2.map 
-    Soil_moisture_3 = Soil_moisture_3.map 
+    Soil_moisture_1 = Init_soilmoisture.L1.map 
+    Soil_moisture_2 = Init_soilmoisture.L2.map 
+    Soil_moisture_3 = Init_soilmoisture.L3.map 
 
 Once the database is complete and the configuration file correctly set
 we are ready to run |ech2o|-iso. This is simply done by navigating to the
@@ -576,19 +576,21 @@ command:
 
 
 Where ``config.ini`` stands for the name of the configuration file. Note that this
-file and ``configTrck.ini`` can be named in any other way to differentiate different
+file and (``configTrck.ini``) can be named in any other way to differentiate different
 projects or runs.
 
 After hitting enter you will see the splash screen with the version
 number and a report on the pre-processing steps (whether it was able to
 successfully read the files and create the components of the model run).
 
-The screen reports information on the water mass (in :math:` m^{3} ` for
-the different components of the basin for each time step and information
-on the mass balance error (in % of the total input). The mass balance
-error should be a very small number (typically :math:`<` 1.0e-10%). If
-the number is large or steadily increases as the simulation progresses
-it is an indication of some problem in the inputs.
+The screen reports information on the water stores (in equivalent :math:`mm`
+across the area of simulation domain) and water fluxes (in cumulated
+:math:`mm`) for the different compartments and outputs of the basin,
+for each time step, as well as information on the mass balance error
+(in % of the total input). The mass balance error should be a very small
+number (typically :math:`<` 1.0e-12%). If the number is large or steadily
+increases as the simulation progresses it is an indication of some problem
+in the inputs.
 
 Once the model has finished running you can inspect the results using or
 to display the timeseries files or the maps in the results folder.
@@ -613,9 +615,12 @@ You can even drape them to the DEM. Assuming you are in the folder:
 
     aguila -3 ..\spatial\DEM.map + SWE00000.001+365
 
-Also a file called is created in the root folder (where file is
-located). This file contains summary information on the water balance of
-the basin in total volumes of water (:math:`m^{3}`).
+    
+In addition, a file called ``BasinSummary.txt`` is created in the
+output folder. This file contains summary information with more details
+than the screen report, although expressing stores and fluxes in
+:math:`m^{-3}` and cumulated :math:`m^{-3}` over the entire basin,
+respectively.
 
 Spinning-up the model
 ---------------------
@@ -710,24 +715,24 @@ contents into a new file ``spinup.bat``:
 
     echo finishing and copying files after iteration %COUNT%
 
-    copy /Y .\Results/root0_00.365 .\Spatial/root_0.map
-    copy /Y .\Results/p0_00000.365 .\Spatial/p_0.map
-    copy /Y .\Results/ntr0_000.365 .\Spatial/ntr_0.map
-    copy /Y .\Results/lai0_000.365 .\Spatial/lai_0.map
-    copy /Y .\Results/hgt0_000.365 .\Spatial/hgt_0.map
-    copy /Y .\Results/bas0_000.365 .\Spatial/bas_0.map
-    copy /Y .\Results/age0_000.365 .\Spatial/age_0.map
+    copy /Y .\Outputs/root0_00.365 .\Spatial/root_0.map
+    copy /Y .\Outputs/p0_00000.365 .\Spatial/p_0.map
+    copy /Y .\Outputs/ntr0_000.365 .\Spatial/ntr_0.map
+    copy /Y .\Outputs/lai0_000.365 .\Spatial/lai_0.map
+    copy /Y .\Outputs/hgt0_000.365 .\Spatial/hgt_0.map
+    copy /Y .\Outputs/bas0_000.365 .\Spatial/bas_0.map
+    copy /Y .\Outputs/age0_000.365 .\Spatial/age_0.map
 
-    copy /Y .\Results/SWE00000.365 .\Spatial/SWE.map
-    copy /Y .\Results/SWC1_000.365 .\Spatial/Soil_moisture_1.map
-    copy /Y .\Results/SWC2_000.365 .\Spatial/Soil_moisture_2.map
-    copy /Y .\Results/SWC3_000.365 .\Spatial/Soil_moisture_3.map
-    copy /Y .\Results/Ts000000.365 .\Spatial/soiltemp.map
-    copy /Y .\Results/Q0000000.365 .\Spatial/streamflow.map
+    copy /Y .\Outputs/SWE00000.365 .\Spatial/Init_swe.map
+    copy /Y .\Outputs/SWC1_000.365 .\Spatial/Init_soilmoisture.L1.map
+    copy /Y .\Outputs/SWC2_000.365 .\Spatial/Init_soilmoisture.L2.map
+    copy /Y .\Outputs/SWC3_000.365 .\Spatial/Init_soilmoisture.L3.map
+    copy /Y .\Outputs/Ts000000.365 .\Spatial/Init_soiltemp.map
+    copy /Y .\Outputs/Q0000000.365 .\Spatial/Init_streamflow.map
 
-    type .\Results\lai_0.tab >> .\Results\laiaccum.txt
-    type .\Results\NPP_0.tab >> .\Results\NPPaccum.txt
-    type .\Results\SoilMoistureAv.tab >> .\Results\SWCaccum.txt
+    type .\Outputs\lai_0.tab >> .\Outputs\laiaccum.txt
+    type .\Outputs\NPP_0.tab >> .\Outputs\NPPaccum.txt
+    type .\Outputs\SoilMoistureAv.tab >> .\Outputs\SWCaccum.txt
     
     set /A COUNT=%COUNT%+1
 

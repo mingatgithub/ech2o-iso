@@ -19,10 +19,10 @@
  *     along with Ech2o.  If not, see <http://www.gnu.org/licenses/>.
  *
  * Contributors:
- *    Marco Maneta
+ *    Marco Maneta, Sylvain Kuppel
  *******************************************************************************/
 /*
- * TotalGrndFlow.cpp
+ * totalGrndFlow.cpp
  *
  *  Created on: Dec 10, 2010
  *      Author: Marco.Maneta
@@ -38,17 +38,25 @@ void Budget::TotalGrndFlow(const vectCells *timeseries, const Basin *b)
 void Budget::TotalGrndFlow_d2H(const vectCells* timeseries1, const vectCells* timeseries2)
 {
   gwtrflow_d2H += AccountTrckFluxes(timeseries1, timeseries2);
+  //gwtrflow_d2H = AccountTrckFluxes(timeseries1, timeseries2);
 }
 
 void Budget::TotalGrndFlow_d18O(const vectCells* timeseries1, const vectCells* timeseries2)
 {
   gwtrflow_d18O += AccountTrckFluxes(timeseries1, timeseries2);
+  //gwtrflow_d18O = AccountTrckFluxes(timeseries1, timeseries2);
+}
+
+void Budget::TotalGrndFlow_cCl(const vectCells* timeseries1, const vectCells* timeseries2)
+{
+  gwtrflow_cCl += AccountTrckFluxes(timeseries1, timeseries2);
 }
 
 // the water that already left is kept in the balance and "aging" as well
 void Budget::TotalGrndFlow_Age(const vectCells* timeseries1, const vectCells* timeseries2)
 {
   gwtrflow_Age += gwtrflow * dt / 86400 + AccountTrckFluxes(timeseries1, timeseries2);
+  //gwtrflow_Age = AccountTrckFluxes(timeseries1, timeseries2);
 }
 
 // Instantaneous d2H reporting
@@ -60,6 +68,11 @@ void Budget::InstGrndFlow_d2H(const vectCells* timeseries1, const vectCells* tim
 void Budget::InstGrndFlow_d18O(const vectCells* timeseries1, const vectCells* timeseries2)
 {
   d18OGWOut = AccountTrckFluxes2(timeseries1, timeseries2);
+}
+// Instantaneous cCl reporting
+void Budget::InstGrndFlow_cCl(const vectCells* timeseries1, const vectCells* timeseries2)
+{
+  cClGWOut = AccountTrckFluxes2(timeseries1, timeseries2);
 }
 // Instantaneous Age reporting
 void Budget::InstGrndFlow_Age(const vectCells* timeseries1, const vectCells* timeseries2)

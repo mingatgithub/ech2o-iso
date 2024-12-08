@@ -30,74 +30,7 @@
 
 #include "Budget.h"
 
-void Budget::TotalEvaporation(const grid* map1, const grid* map2, const Basin *b)
+void Budget::TotalEvaporation(const grid* map, const Basin *b)
 {
-        evaporation += AccountFluxes(map1, map2, b);
-}
-
-// For Basind2HSummary.txt --------------------------------------------------------------
-void Budget::InstOut_d2H(const grid* evapS, const grid* CevapS,
-			 const grid* evapI, const grid* CevapI,
-			 const grid* evapT, const grid* CevapT,
-			 const grid* leakage, const grid* Cleakage,
-			 const vectCells *OvlndOut, const vectCells *COvlndOut,
-			 const vectCells *GWOut, const vectCells *CGWOut,
-			 const grid* ttarea,			 
-			 const Basin *b)
-{
-  d2HOut = AccountTrckOut(evapS, CevapS,evapI, CevapI, evapT, CevapT,
-			  leakage, Cleakage, OvlndOut, COvlndOut, GWOut, CGWOut, ttarea, b);
-}
-
-void Budget::InstEvaporation_d2H(const grid* evapS, const grid* CevapS,
-				 const grid* evapI, const grid* CevapI,
-				 const grid* evapT, const grid* CevapT,
-				 const Basin *b)
-{
-  d2HET = AccountTrckET(evapS, CevapS,evapI, CevapI, evapT, CevapT, b);
-}
-
-// For Basind18OSummary.txt -------------------------------------------------------------
-void Budget::InstOut_d18O(const grid* evapS, const grid* CevapS,
-			 const grid* evapI, const grid* CevapI,
-			 const grid* evapT, const grid* CevapT,
-			 const grid* leakage, const grid* Cleakage,
-			 const vectCells *OvlndOut, const vectCells *COvlndOut,
-			 const vectCells *GWOut, const vectCells *CGWOut,
-			 const grid* ttarea,			  
-			 const Basin *b)
-{
-  d18OOut = AccountTrckOut(evapS, CevapS,evapI, CevapI, evapT, CevapT,
-			   leakage, Cleakage, OvlndOut, COvlndOut, GWOut, CGWOut, ttarea, b);
-}
-
-void Budget::InstEvaporation_d18O(const grid* evapS, const grid* CevapS,
-				 const grid* evapI, const grid* CevapI,
-				 const grid* evapT, const grid* CevapT,
-				 const Basin *b)
-{
-  d18OET = AccountTrckET(evapS, CevapS,evapI, CevapI, evapT, CevapT, b);
-}
-
-// For BasinAgeSummary.txt -------------------------------------------------------------
-void Budget::InstOut_Age(const grid* evapS, const grid* CevapS,
-			 const grid* evapI, const grid* CevapI,
-			 const grid* evapT, const grid* CevapT,
-			 const grid* leakage, const grid* Cleakage,
-			 const vectCells *OvlndOut, const vectCells *COvlndOut,
-			 const vectCells *GWOut, const vectCells *CGWOut,
-			 const grid* ttarea,			 
-			 const Basin *b)
-{
-  // In days
-  AgeOut = AccountTrckOut(evapS, CevapS,evapI, CevapI, evapT, CevapT,
-			  leakage, Cleakage, OvlndOut, COvlndOut, GWOut, CGWOut, ttarea, b);
-}
-
-void Budget::InstEvaporation_Age(const grid* evapS, const grid* CevapS,
-				 const grid* evapI, const grid* CevapI,
-				 const grid* evapT, const grid* CevapT,
-				 const Basin *b)
-{
-  AgeET = AccountTrckET(evapS, CevapS,evapI, CevapI, evapT, CevapT, b);
+	evaporation += AccountFluxes(map, b);
 }

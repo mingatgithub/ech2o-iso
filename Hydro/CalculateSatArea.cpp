@@ -30,7 +30,7 @@
 
 #include"Basin.h"
 
-int Basin::CalculateSatArea(Atmosphere &atm, Control &ctrl) {
+int Basin::CalculateSatArea(Control &ctrl) {
 
   UINT4 r, c;
   REAL8 poros; //porosity
@@ -40,7 +40,7 @@ int Basin::CalculateSatArea(Atmosphere &atm, Control &ctrl) {
 
 #pragma omp parallel default(none)\
   private(r,c, theta1, poros, IsSaturated) \
-  shared(atm, ctrl)
+  shared(ctrl)
   {
     #pragma omp for nowait
    

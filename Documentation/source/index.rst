@@ -3,8 +3,10 @@
 Getting started: |ech2o|-iso user Guide
 =======================================
 
-This document provides a tutorial that guides users through the process of compiling |ech2o|-iso, preparing the files, and running and visualizing an |ech2o|-iso simulation. 
+This document provides a tutorial that guides users through the process of compiling |ech2o|-iso, preparing the input files, and running and visualizing an |ech2o|-iso simulation.
 
+Tutorial
+=========
 
 .. toctree::
    :maxdepth: 3
@@ -13,7 +15,9 @@ This document provides a tutorial that guides users through the process of compi
    Setup
    CaseStudy
    Keywords
-   KeywordsTrck
+
+
+
 
 Indices and tables
 ==================

@@ -19,7 +19,7 @@
  *     along with Ech2o.  If not, see <http://www.gnu.org/licenses/>.
  *
  * Contributors:
- *    Marco Maneta
+ *    Marco Maneta, Sylvain Kuppel
  *******************************************************************************/
 /*
  * AccountStorages.cpp
@@ -51,6 +51,7 @@ double Budget::AccountStorages(const grid *map, const Basin *b)
   return result;
 }
 
+// For root zone storage: weighted using root fractions
 double Budget::AccountStorages(const grid *map1, const grid *map2, const Basin *b)
 {
 
@@ -67,39 +68,18 @@ double Budget::AccountStorages(const grid *map1, const grid *map2, const Basin *
     r = b->getSortedGrid().cells[i].row;
     c = b->getSortedGrid().cells[i].col;
 
+    if(map1->matrix[r][c] > RNDOFFERR)
     result += (map1->matrix[r][c]*map2->matrix[r][c]*dx*dx);
   }
 
   return result;
 }
 
-double Budget::AccountStorages(const grid *map1, const grid *map2, const grid *map3, const Basin *b)
-{
-
-  UINT4 length = b->getSortedGrid().cells.size();
-  UINT4 r, c;
-  REAL8 result = 0;
-  REAL8 dx = b->getCellSize();
-
-#pragma omp parallel for			\
-  default(shared) private(r,c)			\
-  reduction (+:result)
-  for (UINT4 i = 0; i< length; i++){
-
-    r = b->getSortedGrid().cells[i].row;
-    c = b->getSortedGrid().cells[i].col;
-
-    result += (map1->matrix[r][c]*map2->matrix[r][c]*dx*dx*map3->matrix[r][c]);
-  }
-
-  return result;
-}
 
 // --- Tracking ------------------------------------------------------------------------
 
 // -- Sum tracer * storage
-/*
-double Budget::AccountTrckStorages(const grid *map1, const grid *map2, const grid *map3,const Basin *b)
+double Budget::AccountTrckStorages(const grid *map1, const grid *map2, const Basin *b)
 {
   
   UINT4 length = b->getSortedGrid().cells.size();
@@ -115,13 +95,14 @@ double Budget::AccountTrckStorages(const grid *map1, const grid *map2, const gri
     r = b->getSortedGrid().cells[i].row;
     c = b->getSortedGrid().cells[i].col;
 
-    result += (map1->matrix[r][c]* map2->matrix[r][c] *dx*dx*map3->matrix[r][c]);
+    if(map1->matrix[r][c] > RNDOFFERR)
+    result += (map1->matrix[r][c]* map2->matrix[r][c] *dx*dx);
 
   }
   
   return result;
 }
-*/
+
 // -- Sum tracer * storage / storage
 double Budget::AccountTrckStorages2(const grid *map1, const grid *map2, const Basin *b)
 {
@@ -141,12 +122,14 @@ double Budget::AccountTrckStorages2(const grid *map1, const grid *map2, const Ba
       r = b->getSortedGrid().cells[i].row;
       c = b->getSortedGrid().cells[i].col;
     
+      if(map1->matrix[r][c] > RNDOFFERR){
       numer += map1->matrix[r][c]* map2->matrix[r][c];
       denom += map1->matrix[r][c];
+      }
     
     }
   }
-  result = numer / denom;
+  result = denom > RNDOFFERR ? numer / denom : sqrt(-1) ;
   
   return result;
 }
@@ -159,7 +142,7 @@ double Budget::AccountTrckDomain(const grid *mapCanopy, const grid *mapCCanopy,
 				 const grid *mapL1, const grid *mapCL1, 
 				 const grid *mapL2, const grid *mapCL2, 
 				 const grid *mapL3, const grid *mapCL3, 
-				 const grid *mapGW, const grid *mapCGW, 
+				 //const grid *mapGW, const grid *mapCGW, 
 				 const Basin *b)
 {
   
@@ -177,18 +160,25 @@ double Budget::AccountTrckDomain(const grid *mapCanopy, const grid *mapCCanopy,
     
     r = b->getSortedGrid().cells[i].row;
     c = b->getSortedGrid().cells[i].col;
-
-    numer += mapCanopy->matrix[r][c]* mapCCanopy->matrix[r][c] +
-      mapSnow->matrix[r][c]* mapCSnow->matrix[r][c] +
-      mapSurface->matrix[r][c]* mapCSurface->matrix[r][c] +
-      mapL1->matrix[r][c]* mapCL1->matrix[r][c] +
-      mapL2->matrix[r][c]* mapCL2->matrix[r][c] +
-      mapL3->matrix[r][c]* mapCL3->matrix[r][c] +
-      mapGW->matrix[r][c]* mapCGW->matrix[r][c] ;
     
-    denom += mapCanopy->matrix[r][c] + mapSnow->matrix[r][c] + mapSurface->matrix[r][c] + 
-      mapL1->matrix[r][c] + mapL2->matrix[r][c] + 
-      mapL3->matrix[r][c] + mapGW->matrix[r][c] ;
+    if(mapCanopy->matrix[r][c] > RNDOFFERR){
+      numer += mapCanopy->matrix[r][c]* mapCCanopy->matrix[r][c] ;
+      denom += mapCanopy->matrix[r][c] ;
+    }
+    if(mapSnow->matrix[r][c] > RNDOFFERR){
+      numer += mapSnow->matrix[r][c]* mapCSnow->matrix[r][c] ;
+      denom += mapSnow->matrix[r][c] ;
+    }
+    if(mapSurface->matrix[r][c] > RNDOFFERR){
+      numer += mapSurface->matrix[r][c]* mapCSurface->matrix[r][c] ;
+      denom += mapSurface->matrix[r][c] ;
+    }
+    // There's always water in L1, L2 and L3    
+    numer += mapL1->matrix[r][c]* mapCL1->matrix[r][c] +
+      mapL2->matrix[r][c]* mapCL2->matrix[r][c] +
+      mapL3->matrix[r][c]* mapCL3->matrix[r][c] ; //+
+    denom += mapL1->matrix[r][c] + mapL2->matrix[r][c] + 
+      mapL3->matrix[r][c] ;
     
   }
     }
@@ -202,7 +192,7 @@ double Budget::AccountTrckDomain(const grid *mapCanopy, const grid *mapCCanopy,
 double Budget::AccountTrckRootZone(const grid *mapL1, const grid *mapCL1, const grid *mappL1,
 				   const grid *mapL2, const grid *mapCL2, const grid *mappL2,
 				   const grid *mapL3, const grid *mapCL3, const grid *mappL3,
-				   const grid *mapGW, const grid *mapCGW, 
+				   //const grid *mapGW, const grid *mapCGW, 
 				   const Basin *b)
 {
   UINT4 length = b->getSortedGrid().cells.size();
@@ -222,12 +212,13 @@ double Budget::AccountTrckRootZone(const grid *mapL1, const grid *mapCL1, const 
 
       numer += mapL1->matrix[r][c] * mapCL1->matrix[r][c] * mappL1->matrix[r][c] +
 	mapL2->matrix[r][c]* mapCL2->matrix[r][c] * mappL2->matrix[r][c] +
-	(mapL3->matrix[r][c]* mapCL3->matrix[r][c] +
-	 mapGW->matrix[r][c]* mapCGW->matrix[r][c]) * mappL3->matrix[r][c] ;
+	mapL3->matrix[r][c]* mapCL3->matrix[r][c] * mappL3->matrix[r][c] ; //+
+	 //mapGW->matrix[r][c]* mapCGW->matrix[r][c]) * mappL3->matrix[r][c] ;
       
       denom += mapL1->matrix[r][c] * mappL1->matrix[r][c] + 
 	mapL2->matrix[r][c]* mappL2->matrix[r][c] + 
-	(mapL3->matrix[r][c] + mapGW->matrix[r][c])* mappL3->matrix[r][c] ;
+	//(mapL3->matrix[r][c] + mapGW->matrix[r][c])* mappL3->matrix[r][c] ;
+	mapL3->matrix[r][c] * mappL3->matrix[r][c] ;
     }
   }
   result = numer / denom ;
@@ -240,7 +231,7 @@ double Budget::AccountTrckRootZone(const grid *mapL1, const grid *mapCL1, const 
 double Budget::AccountTrckVadose(const grid *mapL1, const grid *mapCL1, 
 				 const grid *mapL2, const grid *mapCL2, 
 				 const grid *mapL3, const grid *mapCL3, 
-				 const grid *mapGW, const grid *mapCGW, 
+				 //const grid *mapGW, const grid *mapCGW, 
 				 const Basin *b)
 {
   UINT4 length = b->getSortedGrid().cells.size();
@@ -260,11 +251,11 @@ double Budget::AccountTrckVadose(const grid *mapL1, const grid *mapCL1,
 
       numer += mapL1->matrix[r][c]* mapCL1->matrix[r][c] +
 	mapL2->matrix[r][c]* mapCL2->matrix[r][c] +
-	mapL3->matrix[r][c]* mapCL3->matrix[r][c] +
-	mapGW->matrix[r][c]* mapCGW->matrix[r][c] ;
+	mapL3->matrix[r][c]* mapCL3->matrix[r][c] ; //+
+	//mapGW->matrix[r][c]* mapCGW->matrix[r][c] ;
     
       denom += mapL1->matrix[r][c] + mapL2->matrix[r][c] + 
-	mapL3->matrix[r][c] + mapGW->matrix[r][c] ;
+	mapL3->matrix[r][c] ; //+ mapGW->matrix[r][c] ;
     }
   }
   result = numer / denom ;

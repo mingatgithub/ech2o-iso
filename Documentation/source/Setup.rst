@@ -26,7 +26,7 @@ choice of state and diagnostic variables that the user wants reported
 
 There are **two** configurations files:
 
-* The *main configuration file* (defaut name: config.ini), called in the execution command of |ech2o|-iso.  The list of keywords in the current version of the main configuration file (v1.7) is shown `here <http://ech2o-iso.readthedocs.io/en/latest/Keywords.html>`_.
+* The *main configuration file* (defaut name: config.ini), called in the execution command of |ech2o|-iso.  The list of keywords in the current version of the main configuration file (v2.0) is shown `here <http://ech2o-iso.readthedocs.io/en/latest/Keywords.html>`_.
 * The *tracking configuration file* (default name: configTrck.ini), whose location is defined in main configuration file and read *only if* water isotopes and/or age tracking is activated (keyword *Tracking* set to 1). The list of keywords in the current version of the tracking configuration file (v1.0) is shown `here <http://ech2o-iso.readthedocs.io/en/latest/KeywordsTrck.html>`_.
 
 
@@ -57,7 +57,7 @@ Within the PCRaster environment, type
 
     mapattr base.map
 
-to start the interface and create a new blank base map named . Introduce
+to start the interface and create a new blank base map named ``base.map``. Introduce
 the number of rows and columns as indicated in the metadata of the ascii
 raster image. Choose the *’scalar’* datatype and the *’small real’* cell
 representation. If the projection is UTM you may want to indicate a *’y
@@ -86,8 +86,8 @@ ArcInfo DEM map into the CSF PCRaster format type
 
     asc2map -a --clone base.map dem.asc dem.map
 
-This command indicates that we are importing an ascii file named into
-the PCRaster format with name , that the imported file has ArcInfo ascii
+This command indicates that we are importing an ascii file named ``dem.asc`` into
+the PCRaster format with name ``dem.map``, that the imported file has ArcInfo ascii
 grid format and that we are cloning the geometry of our base.map.
 
 Display the map to check it has been correctly imported
@@ -118,7 +118,7 @@ environment type the command
 
 This command instructs PCRaster to calculate the local drainage
 direction (ldd) for each cell using the dem (``DEM.map``) and save the drainage
-network in a map called . The large numbers included as the final four
+network in a map called ``ldd.map``. The large numbers included as the final four
 arguments to the lddcreate function are options to remove pits and core
 areas (see PCRaster documentation on lddcreate for more details).
 Display the results with aguila to visually inspect the drainage
@@ -219,8 +219,8 @@ A time series of climate information for each specific climate zone is
 associated with each of these zones through a unique identifier that
 links the climate zone and a specific column of the binary climate file.
 
-reads climate files in a specific binary format that can be constructed
-from a text file using the utility provided with . The format of the
+|ech2o|-iso reads climate files in a specific binary format that can be constructed
+from a text file using the ``asc2c`` utility provided with the modeling package. The format of the
 text file needed to run is explained below and summarized in Box 1.
 Data must be space or tab separated except the first
 line that must end with a carriage return.
@@ -298,11 +298,11 @@ write the resulting binary file. The format of the binary file follows
 the same structure of the ascii file using 8 bit characters, 32 bit
 signed integers, and 32 bit signed floats.
 
-Eight climate variables are needed to run , each in its own binary file.
+Eight climate variables are needed to run |ech2o|-iso, each in its own binary file.
 expects the data in the files to be in some specific units. Table 2 
 lists the eight needed climate variables and the
 corresponding units in which the data must be provided.
-If water isotope tracking is activated, the corresponding climate inputs must be provided (Table 2).
+If water isotope or chloride tracking is activated, the corresponding climate inputs must be provided (Table 2).
 
 
 **Table 2.** Variables and associated units of climate forcings used by |ech2o|-iso.
@@ -332,37 +332,57 @@ If water isotope tracking is activated, the corresponding climate inputs must be
 | Oxygen 18 content in precip  | ‰                      | | Needed only if ``Tracking = 1`` and       |
 |                              |                        | | ``water_d18O = 1`` in configuration files |
 +------------------------------+------------------------+---------------------------------------------+
+| Chloride content in precip   | :math:`mgL^{-1}`       | | Needed only if ``Tracking = 1`` and       |
+|                              |                        | | ``water_cCl = 1``  in configuration files |
++------------------------------+------------------------+---------------------------------------------+
 
-Two additional files in CSF PCRaster map format are necessary in
-``Clim_Maps_Folder``, one is a map with the temperature threshold (in
-:math:`^\circ C`) for rain to snow transition. This map can be constant
-or the threshold can change in space. The second file is a convenience
+Two additional inofmration are necessary in ``Clim_Maps_Folder``.
+One is (a scalar) the temperature threshold (in :math:`^\circ C`) for 
+rain to snow transition (keyword ``Snow_rain_temp_threshold``). 
+The second (``Isohyet_map``) is a file in CSF PCRaster map format a convenience
 map of precipitation multiplication factors that permits to manipulate
 and improve the spatial distribution of precipitation even when using
 coarse climate zones. The precipitation assigned to a pixel in the
 climate zone from the corresponding *.bin* file will be multiplied by
 the factor specified in the same pixel of this map before being used in
-.
+the simulation.
 
 Forest and species data
 -----------------------
 
-In this version is designed to simulate evergreen vegetation and a
-herbaceous understory. It is also designed to broad types of vegetation
-(e.g. firs, pines) with a general functional behavior instead of
+This model is designed to simulate broad types of ligneous (evergreen and deciduous)
+and herbaceous vegetation types, with a general functional behavior instead of
 simulating specific species. Multiple vegetation types can be simulated,
 the number of them is supplied in the ``Number_of_Species`` keyword of
 the configuration file.
 
-Two types of information are needed to set up the ecological module: 
+|ech2o|-iso needs two types of information to set up the ecological module: 
 
-1. vegetation parameters,
+1. vegetation parameters
 2. initial condition of the state variables tracked.
+
+
+Leaf area index forcing
+-----------------------
+
+If forced vegetation foliar dynamics are activated (i.e. ``Vegetation_dynamics`` 
+set to 2 in the configuration file), then forcing files with time series of 
+leaf area index (LAI) must be provided in the ``Clim_Maps_Folder`` directory, one
+for each species up the number given by the ``Number_of_Species`` keyword.
+The format of the LAI forcing files is the same as the climate files (see above
+section), with one LAI time series per climate zone (the columns can be identical).
+The names of the LAI forcing files should shared a common prefix across species, 
+only differenciated with a suffix indicating the species number - 1, e.g.
+prefix_0.bin,...,prefix_NumSpecies-1.bin (similarly the the vegetation 
+initialization maps, see below). This prefix is given in the configuration file 
+to the keyword ``TimeSeries_LAI`` (the model adds ``_`` (species#) ``.bin``).
+In this case, the initial lai tables or maps (see below) are not needed.
+
 
 Vegetation Parameters file
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The vegetation parameters file must be located in the ``Maps_Folder``
+The vegetation parameters file must be located in the *Maps\_Folder*
 folder indicated in the configuration file. The name of the file must be
 indicated in the ``Species_Parameters`` keyword.
 
@@ -373,12 +393,12 @@ the behavior of plants.
 
 The first line of the file contains two tab- or space-separated
 integers. The first integer indicates the number of vegetation types
-included in the file. The second integer must be the number 39, which is
+included in the file. The second integer must be the number 40, which is
 the number of information items that needs to be supplied for each
 vegetation type.
 
 Below the first line there will be a line per vegetation type containing
-39 items of information. The format and items of information are listed
+40 items of information. The format and items of information are listed
 in Box 3 and below.
 
 **Box 3.** Format of the vegetation parameters file.
@@ -386,7 +406,7 @@ in Box 3 and below.
 ::
 
     line 1: numSpecs	NumParams												
-    In each line from line 1 to line numSpecs+1: 39 Comma or
+    In each line from line 1 to line numSpecs+1: 40 Comma or
     tab separated numbers with the following elements:
 
     SpeciesID NPP/GPPRatio	gsmax	CanopyQuantumEffic
@@ -400,7 +420,7 @@ in Box 3 and below.
     MaxLeafTurnoverTempStress LeafTurnoverTempStressParam
     ColdStressParam	RootTurnoverRate MaxCanStorageParam albedo
     emissivity	KBeers	CanopyWatEffic 
-    vegtype 
+    Kroot  vegtype 
     DeadGrassLeafTurnoverRate DeadGrassLeafTurnoverTempAdjustment 
 
 
@@ -442,16 +462,16 @@ StemAllocCoef\_b
     Stem allocation coefficient as per 3PG model. Typical value around 0.0000006
 
 gs\_light\_coeff
-    Parameter controlling stomatal sensitivity to light. Typical value around 300
+    Parameter controlling stomatal sensitivity to light (in :math:`W m^{-2}`). Typical value around 300
 
 gs\_vpd\_coeff 
-    Parameter controlling stomatal sensitivity to vapor pressure deficit. Typical value around 0.002
+    Parameter controlling stomatal sensitivity to vapor pressure deficit (in :math:`Pa^{-1}`). Typical value around 0.0005
 
-lwp_min
-    Lowest leaf water potential before stomatal function shuts down, in -MPa. Typical value around 3.92 (-400 m of head)
+gs_psi_low
+    Soil moisture suction potential beyond which stomatal conductance is zero (in :math:`m` of head). Typical value around 153.
 
-lwp_max
-    Leaf water potential threshold beyond which stomatal efficiency is maximal, in -MPa. Typical value around 0.069 (-7 m of head)
+gs_psi_high
+    Soil moisture suction potential below which stomatal conductance is not limited by soil moisture (in :math:`m` of head). Typical value around 3.36.
 
 WiltingPnt
     Volumetric soil water content at wilting point, dependent on plant and soil characteristics.
@@ -563,25 +583,52 @@ and the names for each variable paired with the appropriate key in the
 configuration file. A description of the tables is given below
 
 Species\_Proportion\_Table
-    Table containing the proportion of each patch that is occupied by each vegetation type. In the current version of the model this is a time-invariant variable since there is no vegetation dispersal and encroachment module. If a vegetation type does not exist for a patch, indicate a zero in the column for that species in a patch.
+''''''''''''''''''''''''''
+
+: Table containing the proportion of each patch that is occupied by each
+vegetation type. In the current version of the model this is a
+time-invariant variable since there is no vegetation dispersal and
+encroachment module. If a vegetation type does not exist for a patch,
+indicate a zero in the column for that species in a patch.
 
 Species\_StemDensity\_Table 
-    Table containing the tree density of each vegetation type in their share of patch, in trees per sq. meter. In the current version of the model this is a time-invariant variable since there is no vegetation dispersal and encroachment module.
+''''''''''''''''''''''''''''
+
+: Table containing the tree density of each vegetation type in their
+share of patch, in trees per sq. meter. In the current version of the
+model this is a time-invariant variable since there is no vegetation
+dispersal and encroachment module.
 
 Species\_LAI\_Table 
-    Table containing the initial LAI of each vegetation type. note that LAI is defined as the area of leaves over the projected canopy area and not area of leaves over patch or pixel area.
+''''''''''''''''''''
+
+: Table containing the initial LAI of each vegetation type. note that
+LAI is defined as the area of leaves over the projected canopy area and
+not area of leaves over patch or pixel area.
 
 Species\_AGE\_Table 
-    Table containing the average age of trees of each vegetation type in each patch. In years.
+''''''''''''''''''''
+
+: Table containing the average age of trees of each vegetation type in
+each patch. In years.
 
 Species\_BasalArea\_Table 
-    Table containing the total basal area of each type of vegetation in each patch, in square meters.
+''''''''''''''''''''''''''
+
+: Table containing the total basal area of each type of vegetation in
+each patch, in square meters.
 
 Species\_Height\_table 
-    Table containing the effective height of each type of vegetation in each patch, in meters.
+'''''''''''''''''''''''
+
+: Table containing the effective height of each type of vegetation in
+each patch, in meters.
 
 Species\_RootMass\_table 
-    Table containing the average root mass of each type of vegetation in each patch, in grams per square meters.
+'''''''''''''''''''''''''
+
+: Table containing the average root mass of each type of vegetation in
+each patch, in grams per square meters.
 
 All tables have identical format as described in Box 4.
 

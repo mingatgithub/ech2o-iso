@@ -32,33 +32,32 @@
 #include <string.h>
 
 void message(){
-	cout << "USAGE: ech2o <config.ini>" << endl;
+	cout << "USAGE: ech2o_iso <config.ini>" << endl;
 	cout << "\twhere config.ini is a valid ech2o configuration file" << endl;
-	cout << "OR: ech2o -g <output_file>" << endl;
+	cout << "OR: ech2o_iso -g <output_file>" << endl;
 	cout << "\tto write two configuration file templates:" << endl;
 	cout << "\t<output_file> + its tracking-specific counterpart." << endl;
 }
 
 void Splash(int argc, char* argv[]){
 
-  cout << "|______________________________________________________________________________|" << endl;
-  cout << "                                                                              ||" << endl;
-  cout << "  ------------                  --       --       -------------               ||" << endl;
-  cout << "  888888888888                  88       88       8888888888888               ||" << endl;
-  cout << "  88                            88       88       88         88               ||" << endl;
-  cout << "  88            -------------   88       88       88         88               ||" << endl;
-  cout << "  888888888     8888888888888   88888888888       88         88               ||" << endl;
-  cout << "  888888888     88              88888888888       88         88               ||" << endl;
-  cout << "  88            88              88       88 8888  88         88               ||" << endl;
-  cout << "  88            88              88       88    88 88         88               ||" << endl;
-  cout << "  888888888888  8888888888888   88       88   88  8888888888888  === ==== === ||" << endl;
-  cout << "  ------------  -------------   --      -- 888    --------------- 8  88   8 8 ||" << endl;
-  cout << "                                           8888888                8    88 8 8 ||" << endl;
-  cout << "                                                                 *** **** *** ||" << endl;
-  cout << "   ECOHYDROLOGICAL MODEL, isotopes and age tracking (EcH2O-iso)               |" << endl;
-  cout << "   University of Montana (USA), University of Aberdeen (UK), IGB-Berlin (DE)  |" << endl;
-  cout << "   "<< VERSION << "                                                         " << endl;
-  cout << " _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ " <<endl << endl;
+  cout << " ______________________________________________________________________________|" << endl;
+  cout << "||                                                                             |" << endl;
+  cout << "  ------------                  --       --       -------------                |" << endl;
+  cout << "  888888888888                  88       88       8888888888888                |" << endl;
+  cout << "  88                            88       88       88         88                |" << endl;
+  cout << "  88            -------------   88       88       88         88                |" << endl;
+  cout << "  888888888     8888888888888   88888888888       88         88                |" << endl;
+  cout << "  888888888     88              88888888888       88         88                |" << endl;
+  cout << "  88            88              88       88 8888  88         88                |" << endl;
+  cout << "  88            88              88       88    88 88         88                |" << endl;
+  cout << "  888888888888  8888888888888   88       88   88  8888888888888  === ==== ===  |" << endl;
+  cout << "  ------------  -------------   --      -- 888    --------------- 8  88   8 8  |" << endl;
+  cout << "                                           8888888                8    88 8 8  |" << endl;
+  cout << "                                                                 *** **** ***  |" << endl;
+  cout << "|| An EcoHydrOlOgical, tracer-enabled model (EcH2O-iso)                        |" << endl;
+  cout << "|| "<< VERSION << "                                                            |" << endl;
+  cout << "||_____________________________________________________________________________|" <<endl;
 
 
      if (argc==3 && strcmp(argv[1],"-g")==0 ){

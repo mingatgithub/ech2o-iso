@@ -19,7 +19,7 @@
  *     along with Ech2o.  If not, see <http://www.gnu.org/licenses/>.
  *
  * Contributors:
- *    Marco Maneta
+ *    Marco Maneta, Sylvain Kuppel
  *******************************************************************************/
 /*
  * PhysConst.h
@@ -36,14 +36,11 @@
 #include <string>
 
 #define MAX_ITER 150
-#define MAX_ITER_RIC 150
-#define BAD_COND 1e-12
 #define PI 3.14159
 #define RNDOFFERR 1e-12
 #define MIN_SLOPE 0.000001
 
 const double rho_w = 1000; //density of water Kgm-3
-const double rho_i = 920; //density of ice Kgm-3
 const double Ra = 287.05; // gas constant for dry air in JKg-1C-1
 const double Rv = 463; // gas constant for water vapor in JKg-1C-1
 const double stefboltz = 5.67040040e-8; //stefan-Boltzmann constant in Wm-2K-4
@@ -55,15 +52,16 @@ const double lat_heat_fus = 334000; //latent heat of fussion J kg-1
 const float vonkarman = 0.4;
 const double thermal_conduct_water = 0.58;//thermal conductivity of water Wm-1C-1
 const double thermal_conduct_air = 0.024; //thermal conductivity of air Wm-1C-1
-const double thermal_conduct_ice = 2.1; //thermal conductivity of ice Wm-1C-1 
 const double max_snow_albedo = 0.8; //maximum albedo of snow
-const double conc_albedo = 0.4; //albedo of concrete - arithmetic average of surface albedo
-const double molec_water_vap = 0.622; //ratio of molecular weight of water vapour to air [unitless]
+
+
 //Print progress bar when sorting gridd in GridLdd.cpp
 extern void printProgBar( int percent );
 
 //Calculates density of air
-inline double AirDensity(const double &T , const double &P){ //TODO: include readings of air pressure to improve calculation of air density
+inline double AirDensity(const double &T /*, const double &P*/){ //TODO: include readings of air pressure to improve calculation of air density
+
+	double P = 101325; // air pressure in Pa
 	return P/(Ra * (T + 273.2)); // air density in Kgm-3
 };
 
@@ -74,15 +72,7 @@ extern double AirEmissivity(const double &AirTemperature);
 /*calculates the vapor pressure for a given temperature.
 T in C and returns vapor pressure in kPa*/
 extern double SatVaporPressure(const double &T);
-
-// Converts isotopic deltas to ratios
-extern double Delta2Ratio(const double &di, int iso);
-
-// Converts isotopic ratios to deltas
-extern double Ratio2Delta(const double &Ri, int iso);
-
-//psychrometric constant air pressure P in Pa
-inline double PsychrometricConst(const double &P, const double &z){
+inline double PsychrometricConst(const double &P, const double &z){ //psychrometric constant air pressure P in Pa
 	//adjust P for elevation as per Allen FAO
 	double Pz = P * powl( ( 293-0.0065*z )/293, 5.26 );
 	return spec_heat_air * Pz / (lat_heat_vap * 0.622); // P in Pa and psychrometric constant in Pa C-1
@@ -90,22 +80,16 @@ inline double PsychrometricConst(const double &P, const double &z){
 
 //Calculates soil heat capacity as the sum of the heat capacity of the fractions of soil, water and air
 // returns current soil heat capacity in Joules m-3 C-1
-extern double SoilHeatCapacity(const double &DrySoilHeatCap,const double &Porosity,
-			       const double &Theta,
-			       const double &SoilTemp,
-			       const double &Pressure);
-
-extern double SoilHeatCapacityIce(const double &DrySoilHeatCap,const double &SoilV,
-				  const double &Theta,const double &ThetaIce,
-				  const double &SoilTemp, const double &Pressure);
+extern double SoilHeatCapacity(const double &DrySoilHeatCap,
+								const double &Porosity,
+								const double &Theta,
+								const double &SoilTemp);
 
 //Calculates soil heat conductivity as the sum of the conductivity of the fractions of soil, water and air
 // returns current soil heat conductivity in Wm-1C-1
-extern double SoilHeatConductivity(const double &DrySoilHeatCond,const double &Porosity,
-								 const double &Theta);
-
-//Calculates the saturation -- SolveCanopyEnergyBalance
-extern double Saturation(const double &theta, const double &thetar, const double &poros);
+extern double SoilHeatConductivity(const double &DrySoilHeatCond,
+								const double &Porosity,
+								const double &Theta);
 
 /*Calculates the age efficiency factor fa needed in the calculation of GPP
  * returns dimensionless factor [0-1], MAxAge in years, Age in years*/
@@ -145,13 +129,11 @@ extern double Calculate_gs_theta(const double &theta, const double &fieldcap, co
 
 /*
  * calculates the effect of leaf water potential in Jarvi's model of stomatal conductance. lwp is leaf water ptential (in meters of head, positive).
- * lwp_min is the maximum lwp that the leave will have before it fully shuts down stomatal function. lwp_max is the lwp beyond which
+ * lwp_low is the maximum lwp that the leave will have before it fully shuts down stomatal function. lwp_high is the lwp beyond which
  * lwp does not control stomatal function. After Rodrigez-Iturbe and Porporato. Ecohydrology of water controlled ecosystems. p187
  */
 
-extern double Calculate_gs_lwp_linear(const double &lwp, const double &lwp_max, const double &lwp_min);
-
-extern double Calculate_gs_lwp_nonlinear(const double &lwp, const double &lwp_max, const double &lwp_min);
+extern double Calculate_gs_lwp(const double &lwp, const double &lwp_high, const double &lwp_low);
 
 extern double rlog(double u_za, double z_a, double z_d, double z_0, int option);
 

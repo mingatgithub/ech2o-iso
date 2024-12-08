@@ -25,7 +25,7 @@
  * SolveTimeStep.cpp
  *
  *  Created on: Aug 2, 2010
- *      Author: Marco.Maneta
+ *      Author: Marco.Maneta, Sylvain Kuppel
  */
 #include <iostream>
 #include "Sativa.h"
@@ -33,14 +33,29 @@
 
 int SolveTimeStep(){
 
+  //oBasin->UpdateSnowPack(*oAtmosphere, *oControl);
   oBasin->SolveCanopyFluxes(*oAtmosphere, *oControl, *oTracking);
-  oBasin->SolveSurfaceFluxes(*oAtmosphere, *oControl, *oTracking);
-  oBasin->CalculateGrowForest(*oAtmosphere, *oControl);
-  if(oControl->toggle_hydrologic_engine == 0)
-    oBasin->DailyGWRouting(*oAtmosphere, *oControl, *oTracking);
-  oBasin->CalculateSatArea(*oAtmosphere, *oControl);
 
-  // If tracking...	  
+  oBasin->SolveSurfaceFluxes(*oAtmosphere, *oControl, *oTracking);
+
+  // if(oControl->sw_veg_dyn)
+  // commented out the "if", otherwise GPP and NPP are not calculated in "static"
+  // (toggle_veg_dyn=0) and "LAI-forced" (toggle_veg_dyn=2) modes??
+    oBasin->CalculateGrowForest(*oAtmosphere, *oControl);
+
+  //oBasin->DailySurfaceRouting(*oAtmosphere, *oControl);
+  //if(oControl->toggle_soil_water_profile < 2)
+  oBasin->DailyGWRouting(*oAtmosphere, *oControl, *oTracking);
+
+  // Groundwater volume and table depth (if necessary)
+  oBasin->CalculateGrndWaterVol();
+  if(oControl->Rep_WaterTableDepth || oControl->RepTs_WaterTableDepth)
+    oBasin->CalculateWaterTableDepth(*oControl);
+
+  // Saturated area
+  oBasin->CalculateSatArea(*oControl);
+  
+ // Tracking	  
   if(oControl->sw_trck){
     // If Two-pore...
     if(oControl->sw_TPD){
@@ -52,29 +67,44 @@ int SolveTimeStep(){
 
     if(oControl->sw_2H){ 
       if(oControl->Rep_d2HsoilUp || oControl->RepTs_d2HsoilUp)
-	oTracking->Calcd2Hsoil_12(*oBasin);
+	oTracking->CalcTrcksoil_12(*oBasin, 1);
       if(oControl->Rep_d2HsoilAv || oControl->RepTs_d2HsoilAv)
-	oTracking->Calcd2Hsoil_Av(*oBasin);
+	oTracking->CalcTrcksoil_Av(*oBasin, 1);
+      // In any case, get the groundwater signature
+      oTracking->CalcTrcksoil_GW(*oBasin, 1);
     }
     
     if(oControl->sw_18O){
       if(oControl->Rep_d18OsoilUp || oControl->RepTs_d18OsoilUp)
-	oTracking->Calcd18Osoil_12(*oBasin);
+	oTracking->CalcTrcksoil_12(*oBasin, 2);
       if(oControl->Rep_d18OsoilAv || oControl->RepTs_d18OsoilAv)
-	oTracking->Calcd18Osoil_Av(*oBasin);
+	oTracking->CalcTrcksoil_Av(*oBasin, 2);
+      // In any case, get the groundwater signature
+      oTracking->CalcTrcksoil_GW(*oBasin, 2);
     }
-	  
+
+    if(oControl->sw_Cl){
+      // Reported quantities
+      if(oControl->Rep_cClsoilUp || oControl->RepTs_cClsoilUp)
+	oTracking->CalcTrcksoil_12(*oBasin, 3);
+      if(oControl->Rep_cClsoilAv || oControl->RepTs_cClsoilAv)
+	oTracking->CalcTrcksoil_Av(*oBasin, 3);
+      // In any case, get the groundwater signature
+      oTracking->CalcTrcksoil_GW(*oBasin, 3);
+    }
+    
     if(oControl->sw_Age){
       // Increment age by one time step duration
       oTracking->IncrementAge(*oBasin, *oControl);
       // Reported quantities
       if(oControl->Rep_AgesoilUp || oControl->RepTs_AgesoilUp)
-	oTracking->CalcAgesoil_12(*oBasin);
+	oTracking->CalcTrcksoil_12(*oBasin, 4);
       if(oControl->Rep_AgesoilAv || oControl->RepTs_AgesoilAv)
-	oTracking->CalcAgesoil_Av(*oBasin);
-
+	oTracking->CalcTrcksoil_Av(*oBasin, 4);
+      // In any case, get the groundwater signature
+      oTracking->CalcTrcksoil_GW(*oBasin, 4);
     }
   }
-
+  
   return EXIT_SUCCESS;
 }

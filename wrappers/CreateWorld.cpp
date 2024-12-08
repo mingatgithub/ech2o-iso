@@ -37,21 +37,18 @@ int CreateWorld(char* argv[]){
   oControl->ReadConfigFile(argv[1]);
   cout << "Config.ini read ok... " << "\n";
 
-  if(oControl->toggle_hydrologic_engine>0 and oControl->sw_trck)
-    throw std::ios::failure("Error: Richard's not available with Tracking right now\n");
-  
+  oBasin = new Basin(*oControl);
+  cout << "Basin created ok... " << "\n";
+
   oAtmosphere = new Atmosphere(*oControl);
   cout << "Atmosphere created ok... " << "\n";
-  
-  oBasin = new Basin(*oControl, *oAtmosphere);
-  cout << "Basin created ok... " << "\n";
 
   oReport = new Report(*oControl);
   cout << "Report created ok... " << "\n";
 
-  oTracking = new Tracking(*oControl, *oBasin, *oAtmosphere);
+  oTracking = new Tracking(*oControl, *oBasin);
   if(oControl->sw_trck)
-    cout << "Isotope module created ok... " << "\n";
+    cout << "Tracking created ok... " << "\n";
 
   oBudget = new Budget(oBasin, oControl, oTracking);
   cout << "Budget created ok... " << "\n";
@@ -68,39 +65,25 @@ int CreateWorld(char* argv[]){
     throw;
   }
   // Headers for BasinSummary
-  ofSummary << "Precip(m3)\t";
-  ofSummary << "SWE(m3)\t";
-  if(oControl->sw_BC){
-    ofSummary << "BCSurf(m3)\t";
-    ofSummary << "BCGW(m3)\t";
-    if(oControl->sw_deepGW)
-      ofSummary << "DeepBCGW(m3)\t";
-  }
-  ofSummary << "Canopy(m3)\t";
-  ofSummary << "Surface(m3)\t";
-  ofSummary << "Channel(m3)\t";
-  ofSummary << "SoilW(m3)\t";
-  ofSummary << "SoilL1(m3)\t";
-  ofSummary << "SoilL2(m3)\t";
-  ofSummary << "SoilL3(m3)\t";
-  ofSummary << "RZW(m3)\t";
-  ofSummary << "GW(m3)\t";
-  ofSummary << "ET(m3)\t";
-  ofSummary << "EvapS(m3)\t";
-  ofSummary << "EvapC(m3)\t";  
-  ofSummary << "EvapI(m3)\t";
-  ofSummary << "EvapT(m3)\t";
-  ofSummary << "Leakage(m3)\t";
-  if(oControl->sw_deepGW)  
-    ofSummary << "DeepGW(m3)\t";
-  ofSummary << "SrfOut(m3)\t";
-  ofSummary << "GWOut(m3)\t";
-  if(oControl->sw_deepGW)    
-    ofSummary << "DeepGWOut(m3)\t";  
+  ofSummary << "Precip\t";
+  ofSummary << "SWE\t";
+  ofSummary << "Intrcp\t";
+  ofSummary << "Surface\t";
+  ofSummary << "SoilW\t";
+  ofSummary << "SoilL1\t";
+  ofSummary << "SoilL2\t";
+  ofSummary << "SoilL3\t";
+  ofSummary << "RZW\t";
+  ofSummary << "GW\t";
+  ofSummary << "ET\t";
+  ofSummary << "EvapS\t";
+  ofSummary << "EvapI\t";
+  ofSummary << "EvapT\t";
+  ofSummary << "Leakage\t";
+  ofSummary << "SrfOut\t";
+  ofSummary << "GWOut\t";
   ofSummary << "SrftoCh\t";
   ofSummary << "GWtoCh\t";
-  if(oControl->sw_deepGW)    
-    ofSummary << "DeepGWtoCh\t";  
   ofSummary << "Rchrge\t";
   ofSummary << "SatExt\t";
   ofSummary << "MBErr";
@@ -108,12 +91,15 @@ int CreateWorld(char* argv[]){
     ofSummary << "\t2H_MBE";
   if(oControl->sw_trck and oControl->sw_18O)
     ofSummary << "\t18O_MBE";
+  if(oControl->sw_trck and oControl->sw_Cl)
+    ofSummary << "\tCl_MBE";
   if(oControl->sw_trck and oControl->sw_Age)
     ofSummary << "\tAge_MBE";
+  
   ofSummary << "\n";
-
+  
   // == d2H Summary ==========================================================
-  // ---  
+  // ---
   if(oControl->sw_trck and oControl->sw_2H){
     try{
       ofd2HSummary.open((oControl->path_ResultsFolder + "Basind2HSummary.txt").c_str());
@@ -124,7 +110,7 @@ int CreateWorld(char* argv[]){
       cout << e.what() << endl;
       throw;
     }
-    // Headers for BasinSummary
+    // Headers for Basind2HSummary
     ofd2HSummary << "StorAll\t";
     ofd2HSummary << "Snow\t";
     ofd2HSummary << "Intercp\t";
@@ -150,7 +136,7 @@ int CreateWorld(char* argv[]){
   }
 
   // == d18O Summary ==========================================================
-  // ---  
+  // ---
   if(oControl->sw_trck and oControl->sw_18O){
     try{
       ofd18OSummary.open((oControl->path_ResultsFolder + "Basind18OSummary.txt").c_str());
@@ -161,7 +147,7 @@ int CreateWorld(char* argv[]){
       cout << e.what() << endl;
       throw;
     }
-    // Headers for BasinSummary
+    // Headers for Basind18OSummary
     ofd18OSummary << "StorAll\t";
     ofd18OSummary << "Snow\t";
     ofd18OSummary << "Intercp\t";
@@ -186,8 +172,41 @@ int CreateWorld(char* argv[]){
     ofd18OSummary << "Precip\n";
   }
 
+  // == cCl Summary ==========================================================
+  // ---
+  if(oControl->sw_trck and oControl->sw_Cl){
+    try{
+      ofcClSummary.open((oControl->path_ResultsFolder + "BasincClSummary.txt").c_str());
+      if(!ofcClSummary)
+	throw std::ios::failure("Error opening BasincClSummary.txt buffer\n");
+      
+    }catch(const std::exception &e){
+      cout << e.what() << endl;
+      throw;
+    }
+    // Headers for BasincClSummary
+    ofcClSummary << "StorAll\t";
+    ofcClSummary << "Snow\t";
+    ofcClSummary << "Intercp\t";
+    ofcClSummary << "Surface\t";
+    ofcClSummary << "Soil\t";
+    ofcClSummary << "SoilL1\t";
+    ofcClSummary << "SoilL2\t";
+    ofcClSummary << "SoilL3\t";
+    ofcClSummary << "RZW\t";
+    ofcClSummary << "GW\t";
+    ofcClSummary << "Leakage\t";
+    ofcClSummary << "SrfOut\t";
+    ofcClSummary << "GWOut\t";
+    ofcClSummary << "AllOut\t";
+    ofcClSummary << "SrftoCh\t";
+    ofcClSummary << "GWtoCh\t";
+    ofcClSummary << "Rchrge\t";
+    ofcClSummary << "Precip\n";
+  }
+
   // == Age Summary ==========================================================
-  // ---  
+  // ---
   if(oControl->sw_trck and oControl->sw_Age){
     try{
       ofAgeSummary.open((oControl->path_ResultsFolder + "BasinAgeSummary.txt").c_str());
@@ -198,7 +217,7 @@ int CreateWorld(char* argv[]){
       cout << e.what() << endl;
       throw;
     }
-    // Headers for BasinSummary
+    // Headers for BasinAgeSummary
     ofAgeSummary << "StorAll\t";
     ofAgeSummary << "Snow\t";
     ofAgeSummary << "Intercp\t";

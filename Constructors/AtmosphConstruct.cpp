@@ -29,31 +29,35 @@
  */
 
 #include <errno.h>
-#include <stdio.h>
-#include <string.h>
+#include <cstring>
 #include "Atmosphere.h"
 
 Atmosphere::Atmosphere(Control &ctrl){
 
-  errno = 0;  //reset the errno value to isolate errors here (not from BasinConstruct)
+  //reset the errno value to ensure that any errors in loading the binaries inputs are not
+  // "leftovers" from BasinConstruct failures
+  errno = 0;
 
   try{
 
     //Read the zones map and writes the dimensions of the grid
-    _zones = new grid(ctrl.path_ClimMapsFolder + ctrl.fn_climzones, ctrl.MapType);
+    _zones = new grid(ctrl.path_ClimMapsFolder + ctrl.fn_climzones,
+		      ctrl.MapType);
     _NRows = _zones->r;
     _NCols = _zones->c;
     _dx = _zones->dx;
     CountNumZones(); //Reads the _zones grid and fills variable _nzones with the number of zones. This is the number of zones in the zone map
     _NZns = 0; //set to zero the initial zones in the climate time series files. This is the number of zones in the climate time series
 
+
     _vSsortedGridTotalCellNumber = 0;
-    #pragma omp parallel for
-    for(unsigned int i = 0; i < _nzones; i++){
+#pragma omp parallel for
+    for (unsigned int i = 0; i < _nzones; i++) {
       _vSortedGrid[i].cells = SortGrid(_vSortedGrid[i].zone).cells; // fills the vectCells with actual domain cells (no nodata)
-      #pragma omp atomic      
+#pragma omp atomic
       _vSsortedGridTotalCellNumber += _vSortedGrid[i].cells.size();
     }
+
 
     /*constructs the object using the basemap so
       attributes (lat, long, nodata...) are copied*/
@@ -65,10 +69,9 @@ Atmosphere::Atmosphere(Control &ctrl){
     _Precip = new grid (*_zones);
     _Rel_humid = new grid (*_zones);
     _Wind_speed = new grid (*_zones);
-    _Pa = new grid (*_zones);
-    _Anthr_Heat = NULL; //initialized below with switch    
-    _d2Hprecip = NULL; //initialized below with switch
-    _d18Oprecip = NULL; //initialized below with switch
+    _d2Hprecip = NULL;
+    _d18Oprecip = NULL;
+    _cClprecip = NULL;
 
     *_Ldown = *_zones;
     *_Sdown = *_zones;
@@ -78,13 +81,7 @@ Atmosphere::Atmosphere(Control &ctrl){
     *_Precip = *_zones;
     *_Rel_humid = *_zones;
     *_Wind_speed = *_zones;
-    *_Pa = *_zones;
 
-    // Urban fluxes
-    if(ctrl.sw_anthr_heat){
-      _Anthr_Heat = new grid(*_zones);
-      *_Anthr_Heat = *_zones;
-    }    
     // Tracking
     if(ctrl.sw_trck && ctrl.sw_2H){
       _d2Hprecip = new grid(*_zones);
@@ -94,122 +91,201 @@ Atmosphere::Atmosphere(Control &ctrl){
       _d18Oprecip = new grid(*_zones);
       *_d18Oprecip = *_zones;
     }
+    if(ctrl.sw_trck && ctrl.sw_Cl){
+      _cClprecip = new grid(*_zones);
+      *_cClprecip = *_zones;
+    }
 
     _isohyet = new grid(ctrl.path_ClimMapsFolder + ctrl.fn_isohyet, ctrl.MapType);
-    _rain_snow_temp = ctrl.snow_rain_temp;
+    _snow_rain_temp = new grid(ctrl.path_BasinFolder + ctrl.fn_SnowRainTemp, ctrl.MapType);
+    //_rain_snow_temp = ctrl.snow_rain_temp;
 
     /*open climate data files*/
 
-
     try {
-      //      cout << (ctrl.path_ClimMapsFolder + ctrl.fn_Ldown).c_str() << endl;
-      ifLdown.open((ctrl.path_ClimMapsFolder + ctrl.fn_Ldown).c_str(), ios::binary);
-      if(errno!=0) throw ctrl.fn_Ldown;  
-      ifSdown.open((ctrl.path_ClimMapsFolder + ctrl.fn_Sdown).c_str(), ios::binary);
-      if(errno!=0) throw ctrl.fn_Sdown;
-      ifTp.open((ctrl.path_ClimMapsFolder + ctrl.fn_temp).c_str(), ios::binary);
-      if(errno!=0) throw ctrl.fn_temp;
-      ifMaxTp.open((ctrl.path_ClimMapsFolder + ctrl.fn_maxTemp).c_str(), ios::binary);
-      if(errno!=0) throw ctrl.fn_maxTemp;
-      ifMinTp.open((ctrl.path_ClimMapsFolder + ctrl.fn_minTemp).c_str(), ios::binary);
-      if(errno!=0) throw ctrl.fn_minTemp;
-      ifPrecip.open((ctrl.path_ClimMapsFolder + ctrl.fn_precip).c_str(), ios::binary);
-      if(errno!=0) throw ctrl.fn_precip;
-      ifRelHumid.open((ctrl.path_ClimMapsFolder + ctrl.fn_rel_humid).c_str(), ios::binary);
-      if(errno!=0) throw ctrl.fn_rel_humid;
-      ifWindSpeed.open((ctrl.path_ClimMapsFolder + ctrl.fn_wind_speed).c_str(), ios::binary);
-      if(errno!=0) throw ctrl.fn_wind_speed;
-      ifPa.open((ctrl.path_ClimMapsFolder + ctrl.fn_pressure).c_str(), ios::binary);
-      if(errno!=0) throw ctrl.fn_pressure;
-      
-      // Urban fluxes
-      if(ctrl.sw_anthr_heat){
-        ifAnthrHeat.open((ctrl.path_ClimMapsFolder + ctrl.fn_anthrop_heat).c_str(), ios::binary);
-	if(errno!=0) throw ctrl.fn_anthrop_heat;
-      }      
+      ifLdown.open((ctrl.path_ClimMapsFolder + ctrl.fn_Ldown).c_str(),
+		   ios::binary);
+      if (errno != 0)
+	throw ctrl.fn_Ldown; //echo_filenotfound_exception(ctrl.fn_Ldown.c_str(), "Dang! File not found: ");
+      ifSdown.open((ctrl.path_ClimMapsFolder + ctrl.fn_Sdown).c_str(),
+		   ios::binary);
+      if (errno != 0)
+	throw ctrl.fn_Sdown; //echo_filenotfound_exception(ctrl.fn_Sdown.c_str(), "Dang! File not found: ");
+      ifTp.open((ctrl.path_ClimMapsFolder + ctrl.fn_temp).c_str(),
+		ios::binary);
+      if (errno != 0)
+	throw ctrl.fn_temp;
+      ifMaxTp.open((ctrl.path_ClimMapsFolder + ctrl.fn_maxTemp).c_str(),
+		   ios::binary);
+      if (errno != 0)
+	throw ctrl.fn_maxTemp;
+      ifMinTp.open((ctrl.path_ClimMapsFolder + ctrl.fn_minTemp).c_str(),
+		   ios::binary);
+      if (errno != 0)
+	throw ctrl.fn_minTemp;
+      ifPrecip.open((ctrl.path_ClimMapsFolder + ctrl.fn_precip).c_str(),
+		    ios::binary);
+      if (errno != 0)
+	throw ctrl.fn_precip;
+      ifRelHumid.open(
+		      (ctrl.path_ClimMapsFolder + ctrl.fn_rel_humid).c_str(),
+		      ios::binary);
+      if (errno != 0)
+	throw ctrl.fn_rel_humid;
+      ifWindSpeed.open(
+		       (ctrl.path_ClimMapsFolder + ctrl.fn_wind_speed).c_str(),
+		       ios::binary);
+      if (errno != 0)
+	throw ctrl.fn_wind_speed;
+
       // Tracking
       if(ctrl.sw_trck and ctrl.sw_2H){
 	ifd2Hprecip.open((ctrl.path_ClimMapsFolder + ctrl.fn_d2Hprecip).c_str(), ios::binary);
 	if(errno!=0) throw ctrl.fn_d2Hprecip;}
-
+      
       if(ctrl.sw_trck and ctrl.sw_18O){
 	ifd18Oprecip.open((ctrl.path_ClimMapsFolder + ctrl.fn_d18Oprecip).c_str(), ios::binary);
 	if(errno!=0) throw ctrl.fn_d18Oprecip;}
-
+      
+      if(ctrl.sw_trck and ctrl.sw_Cl){
+	ifcClprecip.open((ctrl.path_ClimMapsFolder + ctrl.fn_cClprecip).c_str(), ios::binary);
+	if(errno!=0) throw ctrl.fn_cClprecip;}
+      
     }
     catch (string e){
       cout << "Dang!!: cannot find/read the" << e << "  file: error " << strerror(errno) << endl;
       throw;
     }
-			
-    //Initiate Climate map returns the number of data written
-    try{
-      if(InitiateClimateMap(ifLdown, *_Ldown) != _vSsortedGridTotalCellNumber)
-	throw string("incoming longwave");
-      if(InitiateClimateMap(ifSdown, *_Sdown)!= _vSsortedGridTotalCellNumber)
-	throw string("short wave");
-      if(InitiateClimateMap(ifTp, *_Tp)!= _vSsortedGridTotalCellNumber)
-	throw string("average air temperature");
-      if(InitiateClimateMap(ifMaxTp, *_MaxTp)!= _vSsortedGridTotalCellNumber)
-	throw string("maximum air temperature");
-      if(InitiateClimateMap(ifMinTp, *_MinTp)!= _vSsortedGridTotalCellNumber)
-	throw string("minimum air temperature");
-      if(InitiateClimateMap(ifPrecip, *_Precip)!= _vSsortedGridTotalCellNumber)
-	throw string("precipitation");
-      AdjustPrecip();// adjust precipitation with the isohyet map
-      if(InitiateClimateMap(ifRelHumid, *_Rel_humid)!= _vSsortedGridTotalCellNumber)
-	throw string("relative humidity");
-      if(InitiateClimateMap(ifWindSpeed, *_Wind_speed)!= _vSsortedGridTotalCellNumber)
-	throw string("windspeed");
-      if(InitiateClimateMap(ifPa, *_Pa)!= _vSsortedGridTotalCellNumber)
-	throw string("pressure");
 
-      // Urban: build input maps
-      if(ctrl.sw_anthr_heat)
-	if(InitiateClimateMap(ifAnthrHeat, *_Anthr_Heat)!= _vSsortedGridTotalCellNumber)
-	  throw string("anthropogenic heat");      
-      // Tracking: build input maps
-      if(ctrl.sw_trck){
-	if(ctrl.sw_18O)
-	  if(InitiateClimateMap(ifd18Oprecip, *_d18Oprecip)!= _vSsortedGridTotalCellNumber)
-	    throw string("18O signature");
+#ifdef _OPENMP
+    UINT4 number_threads;
+    number_threads = omp_get_num_threads();
+#endif
+    size_t errCount = 0;
+    UINT4 need_threads = 8;
+    // if(ctrl.sw_trck and ctrl.sw_2H)
+    //   need_threads ++ ;
+    // if(ctrl.sw_trck and ctrl.sw_18O)
+    //   need_threads ++ ;
+    // if(ctrl.sw_trck and ctrl.sw_Cl)
+    //   need_threads ++ ;
+#pragma omp parallel num_threads(need_threads) default(none) \
+    shared(cout, errCount, ctrl) if (number_threads > 1)
+    {
+      try {
+#pragma omp sections
+	{
+	  //Initiate Climate map returns the number of data written
+#pragma omp section
+	  {
+	    if (InitiateClimateMap(ifLdown, *_Ldown)
+		!= _vSsortedGridTotalCellNumber)
+	      throw string("incoming longwave");
+	  }
+#pragma omp section
+	  {
+	    if (InitiateClimateMap(ifSdown, *_Sdown)
+		!= _vSsortedGridTotalCellNumber)
+	      throw string("short wave");
+	  }
+#pragma omp section
+	  {
+	    if (InitiateClimateMap(ifTp, *_Tp)
+		!= _vSsortedGridTotalCellNumber)
+	    throw string("average air temperature");
+	  }
+#pragma omp section
+	  {
+	    if (InitiateClimateMap(ifMaxTp, *_MaxTp)
+		!= _vSsortedGridTotalCellNumber)
+	      throw string("maximum air temperature");
+	  }
+#pragma omp section
+	  {
+	    if (InitiateClimateMap(ifMinTp, *_MinTp)
+		!= _vSsortedGridTotalCellNumber)
+	      throw string("minimum air temperature");
+	  }
+#pragma omp section
+	  {
+	    if (InitiateClimateMap(ifPrecip, *_Precip)
+		!= _vSsortedGridTotalCellNumber)
+	      throw string("precipitation");
+	    AdjustPrecip(); // adjust precipitation with the isohyet map
+	    
+	    // Tracking: build d2H maps
+	    if(ctrl.sw_trck and ctrl.sw_2H)
+	      if(InitiateClimateMap(ifd2Hprecip, *_d2Hprecip)
+		 != _vSsortedGridTotalCellNumber)
+		throw string("2H signature"); 
+	  }
+#pragma omp section
+	  {
+	    if (InitiateClimateMap(ifRelHumid, *_Rel_humid)
+		!= _vSsortedGridTotalCellNumber)
+	      throw string("relative humidity");
+	    
+	    // Tracking: build d2H maps
+	    if(ctrl.sw_trck and ctrl.sw_18O)
+	      if(InitiateClimateMap(ifd18Oprecip, *_d18Oprecip)
+		 != _vSsortedGridTotalCellNumber)
+		throw string("18O signature");
+	  }
+#pragma omp section
+	  {
+	    if (InitiateClimateMap(ifWindSpeed, *_Wind_speed)
+		!= _vSsortedGridTotalCellNumber)
+	      throw string("windspeed");
 
-	if(ctrl.sw_2H)
-	  if(InitiateClimateMap(ifd2Hprecip, *_d2Hprecip)!= _vSsortedGridTotalCellNumber)
-	    throw string("2H signature");
-      }
-    }catch (string e){
-      cout << "Error: some sections of the domain was not filled with " << e << " data." << endl;
-      cout << "Please verify that all the climate zones in the map are presented in the binary climate data file " << endl;
-      cout << "and that the n climate zones present are the first n zones in the binary climate data file " << endl;
+	    // Tracking: build cCl maps
+	    if(ctrl.sw_trck and ctrl.sw_Cl)
+	      if(InitiateClimateMap(ifcClprecip, *_cClprecip)
+		 != _vSsortedGridTotalCellNumber)
+		throw string("Cl concentration");
+	  } //sections
+	}	  
+      } catch (string &e) {
+#pragma omp critical
+	{
+	  cout << "Error: some sections of the domain was not filled with "
+	       << e << " data." << endl << "Please verify that all the climate zones"
+	    " in the map are presented in the binary climate data file " << endl << "and that the n climate"
+	    " zones present are the first n zones in the binary climate data file " << endl;
+	  
+
+	  ++errCount;
+	}
+      } //catch
+    }//parallel region
+    
+    if (errCount != 0)
       throw;
-    }
-
-  }catch (...)
-    { cerr << "Cleaning the atmosphere..." << "\n";
-
-      //clean up the mess...
-      if (_zones)
-	delete _zones;
-      if (_zoneId)
-	delete[] _zoneId;
-
-      delete _Ldown;
-      delete _Sdown;
-      delete _Tp;
-      delete _MaxTp;
-      delete _MinTp;
-      delete _Precip;
-      delete _Rel_humid;
-      delete _Wind_speed;
-      delete _Pa;
-      delete _Anthr_Heat;      
-      delete _d2Hprecip;
-      delete _d18Oprecip;
-
-      if (_isohyet)
-	delete _isohyet;
-
-      throw;
+    
+  } catch (...) {
+    cerr << "Cleaning the atmosphere..." << "\n";
+    
+    //clean up the mess...
+    if (_zones)
+      delete _zones;
+    if (_zoneId)
+      delete[] _zoneId;
+    
+    delete _Ldown;
+    delete _Sdown;
+    delete _Tp;
+    delete _MaxTp;
+    delete _MinTp;
+    delete _Precip;
+    delete _Rel_humid;
+    delete _Wind_speed;
+    delete _d2Hprecip;
+    delete _d18Oprecip;
+    delete _cClprecip;
+    
+    if (_isohyet)
+      delete _isohyet;
+    
+    throw;
     }
 }
+  

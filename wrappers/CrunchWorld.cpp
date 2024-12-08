@@ -32,20 +32,29 @@
 
 int CrunchWorld(){
 
-  if(oControl)
-    delete oControl;
-  if(oBasin)
-    delete oBasin;
-  if(oAtmosphere)
-    delete oAtmosphere;
-  if(oBudget)
-    delete oBudget;
-  if(oReport)
-    delete oReport;
-  if(oTracking)
-    delete oTracking;
-  if(ofSummary.is_open())
-    ofSummary.close();
+	if(oControl)
+		delete oControl;
+	if(oBasin)
+		delete oBasin;
+	if(oAtmosphere)
+		delete oAtmosphere;
+	if(oBudget)
+		delete oBudget;
+	if(oReport)
+		delete oReport;
 
-  return EXIT_SUCCESS;
+	if(ofSummary.is_open())
+		ofSummary.close();
+
+	// Tracking summary files
+	if(ofd2HSummary.is_open())
+	  ofd2HSummary.close();
+	if(ofd18OSummary.is_open())
+	  ofd18OSummary.close();
+	if(ofcClSummary.is_open())
+	  ofcClSummary.close();
+	if(ofAgeSummary.is_open())
+	  ofAgeSummary.close();
+	
+	return EXIT_SUCCESS;
 }

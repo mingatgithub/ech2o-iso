@@ -30,9 +30,9 @@
 
 #include "Budget.h"
 
-void Budget::TotalSrftoChn(const grid *map1, const grid *map2, const Basin *b)
+void Budget::TotalSrftoChn(const grid *map, const Basin *b)
 {
-  srftochn += AccountStorages(map1, map2, b);
+  srftochn += AccountStorages(map, b);
   // AccountStorages is used because FluxSrftoChn is already in m/tstep
   // (not needs to multiply by dt)
 }
@@ -45,6 +45,11 @@ void Budget::InstSrftoChn_d2H(const grid *map1, const grid *map2, const Basin *b
 void Budget::InstSrftoChn_d18O(const grid *map1, const grid *map2, const Basin *b)
 {
   d18Osrftochn = AccountTrckFluxes2(map1, map2, b);
+}
+// Instantaneous cCl reporting
+void Budget::InstSrftoChn_cCl(const grid *map1, const grid *map2, const Basin *b)
+{
+  cClsrftochn = AccountTrckFluxes2(map1, map2, b);
 }
 // Instantaneous Age reporting
 void Budget::InstSrftoChn_Age(const grid *map1, const grid *map2, const Basin *b)

@@ -32,11 +32,8 @@
 
 int Forest::AdvanceLAIMaps(){
 
-  for(UINT4 i = 0; i < _Nsp - 1; i++){
-    UpdateLAIMap(_species[i].ifLAI, *_species[i]._LAI);
-    // Now also update the height map
-    UpdateLAIMap(_species[i].ifhgt, *_species[i]._Height);    
-  }
+  for(UINT4 i = 0; i < _Nsp - 1; i++)
+    UpdateLAIMap(_species[i].ifLAI, *_species[i]._LAI) ;
    
   return EXIT_SUCCESS;
   

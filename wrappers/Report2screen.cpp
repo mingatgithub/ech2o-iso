@@ -2,7 +2,7 @@
  * Ech2o, a spatially-distributed, ecohydrologic simulator
  * Copyright (c) 2016 Marco Maneta <marco.maneta@umontana.edu>
  *
- *     This file is part of ech2o, a hydrologic model developed at the 
+ *     This file is part of ech2o, a hydrologic model developed at the
  *     University of Montana.
  *
  *     Ech2o is free software: you can redistribute it and/or modify
@@ -36,99 +36,113 @@ int Report2Screen(){
   REAL8 dx = oBasin->getCellSize();
   REAL8 area = ncell * dx * dx;
 
-  // ==== SpashScreen -------------------------------------------------------------
-  // For the splash screen, using mm for flux and stores
-  // makes things more obvious than m3 (to check quickly)!
-  printf("\n%-31s%-15.2f","Total Precipitation (mm): ", 1000 * oBudget->precipitation / area);
-  printf("%-31s%-15.2f","SWE (mm): ", 1000 * oBudget->snowpack / area);
-  if(oControl->sw_BC){
-    printf("\n%-31s%-15.2f","Total Surface BC Inflow (mm): ",1000 * oBudget->ovlndinflow / area);
-    printf("%-31s%-15.2f","Total GW BC Inflow (mm): ",1000 * oBudget->grndinflow / area);
-    if(oControl->sw_deepGW)
-      printf("\n%-31s%-15.2f","Total DeepGW BC Inflow (mm): ",1000 * oBudget->deepgrndinflow / area);
-  }
-  printf("\n%-31s%-15.2f","Canopy Storage (mm): ", 1000 * oBudget->canopy /area);
-  printf("%-31s%-15.2f","Ponding (mm): ", 1000 * oBudget->ponding / area);
-  printf("\n%-31s%-15.2f","Channel Storage (mm): ", 1000 * oBudget->chan_store / area);
-  printf("%-31s%-15.2f","Saturated area fraction: ", oBudget->satarea);
-  printf("\n%-31s%-15.2f","Soil water (mm): ", 1000 * oBudget->vadose / area);
-  printf("%-31s%-15.2f","of which RootZone water (mm): ", 1000 * oBudget->rootzone / area);
-  printf("\n%-31s%-15s%-31s%-15.2f"," "," ","and Groundwater (mm): ", 1000 * oBudget->grndwater / area);
-  printf("\n%-31s%-15.2f","Total Evapotranspiration (mm): ", 1000 * oBudget->evaporation / area);
-  printf("%-31s%-15.2f","Total Transpiration (mm): ", 1000 * oBudget->transpiration / area);
-  printf("\n%-31s%-15.2f","Total Canopy Evaporation (mm): ", 1000 * oBudget->evaporationI / area);
-  printf("%-31s%-15.2f","Total Soil Evaporation (mm): ", 1000 * oBudget->evaporationS /area);
-  printf("\n%-31s%-15.2f","Total Channel Evaporation (mm): ", 1000 * oBudget->evaporationC /area);
-  printf("\n%-31s%-15.2f","Bedrock Leak (mm): ", 1000 * oBudget->leakage /area);  
-  if(oControl->sw_deepGW)
-    printf("%-31s%-15.2f","Deep GW (mm): ", 1000 * oBudget->deep_grndwater / area);
-  printf("\n%-31s%-15.2f","Total OvlndFlow output (mm): ", 1000 * oBudget->ovlndflow / area);  
-  printf("%-31s%-15.2f","Total GWFlow output (mm): ", 1000 * oBudget->gwtrflow / area);
-  printf("\n%-31s%-15.2f","Run-off to channel (mm): ", 1000 * oBudget->srftochn / area);  
-  printf("%-31s%-15.2f","GW to channel (mm): ", 1000 * oBudget->gwtochn / area);  
-  if(oControl->sw_deepGW){
-    printf("\n%-31s%-15.2f","Total Deep GWFlow output (mm): ", 1000 * oBudget->deepgwtrflow / area);
-    printf("%-31s%-15.2f","Deep GW to channel (mm): ", 1000 * oBudget->deepgwtochn / area);
-  }
-  printf("\n%-31s%-15.2f","GW recharge (mm): ", 1000 * oBudget->recharge / area);
-  printf("\n%-31s%-15e","Mass Balance Error (%): ", oBudget->MBErr);
-  if(oControl->sw_trck){
-    if(oControl->sw_2H)    
-      printf("\n%-31s%-15e","Deuterium Mass Balance Error (%%): %e \n", oBudget->MBErr_d2H);
-    if(oControl->sw_18O)
-      printf("\n%-31s%-15e","Oxygen 18 Mass Balance Error (%%): %e \n", oBudget->MBErr_d18O);
-    if(oControl->sw_Age)
-      printf("\n%-31s%-15e","Age Mass Balance Error (%%): %e \n", oBudget->MBErr_Age);
-  }
-  printf("\n");
   // ==== BasinSummary.txt --------------------------------------------------------
   // -----------------------------------------------------
+
+  // For the splash screen, using mm for flux and stores
+  // makes things more obvious than m3 (to check quickly)!
   // m3 is kept for BasinSummary.txt
 
+  //printf("\nTotal Precipitation (m3):  %.2f \t", oBudget->precipitation);
+  printf("\nTotal Precipitation (mm):  %.2f \t", 1000 * oBudget->precipitation / area);
   ofSummary << oBudget->precipitation << "\t";
+
+  //printf("SWE (m3): %.2f \n", oBudget->snowpack);
+  printf("SWE (mm): %.2f \n", 1000 * oBudget->snowpack / area);
   ofSummary << oBudget->snowpack << "\t";
-  if(oControl->sw_BC){
-    ofSummary << oBudget->ovlndinflow << "\t";
-    ofSummary << oBudget->grndinflow << "\t";
-    if(oControl->sw_deepGW)
-      ofSummary << oBudget->deepgrndinflow << "\t";
-  }
+
+  //printf("Canopy Storage (m3): %.2f \t", oBudget->canopy);
+  printf("Interception storage (mm): %.2f \t", 1000 * oBudget->canopy /area);
   ofSummary << oBudget->canopy << "\t";
+
+  //printf("Ponding (m3): %.2f \n", oBudget->ponding);
+  printf("Ponding (mm): %.2f \n", 1000 * oBudget->ponding / area);
   ofSummary << oBudget->ponding << "\t";
-  ofSummary << oBudget->chan_store << "\t";
-  ofSummary << oBudget->vadose << "\t";         //all soil water
-  ofSummary << oBudget->soilL1 << "\t";         //layer 1 soil
-  ofSummary << oBudget->soilL2 << "\t";         //layer 2 soil
+
+  //printf("Soil water (m3): %.2f \t", oBudget->vadose);
+  printf("Soil water (mm): %.2f \n", 1000 * oBudget->vadose / area);
+  ofSummary << oBudget->vadose << "\t";
+
+  // Only for budget Summary: each layer
+  ofSummary << oBudget->soilL1 << "\t";
+  ofSummary << oBudget->soilL2 << "\t";
   ofSummary << oBudget->soilL3 << "\t";
+
+  //printf("of which Groundwater (m3): %.2f \n", oBudget->grndwater);
+  printf("of which RootZone water (mm): %.2f \t", 1000 * oBudget->rootzone / area);
   ofSummary << oBudget->rootzone << "\t";
+
+  //printf("of which Groundwater (m3): %.2f \n", oBudget->grndwater);
+  printf(", and Groundwater (mm): %.2f \n", 1000 * oBudget->grndwater / area);
   ofSummary << oBudget->grndwater << "\t";
-  ofSummary << oBudget->evaporation << "\t";    //total ET
-  ofSummary << oBudget->evaporationS << "\t";   //total Es
-  ofSummary << oBudget->evaporationC << "\t";   //total Echannel
-  ofSummary << oBudget->evaporationI << "\t";   //total Einter
-  ofSummary << oBudget->transpiration << "\t";  //total transp
-  ofSummary << oBudget->leakage << "\t";        //Bedrock leakage
-  if(oControl->sw_deepGW)    
-    ofSummary << oBudget->deep_grndwater << "\t"; //Deep GW
-  ofSummary << oBudget->ovlndflow << "\t";      //overland flow
-  ofSummary << oBudget->gwtrflow << "\t";       //GW flow
-  if(oControl->sw_deepGW)    
-    ofSummary << oBudget->deepgwtrflow << "\t";   //Deep GW flow
-  ofSummary << oBudget->srftochn << "\t";       //surface to channel
-  ofSummary << oBudget->gwtochn << "\t";        //GW to channel
-  if(oControl->sw_deepGW)  
-    ofSummary << oBudget->deepgwtochn << "\t";    //Deep GW to channel
+
+  //printf("Total Evapotranspiration (m3): %.2f \t", oBudget->evaporation);
+  printf("Total Evapotranspiration (mm): %.2f \t", 1000 * oBudget->evaporation / area);
+  ofSummary << oBudget->evaporation << "\t";
+
+  //printf("Total Soil Evaporation (m3): %.2f \n", oBudget->evaporationS);
+  printf("Total Soil Evaporation (mm): %.2f \n", 1000 * oBudget->evaporationS /area);
+  ofSummary << oBudget->evaporationS << "\t";
+
+  //printf("Total Canopy Evaporation (m3): %.2f \t", oBudget->evaporationI);
+  printf("Total Canopy Evaporation (mm): %.2f \t", 1000 * oBudget->evaporationI / area);
+  ofSummary << oBudget->evaporationI << "\t";
+
+  //printf("Total Transpiration (m3): %.2f \n", oBudget->transpiration);
+  printf("Total Transpiration (mm): %.2f \n", 1000 * oBudget->transpiration / area);
+  ofSummary << oBudget->transpiration << "\t";
+
+  //printf("Bedrock Leak (m3): %.2f \n", oBudget->leakage);
+  printf("Bedrock Leak (mm): %.2f \n", 1000 * oBudget->leakage /area);
+  ofSummary << oBudget->leakage << "\t";
+
+  //printf("Total OvlndFlow output (m3): %.2f \t", oBudget->ovlndflow);
+  printf("Total OvlndFlow output (mm): %.2f \t", 1000 * oBudget->ovlndflow / area);
+  ofSummary << oBudget->ovlndflow << "\t";
+
+  //printf("Total GWFlow output (m3): %.2f \n", oBudget->gwtrflow);
+  printf("Total GWFlow output (mm): %.2f \n", 1000 * oBudget->gwtrflow / area);
+  ofSummary << oBudget->gwtrflow << "\t";
+
+  //printf("Run-off to channel (m3): %.2f \t", oBudget->srftochn);
+  printf("Run-off to channel (m3): %.2f \t", 1000 * oBudget->srftochn / area);
+  ofSummary << oBudget->srftochn << "\t";
+
+  //printf("GW to channel (m3): %.2f \n", oBudget->gwtochn);
+  printf("GW to channel (m3): %.2f \n", 1000 * oBudget->gwtochn / area);
+  ofSummary << oBudget->gwtochn << "\t";
+
+  //printf("GW recharge (m3): %.2f \t", oBudget->recharge);
+  printf("GW recharge (mm): %.2f \t", 1000 * oBudget->recharge / area);
   ofSummary << oBudget->recharge << "\t";
+
+  // Saturated area (% of the catchment)
+  printf("Saturated area fraction: %.2f \n", oBudget->satarea);
   ofSummary << oBudget->satarea << "\t";
-  ofSummary << oBudget->MBErr ;
-  if(oControl->sw_trck){
-    if(oControl->sw_2H)    
-      ofSummary << "\t" << oBudget->MBErr_d2H ;
-    if(oControl->sw_18O)
-      ofSummary << "\t" << oBudget->MBErr_d18O ;
-    if(oControl->sw_Age)
-      ofSummary << "\t" << oBudget->MBErr_Age ;
+
+  printf("Mass Balance Error (%%): %e \n", oBudget->MBErr);
+  ofSummary << oBudget->MBErr ;//<< "\t";
+
+  if(oControl->sw_trck and oControl->sw_2H){
+    //printf("Deuterium Mass Balance Error (%): %e \n", oBudget->MBErr_d2H);
+    ofSummary << "\t" << oBudget->MBErr_d2H ;
   }
+
+  if(oControl->sw_trck and oControl->sw_18O){
+    //printf("Oxygen 18 Mass Balance Error (%): %e \n", oBudget->MBErr_d18O);
+    ofSummary << "\t" << oBudget->MBErr_d18O ;
+  }
+
+  if(oControl->sw_trck and oControl->sw_Cl){
+    //printf("Chloride Mass Balance Error (%): %e \n", oBudget->MBErr_cCl);
+    ofSummary << "\t" << oBudget->MBErr_cCl ;
+  }
+
+  if(oControl->sw_trck and oControl->sw_Age){
+    //printf("Age Mass Balance Error (%): %e \n", oBudget->MBErr_Age);
+    ofSummary << "\t" << oBudget->MBErr_Age ;
+  }
+
   ofSummary << "\n";
 
   // ==== Basind2HSummary.txt --------------------------------------------------------
@@ -138,7 +152,6 @@ int Report2Screen(){
     ofd2HSummary << oBudget->d2Hsnowpack << "\t";
     ofd2HSummary << oBudget->d2Hcanopy << "\t";
     ofd2HSummary << oBudget->d2Hponding << "\t";
-    ofd2HSummary << oBudget->d2Hchannel << "\t";
     ofd2HSummary << oBudget->d2Hvadose << "\t";
     ofd2HSummary << oBudget->d2HsoilL1 << "\t";
     ofd2HSummary << oBudget->d2HsoilL2 << "\t";
@@ -147,7 +160,6 @@ int Report2Screen(){
     ofd2HSummary << oBudget->d2Hgrndwater << "\t";
     ofd2HSummary << oBudget->d2HET << "\t";
     ofd2HSummary << oBudget->d2HevapS << "\t";
-    ofd2HSummary << oBudget->d2HevapC << "\t";
     ofd2HSummary << oBudget->d2HevapI << "\t";
     ofd2HSummary << oBudget->d2HevapT << "\t";
     ofd2HSummary << oBudget->d2Hleakage << "\t";
@@ -155,10 +167,9 @@ int Report2Screen(){
     ofd2HSummary << oBudget->d2HGWOut << "\t";
     ofd2HSummary << oBudget->d2HOut << "\t";
     ofd2HSummary << oBudget->d2Hsrftochn << "\t";
-    ofd2HSummary << oBudget->d2Hgwtochn << "\t";   
+    ofd2HSummary << oBudget->d2Hgwtochn << "\t";
     ofd2HSummary << oBudget->d2Hrecharge << "\t";
     ofd2HSummary << oBudget->d2Hprecip << "\n";
-
   }
 
   // ==== Basind18OSummary.txt --------------------------------------------------------
@@ -168,7 +179,6 @@ int Report2Screen(){
     ofd18OSummary << oBudget->d18Osnowpack << "\t";
     ofd18OSummary << oBudget->d18Ocanopy << "\t";
     ofd18OSummary << oBudget->d18Oponding << "\t";
-    ofd18OSummary << oBudget->d18Ochannel << "\t";
     ofd18OSummary << oBudget->d18Ovadose << "\t";
     ofd18OSummary << oBudget->d18OsoilL1 << "\t";
     ofd18OSummary << oBudget->d18OsoilL2 << "\t";
@@ -177,7 +187,6 @@ int Report2Screen(){
     ofd18OSummary << oBudget->d18Ogrndwater << "\t";
     ofd18OSummary << oBudget->d18OET << "\t";
     ofd18OSummary << oBudget->d18OevapS << "\t";
-    ofd18OSummary << oBudget->d18OevapC << "\t";
     ofd18OSummary << oBudget->d18OevapI << "\t";
     ofd18OSummary << oBudget->d18OevapT << "\t";
     ofd18OSummary << oBudget->d18Oleakage << "\t";
@@ -185,9 +194,33 @@ int Report2Screen(){
     ofd18OSummary << oBudget->d18OGWOut << "\t";
     ofd18OSummary << oBudget->d18OOut << "\t";
     ofd18OSummary << oBudget->d18Osrftochn << "\t";
-    ofd18OSummary << oBudget->d18Ogwtochn << "\t";   
+    ofd18OSummary << oBudget->d18Ogwtochn << "\t";
     ofd18OSummary << oBudget->d18Orecharge << "\t";
     ofd18OSummary << oBudget->d18Oprecip << "\n";
+
+  }
+
+  // ==== BasincClSummary.txt --------------------------------------------------------
+  // -----------------------------------------------------
+  if(oControl->sw_trck and oControl->sw_Cl){
+    ofcClSummary << oBudget->cClTot << "\t";
+    ofcClSummary << oBudget->cClsnowpack << "\t";
+    ofcClSummary << oBudget->cClcanopy << "\t";
+    ofcClSummary << oBudget->cClponding << "\t";
+    ofcClSummary << oBudget->cClvadose << "\t";
+    ofcClSummary << oBudget->cClsoilL1 << "\t";
+    ofcClSummary << oBudget->cClsoilL2 << "\t";
+    ofcClSummary << oBudget->cClsoilL3 << "\t";
+    ofcClSummary << oBudget->cClrootzone << "\t";
+    ofcClSummary << oBudget->cClgrndwater << "\t";
+    ofcClSummary << oBudget->cClleakage << "\t";
+    ofcClSummary << oBudget->cClOvlndOut << "\t";
+    ofcClSummary << oBudget->cClGWOut << "\t";
+    ofcClSummary << oBudget->cClOut << "\t";
+    ofcClSummary << oBudget->cClsrftochn << "\t";
+    ofcClSummary << oBudget->cClgwtochn << "\t";
+    ofcClSummary << oBudget->cClrecharge << "\t";
+    ofcClSummary << oBudget->cClprecip << "\n";
 
   }
 
@@ -198,7 +231,6 @@ int Report2Screen(){
     ofAgeSummary << oBudget->Agesnowpack << "\t";
     ofAgeSummary << oBudget->Agecanopy << "\t";
     ofAgeSummary << oBudget->Ageponding << "\t";
-    ofAgeSummary << oBudget->Agechannel << "\t";
     ofAgeSummary << oBudget->Agevadose << "\t";
     ofAgeSummary << oBudget->AgesoilL1 << "\t";
     ofAgeSummary << oBudget->AgesoilL2 << "\t";
@@ -214,7 +246,7 @@ int Report2Screen(){
     ofAgeSummary << oBudget->AgeGWOut << "\t";
     ofAgeSummary << oBudget->AgeOut << "\t";
     ofAgeSummary << oBudget->Agesrftochn << "\t";
-    ofAgeSummary << oBudget->Agegwtochn << "\t";   
+    ofAgeSummary << oBudget->Agegwtochn << "\t";
     ofAgeSummary << oBudget->Agerecharge << "\n";
   }
 

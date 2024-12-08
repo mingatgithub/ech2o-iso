@@ -31,31 +31,35 @@
 #include "Basin.h"
 
 void Tracking::MixingV_through(Atmosphere &atm, Basin &bsn, Control &ctrl,
-			       double &rain, double &p, int s, int r, int c) //time step
+			    double &rain, double &p, int r, int c) //time step
 {
   
   double dt = ctrl.dt;
   double pond_old = bsn.getPondingWater()->matrix[r][c];
-  //**********************************************************************************
-  //--- Deuterium --------------------------------------------------------------------
-  //**********************************************************************************
+
+  // This assumes that throughfall is the same as the same-day water
+  // (= excess from storage capacity), i.e., there is no spill-over 
+  // from previously stored intercepted water
+  
+  // Deuterium
   if(ctrl.sw_2H)
     _d2Hsurface->matrix[r][c] = InputMix(pond_old, _d2Hsurface->matrix[r][c],
-					rain*p*dt,bsn.getd2Hthroughfall(s)->matrix[r][c]);
-
-  //**********************************************************************************
-  //--- Oxygen 18 --------------------------------------------------------------------
-  //**********************************************************************************
+					rain*p*dt,atm.getd2Hprecip()->matrix[r][c]);
+  
+  // Oxygen 18
   if(ctrl.sw_18O)
     _d18Osurface->matrix[r][c] = InputMix(pond_old, _d18Osurface->matrix[r][c],
-					  rain*p*dt,bsn.getd18Othroughfall(s)->matrix[r][c]);
+					  rain*p*dt,atm.getd18Oprecip()->matrix[r][c]);
 
-  //**********************************************************************************  
+  // Chloride
+  if(ctrl.sw_Cl)
+    _cClsurface->matrix[r][c] = InputMix(pond_old, _cClsurface->matrix[r][c],
+					  rain*p*dt,atm.getcClprecip()->matrix[r][c]);
+
   // Water age
-  //**********************************************************************************  
   if(ctrl.sw_Age)
     _Agesurface->matrix[r][c] = InputMix(pond_old, _Agesurface->matrix[r][c],
-					 rain*p*dt,bsn.getAgethroughfall(s)->matrix[r][c]);  
+					 rain*p*dt,0.0);
 
 }
 

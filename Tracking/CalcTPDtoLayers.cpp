@@ -73,6 +73,15 @@ int Tracking::CalcTPDtoLayers(Basin &bsn, Control &ctrl){
 				   std::max<double>(0,theta1-theta_MW2)*_d18O_MW2->matrix[r][c])
 	  / theta2;
 	}
+      // Chloride
+      if(ctrl.sw_Cl){
+	_cClsoil1->matrix[r][c] = (std::min<double>(theta_MW1,theta1)*_cCl_TB1->matrix[r][c] +
+				   std::max<double>(0,theta1-theta_MW1)*_cCl_MW1->matrix[r][c])
+	  / theta1;
+	_cClsoil2->matrix[r][c] = (std::min<double>(theta_MW2,theta2)*_cCl_TB2->matrix[r][c] +
+				   std::max<double>(0,theta1-theta_MW2)*_cCl_MW2->matrix[r][c])
+	  / theta2;
+	}
       // Age
       if(ctrl.sw_Age){
 	_Agesoil1->matrix[r][c] = (std::min<double>(theta_MW1,theta1)*_Age_TB1->matrix[r][c] +

@@ -29,403 +29,297 @@
  */
 #include <unistd.h>
 #include  <fstream>
-#include <armadillo>
 #include "Basin.h"
 #include <errno.h>
 #include <stdio.h>
 #include <string.h>
 
 
-Basin::Basin(Control &ctrl, Atmosphere &atm)
+Basin::Basin(Control &ctrl)
 {
-
   try{
 
-    // -------------------------------------------------------------------
-    // Read the base map and writes the dimensions of the grid
-    // -------------------------------------------------------------------
+    //Read the base map and writes the dimensions of the grid
     _DEM = new grid(ctrl.path_BasinFolder + ctrl.fn_dem, ctrl.MapType);
     _NRows = _DEM->r;
     _NCols = _DEM->c;
     _dx = _DEM->dx;
-    //geo coordinations for nc files
-    _north = _DEM->north;
-    _south = _DEM->south;
-    _west = _DEM->west;
-    _east = _DEM->east;
-    _nodata = _DEM->nodata;
 
-    // -------------------------------------------------------------------
-    // If boundary conditions are to be est - read them in
-    // -------------------------------------------------------------------
-    _BCsurface     = NULL;
-    _BCgroundwater = NULL;
-    _BCdeepgwtr    = NULL;
-    if(ctrl.sw_BC){
-      errno = 0; //reset the error
-      _BCsurface     = new grid(*_DEM); //incoming surface water
-      _BCgroundwater = new grid(*_DEM); //incoming groundwater water
-      if(ctrl.sw_deepGW)
-	_BCdeepgwtr = new grid(*_DEM); //incoming groundwater water
-
-      *_BCsurface    = *_DEM;
-      *_BCgroundwater= *_DEM;
-      if(ctrl.sw_deepGW)
-	*_BCdeepgwtr = *_DEM;
-	
-      try{
-	ifBCsurface.open((ctrl.path_ClimMapsFolder + ctrl.fn_BCsurface).c_str(),ios::binary);
-	if(errno!=0) throw ctrl.fn_BCsurface;
-	ifBCgroundwater.open((ctrl.path_ClimMapsFolder + ctrl.fn_BCgroundwater).c_str(),ios::binary);
-	if(errno!=0) throw ctrl.fn_BCgroundwater;
-	if(ctrl.sw_deepGW){
-	  ifBCdeepgwtr.open((ctrl.path_ClimMapsFolder + ctrl.fn_BCdeepgwtr).c_str(),ios::binary);
-	  if(errno!=0) throw ctrl.fn_BCdeepgwtr;
-	}
-      } catch (string e){
-	cout << "Dang!!: cannot find/read the " << e << " file: error " << strerror(errno) << endl;
-	throw;
-      }
-
-      try{
-	if(InitiateBCMap(ifBCsurface, *_BCsurface, atm) != atm.getSsortedGridTotalCellNumber())
-	  throw string("BC surface");
-	if(InitiateBCMap(ifBCgroundwater, *_BCgroundwater, atm) != atm.getSsortedGridTotalCellNumber())
-	  throw string("BC groundwater");
-	if(ctrl.sw_deepGW){
-	  if(InitiateBCMap(ifBCdeepgwtr, *_BCdeepgwtr, atm) != atm.getSsortedGridTotalCellNumber())
-	    throw string("BC deep groundwater");
-	}
-      } catch (string e) {
-	cout << "Error: some sections of the domain were not filled with " << e << " data." << endl;
-	cout << "Please verify that all the boundary zones in the map are presented in the binary" << endl;
-	cout << "and that the n boundary zones present are the first n zones in the file" << endl;
-      }    } //toggle BC
-    // -------------------------------------------------------------------    
-
-
-    // ---------------------------------------------------------------------------------------------------------------
-    /*Catchment map check/creation of sorted grid*/
-    // ---------------------------------------------------------------------------------------------------------------        
     _ldd = new grid(ctrl.path_BasinFolder + ctrl.fn_ldd, ctrl.MapType);
 
-    printf("Checking if file %s exists...\n", (ctrl.path_BasinFolder + ctrl.fn_dem + ".serialized.svf").c_str());
-    /* Checks if there is a _vSordtedGrid object with the correct name in the spatial folder */
+    printf("Checking if file %s exists...", (ctrl.path_BasinFolder + ctrl.fn_dem + ".serialized.svf\n").c_str());
+    /*
+     * Checks if there is a _vSordtedGrid object with the correct name in the spatial folder
+     */
     if (access((ctrl.path_BasinFolder + ctrl.fn_dem + ".serialized.svf").c_str(), F_OK) != -1) {
-      printf("File Found!. Loading object...\n");
+      printf("File Found!. Loading object...");
       loadSortedGrid(_vSortedGrid, (ctrl.path_BasinFolder + ctrl.fn_dem + ".serialized.svf").c_str());
+      printf(" done.\n");
     }
     else{
-      printf("File not found!. Initializing and sorting grid...\n");
+      printf("\nFile not found!. Initializing and sorting grid...\n");
       printf("WARNING -- if the progress bar stalls for too long, please consider checking your DEM map: it should\n");
       printf("contain a buffer of at least 1 cell of no-data (mv) around the valid domain (see documentation) --\n");
-      /*sorts the basin with data cells according to the ldd after _DEM and _ldd have been created*/
+      /*sorts the basin with data cells according
+       * to the ldd after _DEM and _ldd have been created*/
       _vSortedGrid = Basin::SortGridLDD();
+
       printf("Sorting done. Saving serialized sorted grid object for subsequent runs...\n");
+
       saveSortedGrid(_vSortedGrid, (ctrl.path_BasinFolder + ctrl.fn_dem + ".serialized.svf").c_str());
+      printf(" done.\n");
     }
+    //reset errno flag after access trips it to check if svf file exists
+    errno=0;
 
     fForest = new Forest(ctrl); //constructs the Forest object
 
-    // ---------------------------------------------------------------------------------------------------------------
-    /*Basin parameters and properties*/
-    // ---------------------------------------------------------------------------------------------------------------    
-    _slope = new grid(ctrl.path_BasinFolder + ctrl.fn_slope, ctrl.MapType);           //Basin Slope
-    _ttarea = new grid(ctrl.path_BasinFolder + ctrl.fn_ttarea, ctrl.MapType);         //Cell % within catchment
-    _fImperv = new grid(ctrl.path_BasinFolder + ctrl.fn_fimperv, ctrl.MapType);       //Percent impervious area of cell
-    
-    _Ksat0 = new grid(ctrl.path_BasinFolder + ctrl.fn_Ksat0, ctrl.MapType);           //Horizontal conductivity near surface
-    _KsatTopSoil = new grid(ctrl.path_BasinFolder + ctrl.fn_ksat_skin, ctrl.MapType); //Skin horizontal conductivity    
-    _kKsat = NULL;                                                                    //Exp parameter dec. conductivity with depth
-    if(ctrl.sw_expKsat)
+    /*basin parameters and properties*/
+    _slope = new grid(ctrl.path_BasinFolder + ctrl.fn_slope, ctrl.MapType);
+    // Hydraulic conductivity
+    _Ksat0 = NULL;
+    _kKsat = NULL;
+    if(ctrl.toggle_Ksat==0){
+      // Constant porosity
+      _KsatL1 = new grid(ctrl.path_BasinFolder + ctrl.fn_Ksat0, ctrl.MapType);
+      _KsatL2 = new grid(ctrl.path_BasinFolder + ctrl.fn_Ksat0, ctrl.MapType);
+      _KsatL3 = new grid(ctrl.path_BasinFolder + ctrl.fn_Ksat0, ctrl.MapType);
+    }
+    if(ctrl.toggle_Ksat==1){
+      // Exponential profile
+      _Ksat0 = new grid(ctrl.path_BasinFolder + ctrl.fn_Ksat0, ctrl.MapType);
       _kKsat = new grid(ctrl.path_BasinFolder + ctrl.fn_kKsat, ctrl.MapType);
-    
-    _KvKs = new grid(ctrl.path_BasinFolder + ctrl.fn_kvkh, ctrl.MapType);             //Anisotropy ratio for conductivity
-    _random_roughness = new grid(ctrl.path_BasinFolder + ctrl.fn_randrough, ctrl.MapType);//Random surface roughness
-    _porosity0 = new grid(ctrl.path_BasinFolder + ctrl.fn_poros0, ctrl.MapType);      //Soil porosity near surface
-    _kporos = NULL;                                                                   //Exp parameter dec. porosity with depth
-    if(ctrl.sw_expPoros)
-      _kporos = new grid(ctrl.path_BasinFolder + ctrl.fn_kporos, ctrl.MapType);
-    
-    _psi_ae  = new grid(ctrl.path_BasinFolder + ctrl.fn_psi_ae, ctrl.MapType);        //Air-entry pressure [m]
-    _BClambda = new grid(ctrl.path_BasinFolder + ctrl.fn_BClambda, ctrl.MapType);     //Brooks-Corey lambda
-    _theta_rL1 = new grid(ctrl.path_BasinFolder + ctrl.fn_theta_r, ctrl.MapType);     //Residual moisture layer 1
-    _theta_rL2 = new grid(ctrl.path_BasinFolder + ctrl.fn_theta_r, ctrl.MapType);     //Residual moisture layer 2
-    _theta_rL3 = new grid(ctrl.path_BasinFolder + ctrl.fn_theta_r, ctrl.MapType);     //Residual moisture layer 3
-    _soildepth = new grid(ctrl.path_BasinFolder + ctrl.fn_soildepth, ctrl.MapType);   //Soil depth (depth of layer 3) [m]
-    _depth_layer1 = new grid(ctrl.path_BasinFolder + ctrl.fn_depth_layer1, ctrl.MapType);//Depth of soil layer 1 [m]
-    _depth_layer2 = new grid(ctrl.path_BasinFolder + ctrl.fn_depth_layer2, ctrl.MapType);//Depth of soil layer 2 [m]
-    _bedrock_leak = new grid(ctrl.path_BasinFolder + ctrl.fn_bedrock_leak, ctrl.MapType);//Bedrock leakance (frac of Ksat in L3)
-    _paramWc = new grid(ctrl.path_BasinFolder + ctrl.fn_paramWc, ctrl.MapType);       //Veg water use parameter 
-    _paramWp = new grid(ctrl.path_BasinFolder + ctrl.fn_paramWp, ctrl.MapType);       //Veg water use parameter
-    // ---------------------------------------------------------------------------------------------------------------    
-    /*state variables for depth-dependent soil parameters*/
-    // ---------------------------------------------------------------------------------------------------------------    
-    if(ctrl.toggle_soil_prop == 2) {
-      _KsatL1 = new grid(ctrl.path_BasinFolder + ctrl.fn_Ksat0, ctrl.MapType);        //Horizontal conductivity L1
-      _KsatL2 = new grid(ctrl.path_BasinFolder + ctrl.fn_Ksat2, ctrl.MapType);        //Horizontal conductivity L2
-      _KsatL3 = new grid(ctrl.path_BasinFolder + ctrl.fn_Ksat3, ctrl.MapType);        //Horizontal conductivity L3
-      _KvKsL1 = new grid(ctrl.path_BasinFolder + ctrl.fn_kvkh,  ctrl.MapType);        //Anisotropy ratio L1
-      _KvKsL2 = new grid(ctrl.path_BasinFolder + ctrl.fn_kvkh2, ctrl.MapType);        //Anisotropy ratio L2
-      _KvKsL3 = new grid(ctrl.path_BasinFolder + ctrl.fn_kvkh3, ctrl.MapType);        //Anisotropy ratio L3
-      _porosityL1 = new grid(ctrl.path_BasinFolder + ctrl.fn_poros0, ctrl.MapType);   //Porosity L1
-      _porosityL2 = new grid(ctrl.path_BasinFolder + ctrl.fn_poros2, ctrl.MapType);   //Porosity L2
-      _porosityL3 = new grid(ctrl.path_BasinFolder + ctrl.fn_poros3, ctrl.MapType);   //Porosity L3
-      _psi_aeL1 = new grid(ctrl.path_BasinFolder + ctrl.fn_psi_ae,  ctrl.MapType);    //Air-entry pressure L1
-      _psi_aeL2 = new grid(ctrl.path_BasinFolder + ctrl.fn_psi_ae2, ctrl.MapType);    //Air-entry pressure L2
-      _psi_aeL3 = new grid(ctrl.path_BasinFolder + ctrl.fn_psi_ae3, ctrl.MapType);    //Air-entry pressure L3
-      _BClambdaL1 = new grid(ctrl.path_BasinFolder + ctrl.fn_BClambda,  ctrl.MapType);//Brooks-Corey lambda L1
-      _BClambdaL2 = new grid(ctrl.path_BasinFolder + ctrl.fn_BClambda2, ctrl.MapType);//Brooks-Corey lambda L2
-      _BClambdaL3 = new grid(ctrl.path_BasinFolder + ctrl.fn_BClambda3, ctrl.MapType);//Brooks-Corey lambda L3
-    } else {
       _KsatL1 = new grid(*_DEM);
       _KsatL2 = new grid(*_DEM);
       _KsatL3 = new grid(*_DEM);
-      _KvKsL1 = new grid(*_DEM);
-      _KvKsL2 = new grid(*_DEM);
-      _KvKsL3 = new grid(*_DEM);
+    }
+    if(ctrl.toggle_Ksat==2){
+      // Layer-specificied
+      _KsatL1 = new grid(ctrl.path_BasinFolder + ctrl.fn_Ksat0, ctrl.MapType);
+      _KsatL2 = new grid(ctrl.path_BasinFolder + ctrl.fn_KsatL2, ctrl.MapType);
+      _KsatL3 = new grid(ctrl.path_BasinFolder + ctrl.fn_KsatL3, ctrl.MapType);
+    }
+    _KvKs = new grid(ctrl.path_BasinFolder + ctrl.fn_kvkh, ctrl.MapType);
+    // Porosity
+    _porosity0 = NULL;
+    _kporos = NULL;
+    if(ctrl.toggle_Poros==0){
+      // Constant porosity
+      _porosityL1 = new grid(ctrl.path_BasinFolder + ctrl.fn_poros0, ctrl.MapType);
+      _porosityL2 = new grid(ctrl.path_BasinFolder + ctrl.fn_poros0, ctrl.MapType);
+      _porosityL3 = new grid(ctrl.path_BasinFolder + ctrl.fn_poros0, ctrl.MapType);
+    }
+    if(ctrl.toggle_Poros==1){
+      // Exponential profile
+      _porosity0 = new grid(ctrl.path_BasinFolder + ctrl.fn_poros0, ctrl.MapType);
+      _kporos = new grid(ctrl.path_BasinFolder + ctrl.fn_kporos, ctrl.MapType);
       _porosityL1 = new grid(*_DEM);
       _porosityL2 = new grid(*_DEM);
       _porosityL3 = new grid(*_DEM);
-      _psi_aeL1= new grid(*_DEM);
-      _psi_aeL2 = new grid(*_DEM);
-      _psi_aeL3 = new grid(*_DEM);      
-      _BClambdaL1 = new grid(*_DEM);
-      _BClambdaL2 = new grid(*_DEM);
-      _BClambdaL3 = new grid(*_DEM);
     }
-
-    // ---------------------------------------------------------------------------------------------------------------    
-    /*state variables for deep groundwater*/
-    // ---------------------------------------------------------------------------------------------------------------    
-    _DeepGW = NULL;                                                                  //Baseflow to chan water transfer parameter [m]
-    _Hydrofrac_DeepGW = NULL;                                                        //Baseflow to chan water transfer parameter [0-1]
-    _chDeepGWparam = NULL;                                                           //Deep GW storage for each grid cell
-    _FluxDeepGWtoChn = NULL;                                                         //Deep baseflow from the deep GW storge
-    _FluxLattoDeepGW = NULL;                                                         //Lateral deep GW input
-    _FluxDeepGWtoLat = NULL;                                                         //Lateral deep GW output
-    _AccDeepGWtoChn = NULL;                                                          //Accumulated baseflow export to channel
-    _AccLattoDeepGW = NULL;                                                          //Accumulated baseflow input
-    _AccDeepGWtoLat = NULL;                                                          //Accumulated baseflow output
-    _DeepGWupstreamBC = NULL;
-    if(ctrl.sw_deepGW){
-      _DeepGW = new grid(ctrl.path_BasinFolder + ctrl.fn_deepGW, ctrl.MapType);
-      _Hydrofrac_DeepGW = new grid(ctrl.path_BasinFolder + ctrl.fn_hydro_deepGW, ctrl.MapType);
-      _chDeepGWparam = new grid(ctrl.path_BasinFolder + ctrl.fn_chdeepgwparam, ctrl.MapType);
-      _FluxDeepGWtoChn = new grid(*_DEM);
-      _FluxLattoDeepGW = new grid(*_DEM);
-      _FluxDeepGWtoLat = new grid(*_DEM);
-      _AccDeepGWtoChn = new grid(*_DEM); 
-      _AccLattoDeepGW = new grid(*_DEM); 
-      _AccDeepGWtoLat  = new grid(*_DEM);
-      _DeepGWupstreamBC = new grid(*_DEM);
+    if(ctrl.toggle_Poros==2){
+      // Layer-specificied
+      _porosityL1 = new grid(ctrl.path_BasinFolder + ctrl.fn_poros0, ctrl.MapType);
+      _porosityL2 = new grid(ctrl.path_BasinFolder + ctrl.fn_porosL2, ctrl.MapType);
+      _porosityL3 = new grid(ctrl.path_BasinFolder + ctrl.fn_porosL3, ctrl.MapType);
     }
-    
-    // ---------------------------------------------------------------------------------------------------------------    
-    /*state variables for energy balance*/
-    // ---------------------------------------------------------------------------------------------------------------    
-    _meltCoeff = new grid(ctrl.path_BasinFolder + ctrl.fn_snowCf, ctrl.MapType);      //Degree-day snowmelt coefficient
-    _albedo = new grid(ctrl.path_BasinFolder + ctrl.fn_albedo, ctrl.MapType);         //Soil albedo
-    _emiss_surf = new grid(ctrl.path_BasinFolder + ctrl.fn_emiss, ctrl.MapType);      //Soil emissivity
-    _soil_dry_heatcap = new grid(ctrl.path_BasinFolder + ctrl.fn_soilheatcap, ctrl.MapType);//Soil heat capacity
-    _soil_dry_thermcond = new grid(ctrl.path_BasinFolder + ctrl.fn_soilthermcond, ctrl.MapType);//Soil heat conductivity
-    _dampdepth = new grid(ctrl.path_BasinFolder + ctrl.fn_dampdepth, ctrl.MapType);   //Damping depth
-    _Temp_d = new grid(ctrl.path_BasinFolder + ctrl.fn_tempdamp, ctrl.MapType);       //Temperature at damping depth
+    _psi_ae = new grid(ctrl.path_BasinFolder + ctrl.fn_psi_ae, ctrl.MapType);
+    _BClambda = new grid(ctrl.path_BasinFolder + ctrl.fn_BClambda, ctrl.MapType);
+    _theta_rL1 = new grid(ctrl.path_BasinFolder + ctrl.fn_theta_r, ctrl.MapType);
+    _theta_rL2 = new grid(ctrl.path_BasinFolder + ctrl.fn_theta_r, ctrl.MapType);
+    _theta_rL3 = new grid(ctrl.path_BasinFolder + ctrl.fn_theta_r, ctrl.MapType);
+    _soildepth = new grid(ctrl.path_BasinFolder + ctrl.fn_soildepth, ctrl.MapType);
+    _depth_layer1 = new grid(ctrl.path_BasinFolder + ctrl.fn_depth_layer1, ctrl.MapType);
+    _depth_layer2 = new grid(ctrl.path_BasinFolder + ctrl.fn_depth_layer2, ctrl.MapType);
+    _bedrock_leak = new grid(ctrl.path_BasinFolder + ctrl.fn_bedrock_leak, ctrl.MapType);
+    _paramWc = new grid(ctrl.path_BasinFolder + ctrl.fn_paramWc, ctrl.MapType);
+    _paramWp = new grid(ctrl.path_BasinFolder + ctrl.fn_paramWp, ctrl.MapType);
+    _meltCoeff = new grid(ctrl.path_BasinFolder + ctrl.fn_snowCf, ctrl.MapType);
+    _random_roughness = new grid(ctrl.path_BasinFolder + ctrl.fn_randrough, ctrl.MapType);
+    //_rootfrac1 = new grid(ctrl.path_BasinFolder + ctrl.fn_root_fraction_lay1, ctrl.MapType);
+    //_rootfrac2 = new grid(ctrl.path_BasinFolder + ctrl.fn_root_fraction_lay2, ctrl.MapType);
+    //_Kroot = new grid(ctrl.path_BasinFolder + ctrl.fn_Kroot, ctrl.MapType);
 
-    _Temp_L1 = new grid(ctrl.path_BasinFolder + ctrl.fn_tempdamp, ctrl.MapType);       //Temperature at damping depth
-    _Temp_L2 = new grid(ctrl.path_BasinFolder + ctrl.fn_tempdamp, ctrl.MapType);       //Temperature at damping depth
-    _Temp_L3 = new grid(ctrl.path_BasinFolder + ctrl.fn_tempdamp, ctrl.MapType);       //Temperature at damping depth
+    _snow = new grid(ctrl.path_BasinFolder + ctrl.fn_swe, ctrl.MapType);
+    _albedo = new grid(ctrl.path_BasinFolder + ctrl.fn_albedo, ctrl.MapType);
+    _emiss_surf = new grid(ctrl.path_BasinFolder + ctrl.fn_emiss, ctrl.MapType);
+    _soil_dry_heatcap = new grid(ctrl.path_BasinFolder + ctrl.fn_soilheatcap, ctrl.MapType);
+    _soil_dry_thermcond = new grid(ctrl.path_BasinFolder + ctrl.fn_soilthermcond, ctrl.MapType);
+    _dampdepth = new grid(ctrl.path_BasinFolder + ctrl.fn_dampdepth, ctrl.MapType);
+    _Temp_d = new grid(ctrl.path_BasinFolder + ctrl.fn_tempdamp, ctrl.MapType);
 
-    // ---------------------------------------------------------------------------------------------------------------    
-    /*state variables for channels*/
-    // ---------------------------------------------------------------------------------------------------------------    
-    _channelwidth = new grid(ctrl.path_BasinFolder + ctrl.fn_chwidth, ctrl.MapType);  //channel width [m]
-    _channellength = new grid(ctrl.path_BasinFolder + ctrl.fn_chlength,ctrl.MapType); //channel length [m]
-    _chGWparam = new grid(ctrl.path_BasinFolder + ctrl.fn_chgwparam, ctrl.MapType);   //GW to channel parameter
-    _Manningn = new grid(ctrl.path_BasinFolder + ctrl.fn_chmanningn, ctrl.MapType);   //Mannings n
-    _Temp_w = NULL;                                                                   //Channel water temp [oC]
-    _FTemp_w = NULL;                                                                  //Flux*Water Temp
-    _chan_roughness = NULL;                                                           //Channel roughness
-    if(ctrl.toggle_chan_evap==1) {
-      _Temp_w = new grid(ctrl.path_BasinFolder + ctrl.fn_temp_w, ctrl.MapType);       //Channel water temperature
-      _FTemp_w = new grid(*_DEM);                                                     //Flux*Water Temp
-      _chan_roughness = new grid(ctrl.path_BasinFolder + ctrl.fn_chanrough, ctrl.MapType);//Channel roughness
-    }
+    _channelwidth = new grid(ctrl.path_BasinFolder + ctrl.fn_chwidth, ctrl.MapType);
+    _chGWparam = new grid(ctrl.path_BasinFolder + ctrl.fn_chgwparam, ctrl.MapType);
+    _Manningn = new grid(ctrl.path_BasinFolder + ctrl.fn_chmanningn, ctrl.MapType);
 
-    // ---------------------------------------------------------------------------------------------------------------        
     /*state variables initialized with user map*/
-    // ---------------------------------------------------------------------------------------------------------------        
-    _soilmoist1 = new grid(ctrl.path_BasinFolder + ctrl.fn_soilmoist, ctrl.MapType);  //soil moisture volumetric L1
-    _soilmoist2 = new grid(ctrl.path_BasinFolder + ctrl.fn_soilmoist2, ctrl.MapType); //soil moisture volumetric L2
-    _soilmoist3 = new grid(ctrl.path_BasinFolder + ctrl.fn_soilmoist3, ctrl.MapType); //soil moisture volumetric L3
-    _snow = new grid(ctrl.path_BasinFolder + ctrl.fn_swe, ctrl.MapType);              //Current SWE [m]
-    _snow_old = new grid(ctrl.path_BasinFolder + ctrl.fn_swe, ctrl.MapType);          //Previous SWE [m]
-    _Temp_s_old = new grid(ctrl.path_BasinFolder + ctrl.fn_soiltemp, ctrl.MapType);   //Previous surface temperature [oC]
-    _Disch_old =  new grid(ctrl.path_BasinFolder + ctrl.fn_streamflow, ctrl.MapType); //Previous discharge 
+    _soilmoist1 = new grid(ctrl.path_BasinFolder + ctrl.fn_soilmoist, ctrl.MapType);  //soil moisture volumetric
+    _soilmoist2 = new grid(ctrl.path_BasinFolder + ctrl.fn_soilmoist2, ctrl.MapType);  //soil moisture 2nd layer volumetric
+    _soilmoist3 = new grid(ctrl.path_BasinFolder + ctrl.fn_soilmoist3, ctrl.MapType);  //soil moisture 3rd layer volumetric
+    _Temp_s_old = new grid(ctrl.path_BasinFolder + ctrl.fn_soiltemp, ctrl.MapType);  //initial soil temperature C
+    _Disch_old =  new grid(ctrl.path_BasinFolder + ctrl.fn_streamflow, ctrl.MapType);  //initial soil temperature C
 
-    // ---------------------------------------------------------------------------------------------------------------
     /*state variables initialized with the base map*/
-    // ---------------------------------------------------------------------------------------------------------------
-    // Energy balance and soil properties
-    _catcharea = new grid(*_DEM);                                                     //catchment area
-    _fieldcapL1 = new grid(*_DEM);                                                    //Field capacity in L1
-    _fieldcapL2 = new grid(*_DEM);                                                    //Field capacity in L2
-    _fieldcapL3 = new grid(*_DEM);                                                    //Field capacity in L3
-    _infilt_cap = new grid(*_DEM);                                                    //Infilt capacity [m.h-1]
-    _Rn = new grid(*_DEM);                                                            //Surface Net Radiation [W.m-2]
-    _Rn_sum = new grid(*_DEM);                                                        //Total Net Radiation [W.m-2]
-    _latheat = new grid(*_DEM);                                                       //Surface Latent Heat [W.m-2]
-    _latheat_sum = new grid(*_DEM);                                                   //Total Latent Heat [W.m-2]
-    _sensheat = new grid(*_DEM);                                                      //Surface Sensible Heat [W.m-2]
-    _sensheat_sum = new grid(*_DEM);                                                      //Surface Sensible Heat [W.m-2]    
-    _grndheat = new grid(*_DEM);                                                      //Ground Heat [W.m-2]
-    _snwheat = new grid(*_DEM);                                                       //Snow Heat [W.m-2]
-    _Temp_s = new grid(*_DEM);                                                        //Surface temperature [oC]
-    _CanopyStorage = new grid(*_DEM);                                                 //Canopy Storage [m]
-    // Channel storage
-    _chan_store = new grid(*_DEM);                                                    //Channel Storage [m]
-    _chan_store_old = new grid(*_DEM);                                                //Previous channel storage [m]
-    _chan_evap = new grid(*_DEM);                                                     //Channel evaporation
-    // Vegetation root properties
-    _Zroot95 = new grid(*_DEM);                                                       //Depth at with 95% of roots are found
-    _ProotzoneL1 = new grid(*_DEM);                                                   //Root contribution L1
-    _ProotzoneL2 = new grid(*_DEM);                                                   //Root contribution L2
-    _ProotzoneL3 = new grid(*_DEM);                                                   //Root contribution L3
-    // Soil storage
-    _IsSaturated = new grid(*_DEM);                                                   //Saturation map
-    _incident_water_depth = new grid(*_DEM);  
-    _soilmoist_av = new grid(*_DEM);                                                  //Avg VSM of 10 cm (hydrstatic equil)
-    _soilmoist_12 = new grid(*_DEM);                                                  //Age VSM L1+L2
-    _ponding = new grid(*_DEM);                                                       //Ponding Depth [m]
-    _SoilWaterDepth = new grid(*_DEM);                                                //Soil water depth [m]
-    _SoilWaterDepthL1 = new grid(*_DEM);                                              //Soil water depth L1 [m]
-    _SoilWaterDepthL2 = new grid(*_DEM);                                              //Soil water depth L2 [m]
-    _SoilWaterDepthL3 = new grid(*_DEM);                                              //Soil water depth L3 (vadose) [m]
-    _WaterTableDepth = new grid(*_DEM);                                               //Reconstructed WTD [m]
-    _SoilSatDeficit = new grid(*_DEM);                                                //SM inc. water below and above field capacity
-    _GravityWater = new grid(*_DEM);                                                  //Soil water storage above FC
-    _GrndWater = new grid(*_DEM);                                                     //GW storage [m]
-    // Lateral cell fluxes
-    _Layer1upstreamBC = new grid(*_DEM);                                              //L1 flux upstream boundary condition (m.s-1)
-    _Layer2upstreamBC = new grid(*_DEM);                                              //L2 flux upstream boundary condition (m.s-1)
-    _GWupstreamBC = new grid(*_DEM);                                                  //GW flux upstream boundary condition (m.s-1)
-    _Disch_upstreamBC = new grid(*_DEM);                                              //Disch upstream boundary condition (m.s-1)
-    _matGWupstreamBC = arma::cube(_NRows, _NCols, 4, arma::fill::zeros);               //Matrix of upstream groundwater
-    _FluxLattoChn = new grid(*_DEM);                                                  //Channel inflow
-    _FluxLattoSrf = new grid(*_DEM);                                                  //Surface run-on (excluding streamflow)
-    _FluxLattoGW = new grid(*_DEM);                                                   //GW lateral outflow
-    _FluxChntoLat = new grid(*_DEM);                                                  //Surface run-off (only streamflow)
-    _FluxSrftoLat = new grid(*_DEM);                                                  //Surface run-off (excluding streamflow)
-    _FluxL1toLat = new grid(*_DEM);                                                   //L1 lateral inflow	
-    _FluxL2toLat = new grid(*_DEM);                                                   //L2 lateral inflow	
-    _FluxGWtoLat = new grid(*_DEM);                                                   //GW lateral inflow	
-    _FluxL1toChn = new grid(*_DEM);                                                   //Intra-cell L1 to channel
-    _FluxL2toChn = new grid(*_DEM);                                                   //Intra-cell L2 to channel
-    _FluxGWtoChn = new grid(*_DEM);                                                   //Intra-cell GW to channel
-    _FluxSrftoChn = new grid(*_DEM);                                                  //Intra-cell ponding to channel
-    _Layer1Outlet = new grid(*_DEM);                                                  //Soil outflow @ outlet from L1
-    _Layer2Outlet = new grid(*_DEM);                                                  //Soil outflow @ outlet from L2
-    _GWOutlet = new grid(*_DEM);                                                      //Soil outflow @ outlet from L3
-    // Vertical cell fluxes
-    _BedrockLeakageFlux = new grid(*_DEM);                                            //Bedrock leakage flux in [m.s-1]    
-    _Evaporation = new grid(*_DEM);                                                   //Actual total evaporation in [m.s-1]
-    _EvaporationS_all = new grid(*_DEM);                                              //Actual total soil evaporation in [m.s-1]
-    _EvaporationI_all = new grid(*_DEM);                                              //Actual total interc. evaporation [m.s-1]
-    _Transpiration_all = new grid(*_DEM);                                             //Actural total transpiration [m.s-1]
-    _FluxInfilt = new grid(*_DEM);                                                    //Surface to L1 (summed over timestep)
-    _FluxExfilt = new grid(*_DEM);                                                    //L1 to surface (return flow)
-    _FluxPercolL2 = new grid(*_DEM);                                                  //L1 to L2 (summed over timestep)
-    _FluxPercolL3 = new grid(*_DEM);                                                  //L2 to L3 (summed over timestep)
-    _FluxRecharge = new grid(*_DEM);                                                  //Recharge to GW
-    _ReturnL1 = new grid(*_DEM);
-    _ReturnL2 = new grid(*_DEM);
+    _catcharea = new grid(*_DEM);
+    _fieldcapL1 = new grid(*_DEM);
+    _fieldcapL2 = new grid(*_DEM);
+    _fieldcapL3 = new grid(*_DEM);
+    _netrad_srf = new grid(*_DEM);
+    _netrad_veg = new grid(*_DEM);
+    _netrad_tot = new grid(*_DEM);
+    _latheat_srf = new grid(*_DEM);
+    _latheat_veg = new grid(*_DEM);
+    _latheat_tot = new grid(*_DEM);
+    _sensheat_srf = new grid(*_DEM);
+    _sensheat_veg = new grid(*_DEM);
+    _sensheat_tot = new grid(*_DEM);
+    _grndheat = new grid(*_DEM);
+    _snwheat = new grid(*_DEM);
+    _Temp_s = new grid(*_DEM);
+    //_Temp_s_old = new grid(*_DEM);
+    _CanopyStorage = new grid(*_DEM);
+    //_rootfrac1 = new grid(*_DEM);
+    //_rootfrac2 = new grid(*_DEM);
 
-    // ---------------------------------------------------------------------------------------------------------------
-    /* Accumulated fluxes */
-    // ---------------------------------------------------------------------------------------------------------------
-    _AccInfilt = new grid(*_DEM);                                                     //Infiltration
-    _AccExfilt = new grid(*_DEM);                                                     //Exfiltration
-    _AccPercolL2 = new grid(*_DEM);                                                   //L1 to L2 (summed over timestep)
-    _AccL2toL1 = new grid(*_DEM);                                                     //Capillary + return flow, L2 to L1
-    _AccPercolL3 = new grid(*_DEM);                                                   //L2 to L3 (summed over timestep)
-    _AccRecharge = new grid(*_DEM);                                                   //Recharge to GW
-    _AccLeak = new grid(*_DEM);                                                       //Leakance from L3
-    _AccEvaporationS = new grid(*_DEM);                                               //Soil Evaporation
-    _AccL3toL2 = new grid(*_DEM);                                                     //Return from L3 to L2
-    _AccLattoChn = new grid(*_DEM);                                                   //Channel inflow
-    _AccLattoSrf = new grid(*_DEM);                                                   //Surface run-on
-    _AccLattoGW = new grid(*_DEM);                                                    //GW lateral outflow
-    _AccChntoLat = new grid(*_DEM);                                                   //Surface runoff (channel only)
-    _AccSrftoLat = new grid(*_DEM);                                                   //Surface runoff (excluding channel)
-    _AccL1toLat = new grid(*_DEM);                                                    //L1 outflow
-    _AccL2toLat = new grid(*_DEM);                                                    //L2 outflow
-    _AccGWtoLat = new grid(*_DEM);                                                    //GW outflow
-    _AccL1toChn = new grid(*_DEM);                                                    //L1 to channel (accumlated)
-    _AccL2toChn = new grid(*_DEM);                                                    //L2 to channel (accumlated)
-    _AccGWtoChn = new grid(*_DEM);                                                    //GW to channel (accumlated)
-    _AccSrftoChn = new grid(*_DEM);                                                   //Ponding to channel (accumulated)
+    
+    // Depth at which 95% of roots are found, and 
+    // contribution of each layer to the root zone
+    // (both averaged over pixel-sharing species)
+    _Zroot95 = new grid(*_DEM);
+    _ProotzoneL1 = new grid(*_DEM);
+    _ProotzoneL2 = new grid(*_DEM);
+    _ProotzoneL3 = new grid(*_DEM);
 
-    // ---------------------------------------------------------------------------------------------------------------        
-    /* Tracking fluxes specifically for isotopes */
-    // ---------------------------------------------------------------------------------------------------------------            
-    _psi_MW = NULL;                                                                   //Press separating 2 water pools
-    _moist_MW1 = NULL ;                                                               //Moisture of mobile water in L1
-    _moist_MW2 = NULL ;                                                               //Moisture of mobile water in L2
-    _fracMW1 = NULL ;                                                                 //Frac of mobile water L1
-    _fracMW2 = NULL;                                                                  //Frac of mobile water L2
-    _fracMW12 = NULL;                                                                 //Frac of mobile water L1+L2
-    //Downward
-    _FluxCnptoSrf = NULL;                                                             //Canopy water to surface [m]
-    _FluxCnptoSnow = NULL;                                                            //Canopy water to snow [m]
-    _FluxSnowtoSrf = NULL;                                                            //Snowmelt water to surface [m]
-    _FluxSrftoL1 = NULL;                                                              //Surface water to layer 1 [m]
-    _FluxL1toL2 = NULL;                                                               //Layer 1 to layer 2 [m]
-    _FluxL2toL3 = NULL;                                                               //Layer 2 to layer 3 [m]
-    _FluxLeak = NULL;
-    //Upward
-    _FluxL1toSrf = NULL;                                                              //Layer 1 to surface [m]
-    //Mixing
-    _IncompAlpha = NULL;                                                              //Frac of water used in mixing (alt. to MW)
-		
+    _IsSaturated = new grid(*_DEM);  //saturation map
+    _soilmoist_av = new grid(*_DEM); //average volumetric soil moisture of the first 10 cm of the soil as calculated using a hydrstatic equilibrium moisture profile
+    _soilmoist_12 = new grid(*_DEM); //average volumetric soil moisture of the upper two layers
+    _ponding = new grid(*_DEM);
+    _Schannel = new grid(*_DEM);
+    _Ssurface = new grid(*_DEM);
+    _infilt_cap = new grid(*_DEM); //infilt cap m h-1
+    _SoilWaterDepth = new grid(*_DEM); //soil moisture depth m
+    _SoilWaterDepthL1 = new grid(*_DEM); //soil moisture depth L1 m
+    _SoilWaterDepthL2 = new grid(*_DEM); //soil moisture depth L2 m
+    _SoilWaterDepthL3 = new grid(*_DEM); //soil moisture depth L3 (vadose) m
+    _WaterTableDepth = new grid(*_DEM); //reconstructed WTD in meters
+    _SoilSatDeficit = new grid(*_DEM); //soil moisture including water below and above field capacity
+    _GravityWater = new grid(*_DEM); //soil water storage beyond
+    _ponding_old = new grid(*_DEM); //surface storage at teh beginning of the time step
+    _GrndWater = new grid(*_DEM); //groundwater storage at the end of the time step
+    _GrndWater2 = new grid(*_DEM); //groundwater storage in continuous aquifers (GrndWater2<=GrndWater)
+    _GWupstreamBC = new grid(*_DEM); //gw flux upstream boundary conditin (ms-1)
+    _Disch_upstreamBC = new grid(*_DEM);
+
+    // Outgoing flxues (m.s-1)
+    _EvaporationS_all = new grid(*_DEM); //actual soil evaporation
+    _EvaporationI_all = new grid(*_DEM); //actual evaporation from summed interception
+    _Transpiration_all = new grid(*_DEM); //transpiration from summed
+    _Evaporation = new grid(*_DEM); //actual evaporation in
+    _Leakage = new grid(*_DEM); //bedrock leakage flux
+    
+    _FluxSnowmelt = new grid(*_DEM); // surface to L1
+    _FluxInfilt = new grid(*_DEM); // surface to L1
+    _FluxExfilt = new grid(*_DEM); // L1 to surface (return flow)
+    _FluxPercolL2 = new grid(*_DEM); // L1 to L2
+    _FluxL2toL1 = new grid(*_DEM); // capillary + return flow, L2 to L1
+    _FluxPercolL3 = new grid(*_DEM); // L2 to L3
+    _FluxRecharge = new grid(*_DEM); // Recharge to GW
+    _FluxL3toL2 = new grid(*_DEM); // return from L3 to L2
+    _FluxTranspiL1 = new grid(*_DEM);
+    _FluxTranspiL2 = new grid(*_DEM);
+    _FluxTranspiL3 = new grid(*_DEM);
+    _FluxLattoChn = new grid(*_DEM); // channel inflow
+    _FluxLattoSrf = new grid(*_DEM); // surface run-on (excluding streamflow)
+    _FluxLattoGW = new grid(*_DEM); // groundwater lateral outflow
+    _FluxChntoLat = new grid(*_DEM); // surface run-off (only streamflow)
+    _FluxSrftoLat = new grid(*_DEM); // surface run-off (excluding streamflow)
+    _FluxGWtoLat = new grid(*_DEM); // groundwater lateral inflow	
+    _FluxGWtoChn = new grid(*_DEM); // intra-cell groundwater to channel
+    _FluxSrftoChn = new grid(*_DEM); // intra-cell ponding to channel
+
+    // Accumulated fluxes
+    _AccInfilt = new grid(*_DEM);
+    _AccExfilt = new grid(*_DEM);
+    _AccPercolL2 = new grid(*_DEM); // L1 to L2 (summed over timestep)
+    _AccL2toL1 = new grid(*_DEM); // capillary + return flow, L2 to L1
+    _AccPercolL3 = new grid(*_DEM); // L2 to L3 (summed over timestep)
+    _AccRecharge = new grid(*_DEM); // Recharge to GW
+    _AccLeakage = new grid(*_DEM); //bedrock leakage flux
+    _AccEvaporationS = new grid(*_DEM);
+    _AccTranspiL1 = new grid(*_DEM);
+    _AccTranspiL2 = new grid(*_DEM);
+    _AccTranspiL3 = new grid(*_DEM);
+    _AccL3toL2 = new grid(*_DEM); // return from L3 to L2
+    _AccLattoChn = new grid(*_DEM);
+    _AccLattoSrf = new grid(*_DEM);
+    _AccLattoGW = new grid(*_DEM);
+    _AccChntoLat = new grid(*_DEM);
+    _AccSrftoLat = new grid(*_DEM);
+    _AccGWtoLat = new grid(*_DEM);
+    _AccGWtoChn = new grid(*_DEM); // groundwater to channel (accumlated)
+    _AccSrftoChn = new grid(*_DEM); // ponding to channel (accumulated)
+
+    // Tracking-specific
+    _psi_MW = NULL;
+    _moist_MW1 = NULL ;
+    _moist_MW2 = NULL ;
+    _fracMW1 = NULL ;
+    _fracMW2 = NULL;
+    _fracMW12 = NULL;
+    _FluxCnptoSrf = NULL;
+    _FluxCnptoSnow = NULL;
+    _FluxSrftoL1 = NULL;
+    _FluxL1toL2 = NULL;
+    _FluxL2toL3 = NULL;
+    //_FluxL2toGW = NULL;
+    //_FluxL3toGW = NULL;
+    //_FluxGWtoL2 = NULL;
+    //_FluxGWtoL3 = NULL;
+               
     if(ctrl.sw_trck){
-      _FluxCnptoSrf = new grid(*_DEM);                                                //Canopy/sky to surface
-      _FluxCnptoSnow = new grid(*_DEM);                                               //Canopy/sky to snowpac
-      _FluxSnowtoSrf = new grid(*_DEM);                                               //Snowpack to surface
-      _FluxSrftoL1 = new grid(*_DEM);                                                 //Surface to L1
-      _FluxL1toSrf = new grid(*_DEM);                                                 //L1 to surface
-      _FluxL1toL2 = new grid(*_DEM);                                                  //Percolation L1 to L2
-      _FluxL2toL3 = new grid(*_DEM);                                                  //Percolation L2 to L3
-      _FluxLeak = new grid(*_DEM);                                                    //GW to leakance
-      if(ctrl.toggle_mix == 3)
-	_IncompAlpha = new grid(ctrl.path_BasinFolder+ctrl.fn_IncompMix, ctrl.MapType);
-      
+      _FluxCnptoSrf = new grid(*_DEM); // canopy/sky to surface
+      _FluxCnptoSnow = new grid(*_DEM); // canopy/sky to snowpac
+      _FluxSrftoL1 = new grid(*_DEM); // surface to first layer
+      _FluxL1toL2 = new grid(*_DEM); // percolation L1 to L2
+      _FluxL2toL3 = new grid(*_DEM); // percolation L2 to L3
+      //_FluxL2toGW = new grid(*_DEM); // recharge L3 to groundwater
+      //_FluxL3toGW = new grid(*_DEM); // recharge L3 to groundwater
+      //_FluxGWtoL2 = new grid(*_DEM); // return flow, groundwater to L2
+      //_FluxGWtoL3 = new grid(*_DEM); // discharge, groundwater to L3
       if(ctrl.sw_TPD){
-	_psi_MW = new grid(ctrl.path_BasinFolder+ctrl.fn_psi_MW, ctrl.MapType);
-	_moist_MW1 = new grid(*_DEM);
-	_moist_MW2 = new grid(*_DEM);
-	_fracMW1 = new grid(*_DEM);
-	_fracMW2 = new grid(*_DEM);
-	_fracMW12 = new grid(*_DEM);
+       _psi_MW = new grid(ctrl.path_BasinFolder+ctrl.fn_psi_MW, ctrl.MapType);
+       _moist_MW1 = new grid(*_DEM);
+       _moist_MW2 = new grid(*_DEM);
+       _fracMW1 = new grid(*_DEM);
+       _fracMW2 = new grid(*_DEM);
+       _fracMW12 = new grid(*_DEM);
       }
     }
 
-    // ---------------------------------------------------------------------------------------------------------------
-    /* Error checking of maps  */
-    // ---------------------------------------------------------------------------------------------------------------        
-    errno = 0;    // reset errno just to make sure that any constructor error here are not "leftovers"
+    //cout << errno << endl ;
+    
+    // reset errno just to make sure that any constructor error here are not
+    // "leftovers" from earlier constrcutors' failures 
+    errno = 0 ;
 
     try{
       //calculate the value of Ksat for each layer (integrated from expo profile)
-      CalcKsatLayers(ctrl); 
-      if(errno!=0){
-	cout << "Error creating Ksat for each layer: " << endl;
-	throw string("Ksat, soil depths, kKsat");
+      // only call if exponential profile, otherwise it's already specified
+      if(ctrl.toggle_Ksat==1){
+	CalcKsatLayers(ctrl); 
+	if(errno!=0){
+	  cout << "Error creating Ksat for each layer: " << endl;
+	  throw string("Ksat, soil depths, kKsat");
+	}
       }
       //calculate the value of porosity for each layer (integrated from expo profile)
-      CalcPorosLayers(ctrl);
-      if(errno!=0){
-	cout << "Error creating Kporos for each layer: " << endl;
-	throw string("porosm, kporos, soil depths");
+      // only call if exponential profile, otherwise it's already specified
+      if(ctrl.toggle_Poros==1){
+	CalcPorosLayers(ctrl);
+	if(errno!=0){
+	  cout << "Error creating Kporos for each layer: " << endl;
+	  throw string("porosm, kporos, soil depths");
+	}
       }
       //Partial check of maps mainly to make sure no no data is written within the valid domain
       CheckMaps(ctrl);
@@ -440,14 +334,14 @@ Basin::Basin(Control &ctrl, Atmosphere &atm)
 	throw string(" ");
       }
       // Calculate the value of field capacity using the Brooks and Corey Formula
-      CalcFieldCapacity(ctrl);	
+      CalcFieldCapacity();	
       if(errno!=0){
 	cout << "Error creating field capacity: " << endl;
 	throw string("psi_ae, BClambda, poros, theta_r ");
       }
 	
       //Reads initial streamflow map and populate _ponding variable with initial storage in stream
-      CalcInitialStreamStorage();
+      CalcInitialStreamStorage(ctrl);
       if(errno!=0){
 	cout << "Error creating stream storage maps: " << endl;
 	throw string("slope, chanmask, chanmann, chanwidth ");
@@ -476,116 +370,38 @@ Basin::Basin(Control &ctrl, Atmosphere &atm)
 
   }catch (std::bad_alloc &)
     { cerr << " Cleaning basin objects..." << "\n";
-      /* Boundary conditions */
-      if(_BCsurface)
-	delete _BCsurface;
-      if(_BCgroundwater)
-	delete _BCgroundwater;
-      if(_BCdeepgwtr)
-	delete _BCdeepgwtr;      
-      /* General basin properties */
-      if(fForest)
-	delete fForest;
       if(_DEM)
 	delete _DEM;
       if(_ldd)
 	delete _ldd;
-      if(_slope)
-	delete _slope;
-      if(_fImperv)
-	delete _fImperv;
-      /* General soil properties */
-      if(_Ksat0)
-	delete _Ksat0;
-      if(_KsatTopSoil)
-	delete _KsatTopSoil;
-      if(_kKsat)
-	delete _kKsat;
-      if(_KvKs)
-	delete _KvKs;
-      if(_random_roughness)
-	delete _random_roughness;
-      if(_porosity0)
-	delete _porosity0;
-      if(_kporos)
-	delete _kporos;
-      if(_psi_ae)
-	delete _psi_ae;
-      if(_BClambda)
-	delete _BClambda;
-      if(_theta_rL1)
-	delete _theta_rL1;
-      if(_theta_rL2)
-	delete _theta_rL2;
-      if(_theta_rL3)
-	delete _theta_rL3;
-      if(_soildepth)
-	delete _soildepth;
-      if(_depth_layer1)
-	delete _depth_layer1;
-      if(_depth_layer2)
-	delete _depth_layer2;
-      if(_bedrock_leak)
-	delete _bedrock_leak;
-      if(_paramWc)
-	delete _paramWc;
-      if(_paramWp)
-	delete _paramWp;
-      /* Depth-dependent soil parameters*/
-      if(_KsatL1)
-	delete _KsatL1;
-      if(_KsatL2)
-	delete _KsatL2;
-      if(_KsatL3)
-	delete _KsatL3;
-      if(_KvKsL1)
-	delete _KvKsL1;
-      if(_KvKsL2)
-	delete _KvKsL2;
-      if(_KvKsL3)
-	delete _KvKsL3;
-      if(_porosityL1)
-	delete _porosityL1;
-      if(_porosityL2)
-	delete _porosityL2;
-      if(_porosityL3)
-	delete _porosityL3;
-      if(_psi_aeL1)
-	delete _psi_aeL1;
-      if(_psi_aeL2)
-	delete _psi_aeL2;
-      if(_psi_aeL3)
-	delete _psi_aeL3;
-      if(_BClambdaL1)
-	delete _BClambdaL1;
-      if(_BClambdaL2)
-	delete _BClambdaL2;
-      if(_BClambdaL3)
-	delete _BClambdaL3;
-      /* Deep groundwaer */
-      if(_DeepGW)
-	delete _DeepGW;
-      if(_Hydrofrac_DeepGW)
-	delete _Hydrofrac_DeepGW;
-      if(_chDeepGWparam)
-	delete _chDeepGWparam;     
-      if(_FluxDeepGWtoChn)
-	delete _FluxDeepGWtoChn;
-      if(_FluxLattoDeepGW)
-	delete _FluxLattoDeepGW;
-      if(_FluxDeepGWtoLat)
-	delete _FluxDeepGWtoLat;
-      if(_AccDeepGWtoChn)
-	delete _AccDeepGWtoChn; 
-      if(_AccLattoDeepGW)
-	delete _AccLattoDeepGW; 
-      if(_AccDeepGWtoLat)
-	delete _AccDeepGWtoLat; 
-      if(_DeepGWupstreamBC)
-	delete _DeepGWupstreamBC;
-      /* Energy balance */
-      if(_meltCoeff)
-	delete _meltCoeff;
+      if(_snow)
+	delete _snow;
+      if(_netrad_srf)
+	delete _netrad_srf;
+      if(_netrad_veg)
+	delete _netrad_veg;
+      if(_netrad_tot)
+	delete _netrad_tot;
+      if(_latheat_srf)
+	delete _latheat_srf;
+      if(_latheat_veg)
+	delete _latheat_veg;
+      if(_latheat_tot)
+	delete _latheat_tot;
+      if(_sensheat_srf)
+	delete _sensheat_srf;
+      if(_sensheat_veg)
+	delete _sensheat_veg;
+      if(_sensheat_tot)
+	delete _sensheat_tot;
+      if(_grndheat)
+	delete _grndheat;
+      if(_snwheat)
+	delete _snwheat;
+      if(_Temp_s)
+	delete _Temp_s;
+      if(_Temp_s_old)
+	delete _Temp_s_old;
       if(_albedo)
 	delete _albedo;
       if(_emiss_surf)
@@ -598,81 +414,64 @@ Basin::Basin(Control &ctrl, Atmosphere &atm)
 	delete _dampdepth;
       if(_Temp_d)
 	delete _Temp_d;
-      if(_Temp_L1)
-	delete _Temp_L1;
-      if(_Temp_L2)
-	delete _Temp_L2;
-      if(_Temp_L3)
-	delete _Temp_L3;      
-      /* Channels */
-      if(_channelwidth)
-	delete _channelwidth;
-      if(_channellength)
-	delete _channellength;      
-      if(_chGWparam)
-	delete _chGWparam;      
-      if(_Manningn)
-	delete _Manningn;
-      if(_Temp_w)
-	delete _Temp_w;
-      if(_FTemp_w)
-	delete _FTemp_w;
-      if(_chan_roughness)
-	delete _chan_roughness;
-      /* State-variables*/
-      if(_soilmoist1)
-	delete _soilmoist1;
-      if(_soilmoist2)
-	delete _soilmoist2;
-      if(_soilmoist3)
-	delete _soilmoist3;
-      if(_snow)
-	delete _snow;
-      if(_snow_old)
-	delete _snow_old;
-      if(_Temp_s_old)
-	delete _Temp_s_old;      
-      if(_Disch_old)
-	delete _Disch_old;
-      /*Energy balance and soil prop - state variables*/
-      if(_catcharea)
-	delete _catcharea;
-      if(_fieldcapL1)
-	delete _fieldcapL1;
-      if(_fieldcapL2)
-	delete _fieldcapL2;
-      if(_fieldcapL3)
-	delete _fieldcapL3;
+      if(_ponding)
+	delete _ponding;
+      if(_Schannel)
+	delete _Schannel;
+      if(_Ssurface)
+	delete _Ssurface;
+      if(_Ksat0)
+	delete _Ksat0;
+      if(_kKsat)
+	delete _kKsat;
+      if(_KsatL1)
+	delete _KsatL1;
+      if(_KsatL2)
+	delete _KsatL2;
+      if(_KsatL3)
+	delete _KsatL3;
+      if(_KvKs)
+	delete _KvKs;
+      if(_random_roughness)
+	delete _random_roughness;
+      if(_slope)
+	delete _slope;
+      if(_porosity0)
+	delete _porosity0;
+      if(_kporos)
+	delete _kporos;
+      if(_porosityL1)
+	delete _porosityL1;
+      if(_porosityL2)
+	delete _porosityL2;
+      if(_porosityL3)
+	delete _porosityL3;
+      if(_psi_ae)
+	delete _psi_ae;
+      if(_BClambda)
+	delete _BClambda;
+      if(_theta_rL1)
+	delete _theta_rL1;
+      if(_theta_rL2)
+	delete _theta_rL2;
+      if(_theta_rL3)
+	delete _theta_rL3;
       if(_infilt_cap)
 	delete _infilt_cap;
-      if(_Rn)
-	delete _Rn;
-      if(_Rn_sum)
-	delete _Rn_sum;
-      if(_latheat)
-	delete _latheat;
-      if(_latheat_sum)
-	delete _latheat_sum;
-      if(_sensheat)
-	delete _sensheat;
-      if(_sensheat_sum)
-	delete _sensheat_sum;      
-      if(_grndheat)
-	delete _grndheat;
-      if(_snwheat)
-	delete _snwheat;
-      if(_Temp_s)
-	delete _Temp_s;
-      if(_CanopyStorage)
-	delete _CanopyStorage;
-      /*Channel Storage - state variables*/
-      if(_chan_store)
-	delete _chan_store;
-      if(_chan_store_old)
-	delete _chan_store_old;      
-      if(_chan_evap)
-	delete _chan_evap;
-      /*Veg root properties - state variables*/
+      if(_soilmoist1)
+	delete _soilmoist1;
+      if(_soildepth)
+	delete _soildepth;
+      if(_depth_layer1)
+	delete _depth_layer1;
+      if(_depth_layer2)
+	delete _depth_layer2;
+      //if(_rootfrac1)
+      //	delete _rootfrac1;
+      //if(_rootfrac2)
+      //      delete _rootfrac2;
+      //if(_Kroot)
+      //	delete _Kroot;
       if(_Zroot95)
 	delete _Zroot95;
       if(_ProotzoneL1)
@@ -681,17 +480,20 @@ Basin::Basin(Control &ctrl, Atmosphere &atm)
 	delete _ProotzoneL2;
       if(_ProotzoneL3)
 	delete _ProotzoneL3;
-      /*Soil storage - state variables*/
-      if(_IsSaturated)
-	delete _IsSaturated;
-      if(_incident_water_depth)
-	delete _incident_water_depth;
-      if(_soilmoist_av)
-	delete _soilmoist_av;
-      if(_soilmoist_12)
-	delete _soilmoist_12;
-      if(_ponding)
-	delete _ponding;
+      if(_fieldcapL1)
+	delete _fieldcapL1;
+      if(_fieldcapL2)
+	delete _fieldcapL2;
+      if(_fieldcapL3)
+	delete _fieldcapL3;
+      if(_paramWc)
+	delete _paramWc;
+      if(_paramWp)
+	delete _paramWp;
+      if(_meltCoeff)
+	delete _meltCoeff;
+      if(_Evaporation)
+	delete _Evaporation;
       if(_SoilWaterDepth)
 	delete _SoilWaterDepth;
       if(_SoilWaterDepthL1)
@@ -704,77 +506,97 @@ Basin::Basin(Control &ctrl, Atmosphere &atm)
 	delete _WaterTableDepth;
       if(_SoilSatDeficit)
 	delete _SoilSatDeficit;
-      if(_GravityWater)
-	delete _GravityWater;
-      if(_GrndWater)
-	delete _GrndWater;
-      /* Lateral fluxes - state variables*/
-      if(_Layer1upstreamBC)
-	delete _Layer1upstreamBC;
-      if(_Layer2upstreamBC)
-	delete _Layer2upstreamBC;
-      if(_GWupstreamBC)
-	delete _GWupstreamBC;
+      if(_CanopyStorage)
+	delete _CanopyStorage;
+      if(_Disch_old)
+	delete _Disch_old;
       if(_Disch_upstreamBC)
 	delete _Disch_upstreamBC;
-      //      if(_matGWupstreamBC)
-      //	delete _matGWupstreamBC;
-      if(_FluxLattoChn)
-	delete _FluxLattoChn;
-      if(_FluxLattoSrf)
-	delete _FluxLattoSrf;
-      if(_FluxLattoGW)
-	delete _FluxLattoGW;
-      if(_FluxChntoLat)
-	delete _FluxChntoLat;
-      if(_FluxSrftoLat)
-	delete _FluxSrftoLat;
-      if(_FluxL1toLat)
-	delete _FluxL1toLat;
-      if(_FluxL2toLat)
-	delete _FluxL2toLat;
-      if(_FluxGWtoLat)
-	delete _FluxGWtoLat;
-      if(_FluxL1toChn)
-	delete _FluxL1toChn;
-      if(_FluxL2toChn)
-	delete _FluxL2toChn;
-      if(_FluxGWtoChn)
-	delete _FluxGWtoChn;
-      if(_FluxSrftoChn)
-	delete _FluxSrftoChn;      
-      if(_Layer1Outlet)
-	delete _Layer1Outlet;
-      if(_Layer2Outlet)
-	delete _Layer2Outlet;
-      if(_GWOutlet)
-	delete _GWOutlet;
-      /* Vertical fluxes - state variables*/
-      if(_BedrockLeakageFlux)
-	delete _BedrockLeakageFlux;
-      if(_Evaporation)
-	delete _Evaporation;
+      if(_catcharea)
+	delete _catcharea;
+      if(_GravityWater)
+	delete _GravityWater;
+      if(_GrndWater2)
+        delete _GrndWater2;
+      if(_GrndWater)
+	delete _GrndWater;
+      if(_GWupstreamBC)
+	delete _GWupstreamBC;
+      if(_channelwidth)
+	delete _channelwidth;
+      if(_chGWparam)
+	delete _chGWparam;
+      if(_Manningn)
+	delete _Manningn;
+      if(_soilmoist_av)
+	delete _soilmoist_av;
+      if(_soilmoist_12)
+	delete _soilmoist_12;
+      if(_soilmoist2)
+	delete _soilmoist2;
+      if(_soilmoist3)
+	delete _soilmoist3;
+      if(_bedrock_leak)
+	delete _bedrock_leak;
+      if(_IsSaturated)
+	delete _IsSaturated;
       if(_EvaporationS_all)
 	delete _EvaporationS_all;
       if(_EvaporationI_all)
 	delete _EvaporationI_all;
       if(_Transpiration_all)
 	delete _Transpiration_all;
+
+      if(fForest)
+	delete fForest;
+
+      if(_ponding_old)
+	delete _ponding_old;
+      if(_FluxCnptoSrf)
+	delete _FluxCnptoSrf;
+      if(_FluxCnptoSnow)
+	delete _FluxCnptoSnow;
+      if(_FluxSnowmelt)
+	delete _FluxSnowmelt;
       if(_FluxInfilt)
 	delete _FluxInfilt;
       if(_FluxExfilt)
 	delete _FluxExfilt;
       if(_FluxPercolL2)
 	delete _FluxPercolL2;
+      if(_FluxL2toL1)
+	delete _FluxL2toL1;
       if(_FluxPercolL3)
 	delete _FluxPercolL3;
       if(_FluxRecharge)
 	delete _FluxRecharge;
-      if(_ReturnL1)
-	delete _ReturnL1;
-      if(_ReturnL2)
-	delete _ReturnL2;      
-      /* Accumulated fluxes - state variables*/
+      if(_Leakage)
+	delete _Leakage;
+      if(_FluxL3toL2)
+	delete _FluxL3toL2;
+      if(_FluxTranspiL1)
+	delete _FluxTranspiL1;
+      if(_FluxTranspiL2)
+	delete _FluxTranspiL2;
+      if(_FluxTranspiL3)
+	delete _FluxTranspiL3;
+      if(_FluxLattoSrf)
+	delete _FluxLattoSrf;
+      if(_FluxLattoGW)
+	delete _FluxLattoGW;
+      if(_FluxLattoChn)
+	delete _FluxLattoChn;
+      if(_FluxChntoLat)
+	delete _FluxChntoLat;
+      if(_FluxSrftoLat)
+	delete _FluxSrftoLat;
+      if(_FluxGWtoLat)
+	delete _FluxGWtoLat;
+      if(_FluxGWtoChn)
+	delete _FluxGWtoChn;
+      if(_FluxSrftoChn)
+	delete _FluxSrftoChn;
+
       if(_AccInfilt)
 	delete _AccInfilt;
       if(_AccExfilt)
@@ -787,37 +609,36 @@ Basin::Basin(Control &ctrl, Atmosphere &atm)
 	delete _AccPercolL3;
       if(_AccRecharge)
 	delete _AccRecharge;
-      if(_AccLeak)
-	delete _AccLeak;
-      if(_AccEvaporationS)
-	delete _AccEvaporationS;
+      if(_AccLeakage)
+	delete _AccLeakage;
       if(_AccL3toL2)
 	delete _AccL3toL2;
-      if(_AccLattoChn)
-	delete _AccLattoChn;
-      if(_AccLattoSrf)
-	delete _AccLattoSrf;
+      if(_AccEvaporationS)
+	delete _AccEvaporationS;
+      if(_AccTranspiL1)
+	delete _AccTranspiL1;
+      if(_AccTranspiL2)
+	delete _AccTranspiL2;
+      if(_AccTranspiL3)
+	delete _AccTranspiL3;
       if(_AccLattoGW)
 	delete _AccLattoGW;
+      if(_AccLattoSrf)
+	delete _AccLattoSrf;
+      if(_AccLattoChn)
+	delete _AccLattoChn;
       if(_AccChntoLat)
 	delete _AccChntoLat;
       if(_AccSrftoLat)
 	delete _AccSrftoLat;
-      if(_AccL1toLat)
-	delete _AccL1toLat;
-      if(_AccL2toLat)
-	delete _AccL2toLat;
       if(_AccGWtoLat)
 	delete _AccGWtoLat;
-      if(_AccL1toChn)
-	delete _AccL1toChn;
-      if(_AccL2toChn)
-	delete _AccL2toChn;
       if(_AccGWtoChn)
 	delete _AccGWtoChn;
       if(_AccSrftoChn)
 	delete _AccSrftoChn;
-      /* Tracking fluxes - state variables*/
+
+      // Tracking
       if(_psi_MW)
 	delete _psi_MW;
       if(_moist_MW1)
@@ -830,44 +651,29 @@ Basin::Basin(Control &ctrl, Atmosphere &atm)
 	delete _fracMW2;
       if(_fracMW12)
 	delete _fracMW12;
-      if(_FluxCnptoSrf)
-	delete _FluxCnptoSrf;
-      if(_FluxCnptoSnow)
-	delete _FluxCnptoSnow;
-      if(_FluxSnowtoSrf)
-	delete _FluxSnowtoSrf;
       if(_FluxSrftoL1)
 	delete _FluxSrftoL1;
       if(_FluxL1toL2)
 	delete _FluxL1toL2;
       if(_FluxL2toL3)
 	delete _FluxL2toL3;
-      if(_FluxLeak)
-	delete _FluxLeak;
-      if(_FluxL1toSrf)
-	delete _FluxL1toSrf;
-      if(_IncompAlpha)
-	delete _IncompAlpha;
+      //if(_FluxL2toGW)
+      //		delete _FluxL2toGW;
+      //if(_FluxL3toGW)
+      //	delete _FluxL3toGW;
+      //if(_FluxGWtoL2)
+      //	delete _FluxGWtoL2;
+      //if(_FluxGWtoL3)
+      //delete _FluxGWtoL3;
+
 
       throw;
     }
 
-}
-
-UINT4 rr(UINT4 d){
-  if(d<4)
-    return 1;
-  if(d>6)
-    return -1;
-  else
-    return 0;
-}
-
-UINT4 cc(UINT4 d){
-  if((d==1) || (d==4) || (d==7))
-    return -1;
-  if((d==2) || (d==5) || (d==8))
-    return 0;
-  else
-    return 1;
+  /*	for(unsigned int r = 0; r <  _NRows; r++)//remove!!!!!
+	for(unsigned int c = 0; c <  _NCols; c++)
+	{
+	_Temp_s->matrix[r][c] = 2;
+	_Temp_s_old->matrix[r][c] = 1;
+	}*/
 }

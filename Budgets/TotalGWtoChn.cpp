@@ -30,9 +30,9 @@
 
 #include "Budget.h"
 
-void Budget::TotalGWtoChn(const grid *map1, const grid *map2, const Basin *b)
+void Budget::TotalGWtoChn(const grid *map, const Basin *b)
 {
-  gwtochn += AccountStorages(map1, map2, b);
+  gwtochn += AccountStorages(map, b);
   // AccountStorages is used because FluxGWtoChn is already in m/tstep
   // (no need to multiply by dt)
 }
@@ -45,6 +45,10 @@ void Budget::InstGWtoChn_d2H(const grid *map1, const grid *map2, const Basin *b)
 void Budget::InstGWtoChn_d18O(const grid *map1, const grid *map2, const Basin *b)
 {
   d18Ogwtochn = AccountTrckFluxes2(map1, map2, b);
+}
+void Budget::InstGWtoChn_cCl(const grid *map1, const grid *map2, const Basin *b)
+{
+  cClgwtochn = AccountTrckFluxes2(map1, map2, b);
 }
 void Budget::InstGWtoChn_Age(const grid *map1, const grid *map2, const Basin *b)
 {

@@ -19,7 +19,7 @@
  *     along with Ech2o.  If not, see <http://www.gnu.org/licenses/>.
  *
  * Contributors:
- *    Marco Maneta
+ *    Marco Maneta, Sylvain Kuppel
  *******************************************************************************/
 /*
  * CreateGroves.cpp
@@ -49,9 +49,6 @@ int Grove::CreateGrids(grid *base){
 		_Del_StemMass = new grid (*base);
 		_Del_RootMass = new grid (*base);
 		_Temp_c = new grid(*base);
-		_RUptakeL1 = new grid (*base);
-		_RUptakeL2 = new grid (*base);
-		_RUptakeL3 = new grid (*base);		
 		_NetR_Can = new grid (*base);
 		_LatHeat_CanE = new grid (*base);
 		_LatHeat_CanT = new grid (*base);
@@ -60,17 +57,80 @@ int Grove::CreateGrids(grid *base){
 		_ET = new grid (*base);
 		_Einterception = new grid (*base);
 		_Transpiration = new grid (*base);
-		_TranspirationFlux = new grid (*base);
 		_Esoil = new grid (*base);
-		_SoilWatPot = new grid (*base);		
 		_LeafWatPot = new grid (*base);
-		_SapVelocity = new grid (*base);
 		_rootfrac1 = new grid (*base);
 		_rootfrac2 = new grid (*base);
 
 	}catch(const exception& e){
 
 		cerr << "Failed allocate memory for Grove grid object \n" << e.what() << endl;
+		exit(EXIT_FAILURE);
+	}
+
+	return EXIT_SUCCESS;
+}
+
+
+int Grove::CreateGridsd2H(grid *base){
+
+	try{
+		_d2Hcanopy = new grid (*base);
+		_d2HevapI = new grid (*base);
+		_d2HevapT = new grid (*base);
+		_d2HevapS = new grid (*base);
+
+	}catch(const exception& e){
+
+		cerr << "Failed allocate memory for Grove grid (2H) object \n" << e.what() << endl;
+		exit(EXIT_FAILURE);
+	}
+
+	return EXIT_SUCCESS;
+}
+
+int Grove::CreateGridsd18O(grid *base){
+
+	try{
+		_d18Ocanopy = new grid (*base);
+		_d18OevapI = new grid (*base);
+		_d18OevapT = new grid (*base);
+		_d18OevapS = new grid (*base);
+
+	}catch(const exception& e){
+
+		cerr << "Failed allocate memory for Grove grid (18O) object \n" << e.what() << endl;
+		exit(EXIT_FAILURE);
+	}
+
+	return EXIT_SUCCESS;
+}
+
+int Grove::CreateGridscCl(grid *base){
+
+	try{
+		_cClcanopy = new grid (*base);
+
+	}catch(const exception& e){
+
+		cerr << "Failed allocate memory for Grove grid (Cl) object \n" << e.what() << endl;
+		exit(EXIT_FAILURE);
+	}
+
+	return EXIT_SUCCESS;
+}
+
+int Grove::CreateGridsAge(grid *base){
+
+	try{
+		_Agecanopy = new grid (*base);
+		_AgeevapI = new grid (*base);
+		_AgeevapT = new grid (*base);
+		_AgeevapS = new grid (*base);
+
+	}catch(const exception& e){
+
+		cerr << "Failed allocate memory for Grove grid (Age) object \n" << e.what() << endl;
 		exit(EXIT_FAILURE);
 	}
 

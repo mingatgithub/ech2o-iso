@@ -2,7 +2,7 @@
  * Ech2o, a spatially-distributed, ecohydrologic simulator
  * Copyright (c) 2016 Marco Maneta <marco.maneta@umontana.edu>
  *
- *     This file is part of ech2o, a hydrologic model developed at the 
+ *     This file is part of ech2o, a hydrologic model developed at the
  *     University of Montana.
  *
  *     Ech2o is free software: you can redistribute it and/or modify
@@ -30,23 +30,27 @@
 
 #include "Budget.h"
 
-void Budget::TotalPrecipitation(const grid* map1, const grid* map2, const Atmosphere *b)
+void Budget::TotalPrecipitation(const grid* map, const Atmosphere *b)
 {
-  precipitation += AccountFluxes(map1, map2, b);
+  precipitation += AccountFluxes(map, b);
 }
 
-void Budget::TotalPrecipitation_d2H(const grid* map1, const grid* map2,
-				    const grid* map3, const Atmosphere *atm)
+void Budget::TotalPrecipitation_d2H(const grid* map1, const grid* map2, const Atmosphere *atm)
 {
-  precipitation_d2H += AccountTrckFluxes(map1, map2, map3, atm);
+  precipitation_d2H += AccountTrckFluxes(map1, map2, atm);
   //precipitation_d2H = AccountTrckFluxes(map1, map2, atm);
 }
 
-void Budget::TotalPrecipitation_d18O(const grid* map1, const grid* map2,
-				     const grid* map3, const Atmosphere *atm)
+void Budget::TotalPrecipitation_d18O(const grid* map1, const grid* map2, const Atmosphere *atm)
 {
-  precipitation_d18O += AccountTrckFluxes(map1, map2, map3, atm);
+  precipitation_d18O += AccountTrckFluxes(map1, map2, atm);
   //precipitation_d18O = AccountTrckFluxes(map1, map2, atm);
+}
+
+void Budget::TotalPrecipitation_cCl(const grid* map1, const grid* map2, const Atmosphere *atm)
+{
+  precipitation_cCl += AccountTrckFluxes(map1, map2, atm);
+  //precipitation_cCl = AccountTrckFluxes(map1, map2, atm);
 }
 
 // the water that already entered is kept in the balance and "aging" as well
@@ -57,11 +61,15 @@ void Budget::TotalPrecipitation_Age()
 }
 
 // For Basin*Summary.txt
-void Budget::InstPrecipitation_d2H(const grid* map1, const grid* map2, const Basin *b)
+void Budget::InstPrecipitation_d2H(const grid* map1, const grid* map2, const Atmosphere *atm)
 {
-  d2Hprecip = AccountTrckFluxes2(map1, map2, b);
+  d2Hprecip = AccountTrckFluxes2(map1, map2, atm);
 }
-void Budget::InstPrecipitation_d18O(const grid* map1, const grid* map2, const Basin *b)
+void Budget::InstPrecipitation_d18O(const grid* map1, const grid* map2, const Atmosphere *atm)
 {
-  d18Oprecip = AccountTrckFluxes2(map1, map2, b);
+  d18Oprecip = AccountTrckFluxes2(map1, map2, atm);
+}
+void Budget::InstPrecipitation_cCl(const grid* map1, const grid* map2, const Atmosphere *atm)
+{
+  cClprecip = AccountTrckFluxes2(map1, map2, atm);
 }

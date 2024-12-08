@@ -19,7 +19,7 @@
  *     along with Ech2o.  If not, see <http://www.gnu.org/licenses/>.
  *
  * Contributors:
- *    Marco Maneta
+ *    Marco Maneta, Sylvain Kuppel
  *******************************************************************************/
 /*
  * AdjustPrecip.cpp
@@ -32,19 +32,20 @@
 
 int Atmosphere::AdjustPrecip(){
 
-	UINT4 r, c;
-
-      #pragma omp parallel for default(none) private(r,c) 
-	for(UINT4 i = 0; i < _vSortedGrid.size(); i++)
-		for (UINT4 j = 0; j < _vSortedGrid[i].cells.size() ; j++)
-		{
-			r = _vSortedGrid[i].cells[j].row;
-			c = _vSortedGrid[i].cells[j].col;
-
-			_Precip->matrix[r][c] *= _isohyet->matrix[r][c];
-		}
+  UINT4 r, c;
 
 
-	return EXIT_SUCCESS;
+#pragma omp parallel for default(none) private(r,c)
+  for(UINT4 i = 0; i < _vSortedGrid.size(); i++)
+    for (UINT4 j = 0; j < _vSortedGrid[i].cells.size() ; j++)
+      {
+	r = _vSortedGrid[i].cells[j].row;
+	c = _vSortedGrid[i].cells[j].col;
+
+	_Precip->matrix[r][c] *= _isohyet->matrix[r][c];
+      }
+
+
+  return EXIT_SUCCESS;
 
 }

@@ -19,13 +19,13 @@
  *     along with Ech2o.  If not, see <http://www.gnu.org/licenses/>.
  *
  * Contributors:
- *    Marco Maneta
+ *    Marco Maneta, Sylvain Kuppel
  *******************************************************************************/
 /*
  * globals.cpp
  *
  *  Created on: Jul 30, 2010
- *      Author: Marco.Maneta
+ *      Author: Marco.Maneta, Sylvain Kuppel
  */
 
 #include "Sativa.h"
@@ -40,4 +40,5 @@ Tracking *oTracking  = NULL;
 ofstream ofSummary;
 ofstream ofd2HSummary;
 ofstream ofd18OSummary;
+ofstream ofcClSummary;
 ofstream ofAgeSummary;

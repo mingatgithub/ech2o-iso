@@ -31,7 +31,7 @@
 #ifndef SATIVA_H_
 #define SATIVA_H_
 
-#define VERSION "V 3.0"
+#define VERSION "V 2.0"
 
 #include "Basin.h"
 #include "Atmosphere.h"
@@ -49,6 +49,7 @@ extern Tracking *oTracking;
 extern ofstream ofSummary;
 extern ofstream ofd2HSummary;
 extern ofstream ofd18OSummary;
+extern ofstream ofcClSummary;
 extern ofstream ofAgeSummary;
 
 void Splash(int argc, char* argv[]);
@@ -56,7 +57,6 @@ int CreateWorld(char* argv[]);
 int SolveTimeStep();
 int CalculateBudgets();
 int Report2Screen();
-int Report2nc();
 int Report2Maps();
 int Report2Ts();
 int CrunchWorld();

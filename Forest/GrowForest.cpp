@@ -19,7 +19,7 @@
  *     along with Ech2o.  If not, see <http://www.gnu.org/licenses/>.
  *
  * Contributors:
- *    Marco Maneta
+ *    Marco Maneta, Sylvain Kuppel
  *******************************************************************************/
 /*
  * CalculateGPP.cpp
@@ -37,6 +37,7 @@ int Forest::GrowForest(Basin &bas, const Atmosphere &atm, const Control &ctrl) {
   REAL8 alpha = 0; //canopy quantum efficiency
   REAL8 beta = 0; //canopy water efficiency
   REAL8 par = 0;
+  //REAL8 lai = 0;
   REAL8 forestAge = 0;
   REAL8 airTemp, optTemp, maxTemp, minTemp;
   REAL8 Wc, Wp, UsableTheta, Wr, gsmax;
@@ -52,12 +53,13 @@ int Forest::GrowForest(Basin &bas, const Atmosphere &atm, const Control &ctrl) {
 
   for (j = 0; j < _Nsp - 1; j++) //grow forest up to Nsp -1 because Nsp is bare soil
 
-#pragma omp parallel for default(none)					\
-  private( r, c, alpha, beta, par, E, lai,forestAge,			\
+
+#pragma omp parallel for default(shared)				\
+  private( r, c, alpha, beta, par, E, lai, forestAge,			\
 	   airTemp, optTemp, maxTemp, minTemp, Wc, Wp, gsmax,		\
 	   UsableTheta, Wr, fa, ft ,fw, fc1, fc2, fc3, BeerK,		\
 	   theta_wp, theta, theta2, theta3, froot1, froot2, froot3)	\
-  shared(j,bas, atm, ctrl,dt)
+  //shared(j,bas, atm, ctrl,dt)
 
     for (unsigned int k = 0; k < _vSortedGrid.cells.size(); k++) {
       r = _vSortedGrid.cells[k].row;
@@ -84,9 +86,15 @@ int Forest::GrowForest(Basin &bas, const Atmosphere &atm, const Control &ctrl) {
       theta2 = bas.getSoilMoist2()->matrix[r][c];
       theta3 = bas.getSoilMoist3()->matrix[r][c];
       froot1 = _species[j]._rootfrac1->matrix[r][c];
-      froot2 = _species[j]._rootfrac2->matrix[r][c];  
+      froot2 = _species[j]._rootfrac2->matrix[r][c];
+      //froot1 = bas.getRootFrac1()->matrix[r][c];
+      //froot2 = bas.getRootFrac2()->matrix[r][c];    
       froot3 = 1-froot1-froot2;
+      
+      //psi_ae = bas.getPsiAE()->matrix[r][c];
       BeerK = _species[j].KBeers;
+      
+
       fc1 = bas.getFieldCapacityL1()->matrix[r][c];
       fc2 = bas.getFieldCapacityL2()->matrix[r][c];
       fc3 = bas.getFieldCapacityL3()->matrix[r][c];
@@ -94,12 +102,17 @@ int Forest::GrowForest(Basin &bas, const Atmosphere &atm, const Control &ctrl) {
       UsableTheta = max<REAL8>(0,min<REAL8>(1,(theta-theta_wp)/(fc1-theta_wp)))*froot1 +
 	max<REAL8>(0,min<REAL8>(1,(theta2-theta_wp)/(fc2-theta_wp)))*froot2 +
 	max<REAL8>(0,min<REAL8>(1,(theta3-theta_wp)/(fc3-theta_wp)))*froot3;
+      
+      //      if (UsableTheta > bas.getFieldCapacity()->matrix[r][c])
+      //UsableTheta = 1;
 
-      Wr = UsableTheta; //TODO: URGENT: improve competition for water. no competition now*/
+      Wr = /*_species[j]._fraction->matrix[r][c] **/UsableTheta; //TODO: URGENT: improve competition for water. no competition now*/
 
       fa = Calculate_fa(_species[j].MaxAge, forestAge);
       ft = Calculate_ft(airTemp, maxTemp, minTemp, optTemp);
-      fw = Calculate_fw(_species[j]._CanopyConductance->matrix[r][c],gsmax, Wr, Wc, Wp);
+
+      fw = Calculate_fw(_species[j]._CanopyConductance->matrix[r][c],
+			gsmax, Wr, Wc, Wp);
       
       _species[j]._GPP->matrix[r][c] = sqrtl(alpha * par * beta * E) * fa* ft; // * fw;
       _species[j]._NPP->matrix[r][c] = _species[j]._GPP->matrix[r][c] * _species[j].GPP2NPP;
@@ -107,7 +120,7 @@ int Forest::GrowForest(Basin &bas, const Atmosphere &atm, const Control &ctrl) {
       if (_species[j].vegtype == 2){
           
 	ft = expl(-BeerK * lai) ;
-	fw = Wr;
+	fw = Wr;//1 / (1 + powl(psi_ae/_species[j].lwp_d, _species[j].lwp_c));
           
       }
 
@@ -116,13 +129,15 @@ int Forest::GrowForest(Basin &bas, const Atmosphere &atm, const Control &ctrl) {
       // - veg_dyn = 1 : calculated dynamically
       // - veg_dyn = 2 : LAI forced from input times series (update from ech2o.cpp)
       if(ctrl.toggle_veg_dyn == 1){
+
 	if (_species[j].vegtype == 1)
 	  GrowGrass(j, r, c, dt);
         else	  
-	  GrowTrees(j, r, c, dt, fa, ft, fw,atm.getMinTemperature()->matrix[r][c], UsableTheta);
+	  GrowTrees(j, r, c, dt, fa, ft, fw,
+		    atm.getMinTemperature()->matrix[r][c], UsableTheta);
+
       }
+
     }
-
   return EXIT_SUCCESS;
-
 }

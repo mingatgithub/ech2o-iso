@@ -273,7 +273,7 @@ MaxLeafTurnoverWaterStress LeafTurnoverWaterStressParam
 MaxLeafTurnoverTempStress LeafTurnoverTempStressParam
 ColdStressParam	RootTurnoverRate MaxCanStorageParam albedo
 emissivity	KBeers	CanopyWatEffic sperry_d_par sperry_c_par 
-sperry_K_param gsr_param_a vegtype 
+sperry_K_param gsr_param_a is_grass 
 DeadGrassLeafTurnoverRate DeadGrassLeafTurnoverTempAdjustment 
 
 \end{verbatim}
@@ -398,13 +398,13 @@ DeadGrassLeafTurnoverRate DeadGrassLeafTurnoverTempAdjustment
 \paragraph{gsr\_param\_a}: Parameter that controls the loss of conductance in the rhizosphere as soil dries. Typical value 8
 
 \hangindent=0.7cm
-\paragraph{vegtype}: Switch that indicates if the vegetation type is herbaceous (1) or not (0)
+\paragraph{is\_grass}: Switch that indicates if the vegetation type is herbaceous (1) or not (0)
 
 \hangindent=0.7cm
-\paragraph{DeadGrassLeafTurnoverRate}: Base Rate of decomposition of dry grass leaves,  $s^{-1}$. The value is used only if \emph{vegtype}=1 although a value needs to be supplied in all cases 
+\paragraph{DeadGrassLeafTurnoverRate}: Base Rate of decomposition of dry grass leaves,  $s^{-1}$. The value is used only if \emph{is\_grass}=1 although a value needs to be supplied in all cases 
 
 \hangindent=0.7cm
-\paragraph{DeadGrassLeafTurnoverTempAdjustment}: Temperature threshold that triggers the decomposition of dry grass leaves,  $\deg C$. The value is used only if \emph{vegtype}=1 although a value needs to be supplied in all cases    
+\paragraph{DeadGrassLeafTurnoverTempAdjustment}: Temperature threshold that triggers the decomposition of dry grass leaves,  $\deg C$. The value is used only if \emph{is\_grass}=1 although a value needs to be supplied in all cases    
  
 
 \subsection{Initial conditions for vegetation state variables}

@@ -19,13 +19,13 @@
  *     along with Ech2o.  If not, see <http://www.gnu.org/licenses/>.
  *
  * Contributors:
- *    Marco Maneta
+ *    Marco Maneta, Sylvain Kuppel
  *******************************************************************************/
 /*
- * CheckMaps.cpp
+ * CheckMapsTrck.cpp
  *
- *  Created on: Feb 10, 2011
- *      Author: Marco.Maneta
+ *  Created on: Nov 14, 2016
+ *      Author: Sylvain Kuppel
  */
 
 #include "Tracking.h"
@@ -59,9 +59,9 @@ void Tracking::CheckMapsTrck(Control &ctrl, Basin &bsn) {
 	if (getd2Hsoil3()->matrix[r][c] == getd2Hsoil3()->nodata) {
 	  string e("Initial d2H map in layer 3 contains no data values inside the valid domain...\n");
 	  throw e;}
-	if (getd2Hgroundwater()->matrix[r][c] == getd2Hgroundwater()->nodata) {
+	/*if (getd2Hgroundwater()->matrix[r][c] == getd2Hgroundwater()->nodata) {
 	  string e("Initial d2H map in groundwater contains no data values inside the valid domain...\n");
-	  throw e;}
+	  throw e;}*/
       }
 
       if(ctrl.sw_trck && ctrl.sw_18O){
@@ -80,9 +80,30 @@ void Tracking::CheckMapsTrck(Control &ctrl, Basin &bsn) {
 	if (getd18Osoil3()->matrix[r][c] == getd18Osoil3()->nodata) {
 	  string e("Initial d18O map in layer 3 contains no data values inside the valid domain...\n");
 	  throw e;}
-	if (getd18Ogroundwater()->matrix[r][c] == getd18Ogroundwater()->nodata) {
+	/*if (getd18Ogroundwater()->matrix[r][c] == getd18Ogroundwater()->nodata) {
 	  string e("Initial d18O map in groundwater contains no data values inside the valid domain...\n");
+	  throw e;}*/
+      }
+      
+      if(ctrl.sw_trck && ctrl.sw_Cl){
+	if (getcClsnowpack()->matrix[r][c] == getcClsnowpack()->nodata) {
+	  string e("Initial cCl map in snowpack contains no data values inside the valid domain...\n");
 	  throw e;}
+	if (getcClsurface()->matrix[r][c] == getcClsurface()->nodata) {
+	  string e("Initial cCl map in channel contains no data values inside the valid channel domain...\n");
+	  throw e;}
+	if (getcClsoil1()->matrix[r][c] == getcClsoil1()->nodata) {
+	  string e("Initial cCl map in layer 1 contains no data values inside the valid domain...\n");
+	  throw e;}
+	if (getcClsoil2()->matrix[r][c] == getcClsoil2()->nodata) {
+	  string e("Initial cCl map in layer 2 contains no data values inside the valid domain...\n");
+	  throw e;}
+	if (getcClsoil3()->matrix[r][c] == getcClsoil3()->nodata) {
+	  string e("Initial cCl map in layer 3 contains no data values inside the valid domain...\n");
+	  throw e;}
+	/*if (getcClgroundwater()->matrix[r][c] == getcClgroundwater()->nodata) {
+	  string e("Initial cCl map in groundwater contains no data values inside the valid domain...\n");
+	  throw e;}*/
       }
 
       if(ctrl.sw_trck && ctrl.sw_Age){
@@ -101,9 +122,11 @@ void Tracking::CheckMapsTrck(Control &ctrl, Basin &bsn) {
 	if (getAgesoil3()->matrix[r][c] == getAgesoil3()->nodata) {
 	  string e("Initial Age map in layer 3 contains no data values inside the valid domain...\n");
 	  throw e;}
-	if (getAgegroundwater()->matrix[r][c] == getAgegroundwater()->nodata) {
+	/*
+	  if (getAgegroundwater()->matrix[r][c] == getAgegroundwater()->nodata) {
 	  string e("Initial Age map in groundwater contains no data values inside the valid domain...\n");
 	  throw e;}
+	*/
       }
 
     } catch (string &e) {

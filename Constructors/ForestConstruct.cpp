@@ -61,8 +61,11 @@ Forest::Forest(Control &ctrl)
 	_species[i].CreateGridsd2H(_patches);
       if(ctrl.sw_trck && ctrl.sw_18O)
 	_species[i].CreateGridsd18O(_patches);
+      if(ctrl.sw_trck && ctrl.sw_Cl)
+	_species[i].CreateGridscCl(_patches);
       if(ctrl.sw_trck && ctrl.sw_Age)
 	_species[i].CreateGridsAge(_patches);
+      
       // If LAI is prescribed over time
       if(i < _Nsp - 1 and ctrl.toggle_veg_dyn == 2){
 	// Read file
@@ -74,22 +77,13 @@ Forest::Forest(Control &ctrl)
 	  cout << "Dang!!: cannot find/read the " << e << "  file: error " << strerror(errno) << endl;
 	  throw;
 	}
-
-	fn.str(""); fn << ctrl.fn_hgt_timeseries << "_" << i << ".bin";
-	try{
-	  _species[i].ifhgt.open((ctrl.path_ClimMapsFolder + fn.str()).c_str(), ios::binary);
-	  if(errno!=0) throw fn.str();
-	} catch (string e) {
-	  cout << "Dang!!: cannot find/read the " << e << "  file: error " << strerror(errno) << endl;
-	  throw;
-	}
+	
 	//Initiate LAI map
+	//cout << "species " << i << ", input LAI file: " << fn.str() << endl ;
 	InitiateLAIMap(_species[i].ifLAI, *_species[i]._LAI);
-	InitiateLAIMap(_species[i].ifhgt, *_species[i]._Height);	
       }
-      //
     }
-
+    
     SetSpeciesParameters(ctrl);
 
     if(!ctrl.ForestStateVarsInputType.compare("tables"))
@@ -102,7 +96,9 @@ Forest::Forest(Control &ctrl)
     }
 
     //SetSpeciesParameters(ctrl);
+
     checkForestDatabase(); //check the sanity of the database
+
 
   }catch (std::bad_alloc &)
     { cerr << "Cleaning up the forest..." << "\n";

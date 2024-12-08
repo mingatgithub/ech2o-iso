@@ -39,9 +39,12 @@ Configuration (main) file keywords
 |                                         | | 1 turns on vegetation allocation and growth module to       |
 |                                         | | calculate LAI, and 2 allows for externally forcing LAI.     |
 +-----------------------------------------+---------------------------------------------------------------+
-| TimeSeries\_LAI                         | | if Vegetation\_dynamics = 2, template name of binary files  |
-|                                         | | giving LAI dynamics, one for each species.                  |
-|                                         | | Files name format: template + '_' + species # + '.bin'      |
+| TimeSeries\_LAI                         | | if Vegetation\_dynamics = 2, generic/prefix in binary files |
+|                                         | | giving LAI dynamics, one for each species indicated with    |
+|                                         | | a number from 0 to Number\_of\_Species - 1 (see below)      |
+|                                         | | File name format is *prefix+'_'+species#+'.bin'*. E.g.,     |
+|                                         | | TimeSeries_LAI = LAI will have the model looking for files  |
+|                                         | | LAI_0.bin, LAI_1.bin, ..., LAI_Number\_of\_Species-1.bin	  |
 +-----------------------------------------+---------------------------------------------------------------+
 | Reinfiltration                          | Boolean switch to turn reinfiltration on (1) or off (0)       |
 +-----------------------------------------+---------------------------------------------------------------+

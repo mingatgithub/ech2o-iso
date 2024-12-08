@@ -2,7 +2,7 @@
  * Ech2o, a spatially-distributed, ecohydrologic simulator
  * Copyright (c) 2016 Marco Maneta <marco.maneta@umontana.edu>
  *
- *     This file is part of ech2o, a hydrologic model developed at the 
+ *     This file is part of ech2o, a hydrologic model developed at the
  *     University of Montana.
  *
  *     Ech2o is free software: you can redistribute it and/or modify
@@ -33,11 +33,11 @@
 
 int Report::RenameFile(string oldname){
 
-
+	errno = 0 ;
 	remove(oldname.c_str());
 	if(errno != 0 && errno != 2)
 	{
-		cout << errno << " " << oldname;
+		cout << errno << " ___ " << oldname;
 		perror("error");
 		throw (EXIT_FAILURE);
 	}
